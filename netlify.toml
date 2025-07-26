@@ -1,0 +1,30 @@
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/contact"
+  to = "/#contact"
+  status = 301
+
+[[redirects]]
+  from = "/services"  
+  to = "/#services"
+  status = 301
+
+[[redirects]]
+  from = "/about"
+  to = "/#about"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio"
+  to = "/#portfolio"
+  status = 301

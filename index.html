@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enam Consulting LLC - Mobile App Development & Business Solutions</title>
+    <meta name="description" content="Enam Consulting LLC provides professional mobile app development, business consulting, and digital transformation services for businesses across Ohio and beyond.">
+    <meta name="keywords" content="mobile app development, business consulting, iOS development, Android development, digital transformation, Ohio consulting">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        nav {
+            background: #34495e;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        nav li {
+            margin: 0 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        nav a:hover {
+            background: #3498db;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(52, 73, 94, 0.8), rgba(52, 152, 219, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f8f9fa" width="1200" height="600"/><circle fill="%23e9ecef" cx="200" cy="150" r="80"/><circle fill="%23dee2e6" cx="800" cy="300" r="120"/><circle fill="%23ced4da" cx="1000" cy="100" r="60"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid white;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: #2c3e50;
+        }
+        
+        section {
+            padding: 4rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2c3e50;
+            font-weight: 700;
+        }
+        
+        .services {
+            background: #f8f9fa;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .service-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .about {
+            background: white;
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .portfolio {
+            background: #f8f9fa;
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .portfolio-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .portfolio-content {
+            padding: 1.5rem;
+        }
+        
+        .portfolio-item h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .portfolio-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .tech-tag {
+            background: #3498db;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .contact {
+            background: #2c3e50;
+            color: white;
+        }
+        
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+        
+        .contact-info h3 {
+            margin-bottom: 1rem;
+            color: #3498db;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-item i {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            color: #3498db;
+        }
+        
+        .contact-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        footer {
+            background: #1a252f;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .about-content,
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav li {
+                margin: 0.5rem 0;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Enam Consulting LLC</div>
+            <div class="tagline">Mobile App Development & Business Solutions</div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>Transform Your Business with Technology</h1>
+            <p>We specialize in mobile app development, digital transformation, and business consulting services that drive growth and innovation for companies across Ohio and beyond.</p>
+            <a href="#contact" class="btn">Get Started</a>
+            <a href="#portfolio" class="btn btn-secondary">View Our Work</a>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">📱</div>
+                    <h3>Mobile App Development</h3>
+                    <p>Custom iOS and Android applications built with cutting-edge technology. From concept to App Store deployment, we handle the entire development lifecycle.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💼</div>
+                    <h3>Business Consulting</h3>
+                    <p>Strategic technology consulting to help businesses optimize operations, improve efficiency, and accelerate digital transformation initiatives.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">☁️</div>
+                    <h3>Cloud Solutions</h3>
+                    <p>Scalable cloud infrastructure, data migration, and modern web applications that grow with your business needs and ensure reliability.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🎯</div>
+                    <h3>Digital Strategy</h3>
+                    <p>Comprehensive digital transformation planning, process automation, and technology roadmaps tailored to your industry and goals.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🛡️</div>
+                    <h3>Security & Compliance</h3>
+                    <p>Enterprise-grade security implementation, data protection strategies, and compliance consulting for regulated industries.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3>Analytics & Insights</h3>
+                    <p>Data-driven solutions, business intelligence implementation, and performance analytics to inform strategic decision-making.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Enam Consulting LLC</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p><strong>Enam Consulting LLC</strong> is a premier technology consulting firm based in Ohio, specializing in mobile application development and digital business solutions. Founded with a mission to help businesses leverage technology for sustainable growth, we combine technical expertise with strategic business insight.</p>
+                    
+                    <p>Our team brings extensive experience in enterprise software development, mobile technologies, and business process optimization. We work with companies of all sizes, from innovative startups to established enterprises, delivering solutions that drive measurable results.</p>
+                    
+                    <p>With a focus on quality, security, and scalability, we ensure every project meets the highest standards of professional software development. Our commitment to ongoing support and maintenance ensures your technology investments continue to deliver value long after deployment.</p>
+                </div>
+                <div class="about-stats">
+                    <div class="stat">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Projects Delivered</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">5+</div>
+                        <div class="stat-label">Years Experience</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Client Satisfaction</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Support Available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+            <h2 class="section-title">Featured Projects</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <h3>HomeLinkGH - Home Services Platform</h3>
+                        <p>Comprehensive mobile platform connecting homeowners with verified service providers. Features real-time booking, payment processing, and service tracking across Ohio.</p>
+                        <div class="portfolio-tech">
+                            <span class="tech-tag">iOS</span>
+                            <span class="tech-tag">Android</span>
+                            <span class="tech-tag">Flutter</span>
+                            <span class="tech-tag">Firebase</span>
+                            <span class="tech-tag">Stripe</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <h3>Beacon of New Beginnings - Crisis Support</h3>
+                        <p>Trauma-informed mobile application providing crisis support resources for survivors of abuse and homelessness. Features encrypted communications and anonymous access.</p>
+                        <div class="portfolio-tech">
+                            <span class="tech-tag">Flutter</span>
+                            <span class="tech-tag">Encryption</span>
+                            <span class="tech-tag">Privacy-First</span>
+                            <span class="tech-tag">Accessibility</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <h3>Faith Klinik Ministries - Church Management</h3>
+                        <p>Complete church management system with member portals, ministry coordination, event management, and community engagement features.</p>
+                        <div class="portfolio-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">PWA</span>
+                            <span class="tech-tag">Role-Based Access</span>
+                            <span class="tech-tag">Community</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <div class="contact-item">
+                        <i>📧</i>
+                        <span>consulting.enam@gmail.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i>📱</i>
+                        <span>Available upon request</span>
+                    </div>
+                    <div class="contact-item">
+                        <i>📍</i>
+                        <span>Ohio, United States</span>
+                    </div>
+                    <div class="contact-item">
+                        <i>🕒</i>
+                        <span>Monday - Friday: 9AM - 6PM EST</span>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem;">Why Choose Enam Consulting LLC?</h3>
+                    <ul style="margin-top: 1rem; line-height: 1.8;">
+                        <li>✅ Proven track record with enterprise clients</li>
+                        <li>✅ Full-service development lifecycle</li>
+                        <li>✅ Security and compliance expertise</li>
+                        <li>✅ Ongoing support and maintenance</li>
+                        <li>✅ Transparent communication</li>
+                        <li>✅ Competitive pricing</li>
+                    </ul>
+                </div>
+                <div class="contact-form">
+                    <h3>Start Your Project</h3>
+                    <form action="#" method="POST">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="company">Company Name</label>
+                            <input type="text" id="company" name="company">
+                        </div>
+                        <div class="form-group">
+                            <label for="service">Service Needed</label>
+                            <select id="service" name="service" style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 5px;">
+                                <option value="">Select a service</option>
+                                <option value="mobile-app">Mobile App Development</option>
+                                <option value="business-consulting">Business Consulting</option>
+                                <option value="cloud-solutions">Cloud Solutions</option>
+                                <option value="digital-strategy">Digital Strategy</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Project Details *</label>
+                            <textarea id="message" name="message" placeholder="Tell us about your project, timeline, and requirements..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%; margin: 0;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>&copy; 2025 Enam Consulting LLC. All rights reserved.</div>
+                <div class="footer-links">
+                    <a href="#privacy">Privacy Policy</a>
+                    <a href="#terms">Terms of Service</a>
+                    <a href="#contact">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission handler
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! We will contact you within 24 hours.');
+        });
+
+        // Add active navigation state
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
