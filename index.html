@@ -7,6 +7,9 @@
     <meta name="description" content="Enam Consulting LLC provides professional mobile app development, business consulting, and digital transformation services for businesses across Ohio and beyond.">
     <meta name="keywords" content="mobile app development, business consulting, iOS development, Android development, digital transformation, Ohio consulting">
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
     <style>
         * {
             margin: 0;
@@ -35,10 +38,14 @@
         }
         
         .logo {
-            font-size: 2.5rem;
-            font-weight: 700;
+            display: flex;
+            justify-content: center;
             margin-bottom: 0.5rem;
-            letter-spacing: -1px;
+        }
+        
+        .logo img {
+            height: 60px;
+            width: auto;
         }
         
         .tagline {
@@ -394,7 +401,9 @@
 <body>
     <header>
         <div class="container">
-            <div class="logo">Enam Consulting LLC</div>
+            <div class="logo">
+                <img src="logo.png" alt="Enam Consulting LLC - Strategic Business Solutions" />
+            </div>
             <div class="tagline">Mobile App Development & Business Solutions</div>
         </div>
     </header>

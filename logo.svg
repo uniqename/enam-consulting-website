@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background hexagon -->
+  <polygon points="40,10 60,20 60,40 40,50 20,40 20,20" 
+           fill="#1E3A8A" stroke="#1E40AF" stroke-width="2"/>
+  
+  <!-- Consulting icon - graph/chart -->
+  <path d="M28 35 L32 30 L36 25 L40 20 L44 25 L48 18 L52 22" 
+        stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Data points -->
+  <circle cx="28" cy="35" r="2" fill="white"/>
+  <circle cx="32" cy="30" r="2" fill="white"/>
+  <circle cx="36" cy="25" r="2" fill="white"/>
+  <circle cx="40" cy="20" r="2" fill="white"/>
+  <circle cx="44" cy="25" r="2" fill="white"/>
+  <circle cx="48" cy="18" r="2" fill="white"/>
+  <circle cx="52" cy="22" r="2" fill="white"/>
+  
+  <!-- Text: Enam -->
+  <text x="85" y="28" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#1E3A8A">
+    Enam
+  </text>
+  
+  <!-- Text: Consulting -->
+  <text x="85" y="48" font-family="Arial, sans-serif" font-size="16" fill="#374151">
+    Consulting
+  </text>
+  
+  <!-- Underline accent -->
+  <rect x="85" y="52" width="80" height="2" fill="#1E40AF"/>
+  
+  <!-- Tagline -->
+  <text x="85" y="68" font-family="Arial, sans-serif" font-size="8" fill="#666">
+    Strategic Business Solutions
+  </text>
+</svg>
