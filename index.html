@@ -37,28 +37,26 @@
             text-align: center;
         }
         
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .company-info h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-        }
-        
-        .logo {
+        .logo-section {
             display: flex;
             align-items: center;
+            gap: 15px;
         }
         
         .logo img {
-            height: 50px;
-            width: auto;
-            opacity: 0.9;
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: white;
+            padding: 3px;
+            opacity: 0.95;
+        }
+        
+        .brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
         }
         
         .tagline {
@@ -382,14 +380,14 @@
         }
         
         @media (max-width: 768px) {
-            .header-content {
+            .logo-section {
                 flex-direction: column;
                 text-align: center;
                 gap: 1rem;
             }
             
-            .company-info h1 {
-                font-size: 2rem;
+            .brand-text h1 {
+                font-size: 1.3rem;
             }
             
             .hero h1 {
@@ -424,13 +422,13 @@
 <body>
     <header>
         <div class="container">
-            <div class="header-content">
-                <div class="company-info">
-                    <h1>Enam Consulting LLC</h1>
-                    <div class="tagline">Mobile App Development & Business Solutions</div>
-                </div>
+            <div class="logo-section">
                 <div class="logo">
                     <img src="logo.png" alt="Enam Consulting LLC Logo" />
+                </div>
+                <div class="brand-text">
+                    <h1>Enam Consulting LLC</h1>
+                    <div class="tagline">Mobile App Development & Business Solutions</div>
                 </div>
             </div>
         </div>
