@@ -3,418 +3,647 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enam Consulting LLC - Mobile App Development & Business Solutions</title>
-    <meta name="description" content="Enam Consulting LLC provides professional mobile app development, business consulting, and digital transformation services for businesses across Ohio and beyond.">
-    <meta name="keywords" content="mobile app development, business consulting, iOS development, Android development, digital transformation, Ohio consulting">
-    
+    <title>Enam Consulting LLC - Mobile App Development & Digital Transformation Expert</title>
+    <meta name="description" content="Enam Consulting LLC delivers production-ready mobile applications and digital transformation solutions. Based in Ohio, serving clients worldwide with expertise in Flutter, iOS, Android, and cloud technologies.">
+    <meta name="keywords" content="mobile app development, Flutter developer, iOS development, Android development, digital transformation, business consulting, Ohio technology consultant, app development expert">
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --text: #334155;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: var(--text);
             background-color: #ffffff;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
+        /* Header & Navigation */
         header {
-            background: linear-gradient(135deg, #2c3e50 0%, #b8860b 100%);
+            background: var(--gradient-primary);
             color: white;
-            padding: 2rem 0;
-            text-align: center;
-        }
-        
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo img {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            object-fit: contain;
-            background: white;
-            padding: 3px;
-            opacity: 0.95;
-        }
-        
-        .brand-text h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.2rem;
-        }
-        
-        .tagline {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-        
-        nav {
-            background: #34495e;
-            padding: 1rem 0;
+            padding: 1.5rem 0;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        
-        nav ul {
-            list-style: none;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        nav li {
-            margin: 0 1.5rem;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-        
-        nav a:hover {
-            background: #b8860b;
-        }
-        
-        .hero {
-            background: linear-gradient(rgba(52, 73, 94, 0.8), rgba(184, 134, 11, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f8f9fa" width="1200" height="600"/><circle fill="%23e9ecef" cx="200" cy="150" r="80"/><circle fill="%23dee2e6" cx="800" cy="300" r="120"/><circle fill="%23ced4da" cx="1000" cy="100" r="60"/></svg>');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 4rem 0;
-            text-align: center;
-        }
-        
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-        
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: #e74c3c;
-            color: white;
-            padding: 1rem 2rem;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            margin: 0.5rem;
-        }
-        
-        .btn:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid white;
-        }
-        
-        .btn-secondary:hover {
-            background: white;
-            color: #2c3e50;
-        }
-        
-        section {
-            padding: 4rem 0;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: #2c3e50;
-            font-weight: 700;
-        }
-        
-        .services {
-            background: #f8f9fa;
-        }
-        
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        
-        .service-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        
-        .service-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .service-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        
-        .service-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #2c3e50;
-        }
-        
-        .about {
-            background: white;
-        }
-        
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-        
-        .about-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-        
-        .about-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-        
-        .stat {
-            text-align: center;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #b8860b;
-        }
-        
-        .stat-label {
-            color: #7f8c8d;
-            font-weight: 500;
-        }
-        
-        .portfolio {
-            background: #f8f9fa;
-        }
-        
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-        
-        .portfolio-item {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-        
-        .portfolio-item:hover {
-            transform: translateY(-5px);
-        }
-        
-        .portfolio-content {
-            padding: 1.5rem;
-        }
-        
-        .portfolio-item h3 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-        
-        .portfolio-tech {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .tech-tag {
-            background: #b8860b;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        .contact {
-            background: #2c3e50;
-            color: white;
-        }
-        
-        .contact-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-        }
-        
-        .contact-info h3 {
-            margin-bottom: 1rem;
-            color: #b8860b;
-        }
-        
-        .contact-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .contact-item i {
-            margin-right: 1rem;
-            font-size: 1.2rem;
-            color: #b8860b;
-        }
-        
-        .contact-form {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            color: #333;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #b8860b;
-        }
-        
-        .form-group textarea {
-            height: 120px;
-            resize: vertical;
-        }
-        
-        footer {
-            background: #1a252f;
-            color: white;
-            text-align: center;
-            padding: 2rem 0;
-        }
-        
-        .footer-content {
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 1rem;
         }
-        
-        .footer-links {
+
+        .logo-section {
             display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            object-fit: contain;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 6rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><circle fill="rgba(255,255,255,0.05)" cx="200" cy="150" r="100"/><circle fill="rgba(255,255,255,0.08)" cx="800" cy="300" r="150"/><circle fill="rgba(255,255,255,0.03)" cx="1000" cy="100" r="80"/></svg>');
+            background-size: cover;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.95;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 5rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-weight: 800;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Services Grid */
+        .services {
+            background: var(--light);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .service-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .service-card p {
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+        /* Portfolio Section */
+        .portfolio {
+            background: white;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 3rem;
+        }
+
+        .portfolio-item {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .portfolio-image {
+            height: 250px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            padding: 2rem;
+        }
+
+        .portfolio-content {
+            padding: 2rem;
+        }
+
+        .portfolio-item h3 {
+            color: var(--dark);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .portfolio-item p {
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .portfolio-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-tag {
+            background: var(--light);
+            color: var(--primary);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
+        .app-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .app-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.6rem 1.2rem;
+            background: var(--dark);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .app-link:hover {
+            background: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* About Section */
+        .about {
+            background: var(--light);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text {
+            font-size: 1.15rem;
+            line-height: 1.9;
+        }
+
+        .about-text p {
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Skills Section */
+        .skills {
+            background: white;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
         }
-        
+
+        .skill-category {
+            background: var(--light);
+            padding: 2rem;
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .skill-category h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .skill-list {
+            list-style: none;
+        }
+
+        .skill-list li {
+            padding: 0.6rem 0;
+            color: var(--text);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .skill-list li::before {
+            content: '✓';
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .contact .section-title,
+        .contact .section-subtitle {
+            color: white;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 4rem;
+        }
+
+        .contact-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .contact-item i {
+            font-size: 1.5rem;
+            min-width: 30px;
+        }
+
+        .contact-highlights {
+            margin-top: 3rem;
+        }
+
+        .contact-highlights ul {
+            list-style: none;
+        }
+
+        .contact-highlights li {
+            padding: 0.8rem 0;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            color: var(--text);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .contact-form h3 {
+            color: var(--dark);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            height: 140px;
+            resize: vertical;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .footer-section p {
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
         .footer-links a {
-            color: #bdc3c7;
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             transition: color 0.3s ease;
         }
-        
+
         .footer-links a:hover {
-            color: #b8860b;
+            color: var(--accent);
         }
-        
-        @media (max-width: 768px) {
-            .logo-section {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
-            }
-            
-            .brand-text h1 {
-                font-size: 1.3rem;
-            }
-            
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
             .hero h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
-            
-            .hero p {
-                font-size: 1.1rem;
-            }
-            
+
             .about-content,
             .contact-content {
                 grid-template-columns: 1fr;
             }
-            
-            nav ul {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            nav li {
-                margin: 0.5rem 0;
-            }
-            
+
             .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
                 flex-direction: column;
-                gap: 1rem;
+                text-align: center;
+            }
+
+            nav ul {
+                justify-content: center;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .services-grid,
+            .portfolio-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -422,72 +651,159 @@
 <body>
     <header>
         <div class="container">
-            <div class="logo-section">
-                <div class="logo">
-                    <img src="logo.png" alt="Enam Consulting LLC Logo" />
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <img src="logo.png" alt="Enam Consulting LLC" />
+                    </div>
+                    <div class="brand-text">
+                        <h1>Enam Consulting LLC</h1>
+                        <div class="tagline">Mobile App Development & Digital Transformation</div>
+                    </div>
                 </div>
-                <div class="brand-text">
-                    <h1>Enam Consulting LLC</h1>
-                    <div class="tagline">Mobile App Development & Business Solutions</div>
-                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#skills">Tech Stack</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </header>
 
-    <nav>
-        <div class="container">
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#portfolio">Portfolio</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
-
     <section id="home" class="hero">
         <div class="container">
-            <h1>Transform Your Business with Technology</h1>
-            <p>We specialize in mobile app development, digital transformation, and business consulting services that drive growth and innovation for companies across Ohio and beyond.</p>
-            <a href="#contact" class="btn">Get Started</a>
-            <a href="#portfolio" class="btn btn-secondary">View Our Work</a>
+            <div class="hero-content">
+                <h1>Building Production-Ready Mobile Applications</h1>
+                <p>Expert mobile app development and digital transformation services. From concept to App Store deployment, delivering scalable solutions for startups and enterprises.</p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">Start Your Project →</a>
+                    <a href="#portfolio" class="btn btn-secondary">View Portfolio</a>
+                </div>
+            </div>
         </div>
     </section>
 
     <section id="services" class="services">
         <div class="container">
-            <h2 class="section-title">Our Services</h2>
+            <div class="section-header">
+                <h2 class="section-title">What I Do</h2>
+                <p class="section-subtitle">Full-stack mobile development and strategic technology consulting to accelerate your digital transformation</p>
+            </div>
             <div class="services-grid">
                 <div class="service-card">
                     <div class="service-icon">📱</div>
                     <h3>Mobile App Development</h3>
-                    <p>Custom iOS and Android applications built with cutting-edge technology. From concept to App Store deployment, we handle the entire development lifecycle.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">💼</div>
-                    <h3>Business Consulting</h3>
-                    <p>Strategic technology consulting to help businesses optimize operations, improve efficiency, and accelerate digital transformation initiatives.</p>
+                    <p>Native iOS and Android applications, cross-platform development with Flutter and React Native. Complete app lifecycle management from design to deployment and ongoing maintenance.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">☁️</div>
-                    <h3>Cloud Solutions</h3>
-                    <p>Scalable cloud infrastructure, data migration, and modern web applications that grow with your business needs and ensure reliability.</p>
+                    <h3>Cloud & Backend Solutions</h3>
+                    <p>Scalable cloud infrastructure using Firebase, Google Cloud Platform, and AWS. API development, real-time databases, authentication systems, and serverless architectures.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🎯</div>
-                    <h3>Digital Strategy</h3>
-                    <p>Comprehensive digital transformation planning, process automation, and technology roadmaps tailored to your industry and goals.</p>
+                    <h3>Digital Strategy & Consulting</h3>
+                    <p>Technology roadmapping, digital transformation planning, and business process optimization. Strategic consulting to align technology investments with business objectives.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">💳</div>
+                    <h3>Payment Integration</h3>
+                    <p>Secure payment processing with Stripe, PayPal, and mobile payment platforms. PCI compliance consulting and e-commerce solutions for seamless transactions.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">🛡️</div>
                     <h3>Security & Compliance</h3>
-                    <p>Enterprise-grade security implementation, data protection strategies, and compliance consulting for regulated industries.</p>
+                    <p>Enterprise-grade security implementation, encryption, HIPAA compliance for healthcare apps, and privacy-first architecture for sensitive applications.</p>
                 </div>
                 <div class="service-card">
-                    <div class="service-icon">📊</div>
-                    <h3>Analytics & Insights</h3>
-                    <p>Data-driven solutions, business intelligence implementation, and performance analytics to inform strategic decision-making.</p>
+                    <div class="service-icon">🚀</div>
+                    <h3>App Store Optimization</h3>
+                    <p>Complete App Store and Google Play submission, compliance review, app store optimization (ASO), and ongoing updates to maintain high rankings and visibility.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Projects</h2>
+                <p class="section-subtitle">Production applications serving real users across multiple industries</p>
+            </div>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        🏠
+                    </div>
+                    <div class="portfolio-content">
+                        <h3>HomeLinkGH</h3>
+                        <p>AI-powered home services platform connecting homeowners with verified service providers across 9 major Ghana areas. Features real-time booking, dynamic pricing, Ghana Card verification, gamification, and secure payment processing.</p>
+                        <div class="portfolio-tech">
+                            <span class="tech-tag">Flutter</span>
+                            <span class="tech-tag">iOS</span>
+                            <span class="tech-tag">Android</span>
+                            <span class="tech-tag">Firebase</span>
+                            <span class="tech-tag">Stripe</span>
+                            <span class="tech-tag">Google Maps</span>
+                            <span class="tech-tag">AI Matching</span>
+                        </div>
+                        <div class="app-links">
+                            <a href="https://homelinkgh.com" target="_blank" class="app-link">🌐 Website</a>
+                            <a href="https://apps.apple.com/app/homelinkgh" target="_blank" class="app-link">🍎 App Store</a>
+                            <a href="https://play.google.com/store/apps/details?id=com.homelinkgh.app" target="_blank" class="app-link">📱 Google Play</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);">
+                        🕊️
+                    </div>
+                    <div class="portfolio-content">
+                        <h3>Beacon of New Beginnings</h3>
+                        <p>Trauma-informed crisis support application for abuse survivors and homeless individuals. Built with privacy-first architecture, encrypted communications, anonymous access, emergency resources, and community support networks.</p>
+                        <div class="portfolio-tech">
+                            <span class="tech-tag">Flutter</span>
+                            <span class="tech-tag">Encryption</span>
+                            <span class="tech-tag">Privacy-First</span>
+                            <span class="tech-tag">Accessibility</span>
+                            <span class="tech-tag">Crisis Support</span>
+                            <span class="tech-tag">SQLite</span>
+                        </div>
+                        <div class="app-links">
+                            <a href="https://beaconnewbeginnings.org" target="_blank" class="app-link">🌐 Website</a>
+                            <a href="#" target="_blank" class="app-link">🍎 App Store (Pending Review)</a>
+                            <a href="#" target="_blank" class="app-link">📱 Google Play (Pending Review)</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portfolio-item">
+                    <div class="portfolio-image" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
+                        ⛪
+                    </div>
+                    <div class="portfolio-content">
+                        <h3>Faith Klinik Ministries</h3>
+                        <p>Comprehensive church management system with role-based access control, member portals, ministry coordination, children's ministry management, live streaming, event management, and community engagement features.</p>
+                        <div class="portfolio-tech">
+                            <span class="tech-tag">Flutter</span>
+                            <span class="tech-tag">iOS</span>
+                            <span class="tech-tag">Android</span>
+                            <span class="tech-tag">Role-Based Access</span>
+                            <span class="tech-tag">Live Streaming</span>
+                            <span class="tech-tag">Community</span>
+                        </div>
+                        <div class="app-links">
+                            <a href="https://faithklinikministries.com" target="_blank" class="app-link">🌐 Website</a>
+                            <a href="#" target="_blank" class="app-link">🍎 App Store (Coming Soon)</a>
+                            <a href="#" target="_blank" class="app-link">📱 Google Play (Coming Soon)</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -495,19 +811,24 @@
 
     <section id="about" class="about">
         <div class="container">
-            <h2 class="section-title">About Enam Consulting LLC</h2>
+            <div class="section-header">
+                <h2 class="section-title">About Enam Consulting LLC</h2>
+                <p class="section-subtitle">Ohio-based technology consulting firm delivering enterprise-grade mobile solutions</p>
+            </div>
             <div class="about-content">
                 <div class="about-text">
-                    <p><strong>Enam Consulting LLC</strong> is a premier technology consulting firm based in Ohio, specializing in mobile application development and digital business solutions. Founded with a mission to help businesses leverage technology for sustainable growth, we combine technical expertise with strategic business insight.</p>
-                    
-                    <p>Our team brings extensive experience in enterprise software development, mobile technologies, and business process optimization. We work with companies of all sizes, from innovative startups to established enterprises, delivering solutions that drive measurable results.</p>
-                    
-                    <p>With a focus on quality, security, and scalability, we ensure every project meets the highest standards of professional software development. Our commitment to ongoing support and maintenance ensures your technology investments continue to deliver value long after deployment.</p>
+                    <p><strong>Founded with a mission to make technology accessible and impactful.</strong> Enam Consulting LLC specializes in mobile application development and digital transformation, serving clients from innovative startups to established enterprises.</p>
+
+                    <p>With extensive experience in Flutter, iOS, Android, and cloud technologies, I architect scalable solutions that drive measurable business results. Every project combines technical excellence with strategic business insight to ensure technology investments deliver long-term value.</p>
+
+                    <p><strong>Based in Ohio, serving clients worldwide.</strong> Whether you're launching a startup MVP, scaling an existing platform, or modernizing legacy systems, I bring the expertise and dedication to transform your vision into production-ready applications.</p>
+
+                    <p>My approach emphasizes security, compliance, user experience, and maintainability. From initial consultation through deployment and ongoing support, you'll work directly with an experienced developer who understands both code and business.</p>
                 </div>
                 <div class="about-stats">
                     <div class="stat">
-                        <div class="stat-number">50+</div>
-                        <div class="stat-label">Projects Delivered</div>
+                        <div class="stat-number">3+</div>
+                        <div class="stat-label">Production Apps</div>
                     </div>
                     <div class="stat">
                         <div class="stat-number">5+</div>
@@ -526,46 +847,72 @@
         </div>
     </section>
 
-    <section id="portfolio" class="portfolio">
+    <section id="skills" class="skills">
         <div class="container">
-            <h2 class="section-title">Featured Projects</h2>
-            <div class="portfolio-grid">
-                <div class="portfolio-item">
-                    <div class="portfolio-content">
-                        <h3>HomeLinkGH - Home Services Platform</h3>
-                        <p>Comprehensive mobile platform connecting homeowners with verified service providers. Features real-time booking, payment processing, and service tracking across Ohio.</p>
-                        <div class="portfolio-tech">
-                            <span class="tech-tag">iOS</span>
-                            <span class="tech-tag">Android</span>
-                            <span class="tech-tag">Flutter</span>
-                            <span class="tech-tag">Firebase</span>
-                            <span class="tech-tag">Stripe</span>
-                        </div>
-                    </div>
+            <div class="section-header">
+                <h2 class="section-title">Technical Expertise</h2>
+                <p class="section-subtitle">Full-stack capabilities across mobile, web, and cloud platforms</p>
+            </div>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3>Mobile Development</h3>
+                    <ul class="skill-list">
+                        <li>Flutter & Dart</li>
+                        <li>iOS Development (Swift)</li>
+                        <li>Android Development (Kotlin/Java)</li>
+                        <li>React Native</li>
+                        <li>Cross-Platform Architecture</li>
+                    </ul>
                 </div>
-                <div class="portfolio-item">
-                    <div class="portfolio-content">
-                        <h3>Beacon of New Beginnings - Crisis Support</h3>
-                        <p>Trauma-informed mobile application providing crisis support resources for survivors of abuse and homelessness. Features encrypted communications and anonymous access.</p>
-                        <div class="portfolio-tech">
-                            <span class="tech-tag">Flutter</span>
-                            <span class="tech-tag">Encryption</span>
-                            <span class="tech-tag">Privacy-First</span>
-                            <span class="tech-tag">Accessibility</span>
-                        </div>
-                    </div>
+                <div class="skill-category">
+                    <h3>Backend & Cloud</h3>
+                    <ul class="skill-list">
+                        <li>Firebase Suite</li>
+                        <li>Google Cloud Platform</li>
+                        <li>Node.js & Express</li>
+                        <li>REST & GraphQL APIs</li>
+                        <li>Serverless Functions</li>
+                    </ul>
                 </div>
-                <div class="portfolio-item">
-                    <div class="portfolio-content">
-                        <h3>Faith Klinik Ministries - Church Management</h3>
-                        <p>Complete church management system with member portals, ministry coordination, event management, and community engagement features.</p>
-                        <div class="portfolio-tech">
-                            <span class="tech-tag">React</span>
-                            <span class="tech-tag">PWA</span>
-                            <span class="tech-tag">Role-Based Access</span>
-                            <span class="tech-tag">Community</span>
-                        </div>
-                    </div>
+                <div class="skill-category">
+                    <h3>Database Systems</h3>
+                    <ul class="skill-list">
+                        <li>Firestore NoSQL</li>
+                        <li>SQLite Local Storage</li>
+                        <li>PostgreSQL</li>
+                        <li>MongoDB</li>
+                        <li>Real-time Databases</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3>Payment Integration</h3>
+                    <ul class="skill-list">
+                        <li>Stripe Payment Processing</li>
+                        <li>PayPal Integration</li>
+                        <li>Mobile Payment SDKs</li>
+                        <li>Subscription Management</li>
+                        <li>PCI Compliance</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3>DevOps & Deployment</h3>
+                    <ul class="skill-list">
+                        <li>CI/CD Pipelines</li>
+                        <li>App Store Deployment</li>
+                        <li>Version Control (Git)</li>
+                        <li>Automated Testing</li>
+                        <li>Performance Monitoring</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3>Additional Expertise</h3>
+                    <ul class="skill-list">
+                        <li>UI/UX Design</li>
+                        <li>Security & Encryption</li>
+                        <li>Agile Methodologies</li>
+                        <li>Technical Documentation</li>
+                        <li>Code Review & Auditing</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -573,40 +920,54 @@
 
     <section id="contact" class="contact">
         <div class="container">
-            <h2 class="section-title">Get In Touch</h2>
+            <div class="section-header">
+                <h2 class="section-title">Let's Build Something Great</h2>
+                <p class="section-subtitle">Ready to transform your idea into a production-ready application?</p>
+            </div>
             <div class="contact-content">
                 <div class="contact-info">
                     <h3>Contact Information</h3>
                     <div class="contact-item">
                         <i>📧</i>
-                        <span>consulting.enam@gmail.com</span>
-                    </div>
-                    <div class="contact-item">
-                        <i>📱</i>
-                        <span>Available upon request</span>
+                        <div>
+                            <strong>Email</strong><br>
+                            consulting.enam@gmail.com
+                        </div>
                     </div>
                     <div class="contact-item">
                         <i>📍</i>
-                        <span>Ohio, United States</span>
+                        <div>
+                            <strong>Location</strong><br>
+                            Ohio, United States<br>
+                            Remote Services Available Worldwide
+                        </div>
                     </div>
                     <div class="contact-item">
                         <i>🕒</i>
-                        <span>Monday - Friday: 9AM - 6PM EST</span>
+                        <div>
+                            <strong>Availability</strong><br>
+                            Monday - Friday: 9AM - 6PM EST<br>
+                            24/7 Support for Production Issues
+                        </div>
                     </div>
-                    
-                    <h3 style="margin-top: 2rem;">Why Choose Enam Consulting LLC?</h3>
-                    <ul style="margin-top: 1rem; line-height: 1.8;">
-                        <li>✅ Proven track record with enterprise clients</li>
-                        <li>✅ Full-service development lifecycle</li>
-                        <li>✅ Security and compliance expertise</li>
-                        <li>✅ Ongoing support and maintenance</li>
-                        <li>✅ Transparent communication</li>
-                        <li>✅ Competitive pricing</li>
-                    </ul>
+
+                    <div class="contact-highlights">
+                        <h3>Why Choose Enam Consulting?</h3>
+                        <ul>
+                            <li>✅ Proven track record with production apps</li>
+                            <li>✅ Direct communication with senior developer</li>
+                            <li>✅ Full-service development lifecycle</li>
+                            <li>✅ Security and compliance expertise</li>
+                            <li>✅ App Store submission handled</li>
+                            <li>✅ Ongoing maintenance and support</li>
+                            <li>✅ Transparent pricing and timelines</li>
+                            <li>✅ Competitive rates for quality work</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="contact-form">
                     <h3>Start Your Project</h3>
-                    <form action="#" method="POST">
+                    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
                         <div class="form-group">
                             <label for="name">Full Name *</label>
                             <input type="text" id="name" name="name" required>
@@ -616,25 +977,26 @@
                             <input type="email" id="email" name="email" required>
                         </div>
                         <div class="form-group">
-                            <label for="company">Company Name</label>
+                            <label for="company">Company/Organization</label>
                             <input type="text" id="company" name="company">
                         </div>
                         <div class="form-group">
                             <label for="service">Service Needed</label>
-                            <select id="service" name="service" style="width: 100%; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 5px;">
+                            <select id="service" name="service">
                                 <option value="">Select a service</option>
                                 <option value="mobile-app">Mobile App Development</option>
-                                <option value="business-consulting">Business Consulting</option>
-                                <option value="cloud-solutions">Cloud Solutions</option>
-                                <option value="digital-strategy">Digital Strategy</option>
+                                <option value="app-redesign">App Redesign/Modernization</option>
+                                <option value="backend">Backend & API Development</option>
+                                <option value="consulting">Technology Consulting</option>
+                                <option value="maintenance">App Maintenance & Support</option>
                                 <option value="other">Other</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="message">Project Details *</label>
-                            <textarea id="message" name="message" placeholder="Tell us about your project, timeline, and requirements..." required></textarea>
+                            <textarea id="message" name="message" placeholder="Tell me about your project, goals, timeline, and any specific requirements..." required></textarea>
                         </div>
-                        <button type="submit" class="btn" style="width: 100%; margin: 0;">Send Message</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin: 0; color: var(--primary); background: white;">Send Message →</button>
                     </form>
                 </div>
             </div>
@@ -644,18 +1006,38 @@
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div>&copy; 2025 Enam Consulting LLC. All rights reserved.</div>
-                <div class="footer-links">
-                    <a href="#privacy">Privacy Policy</a>
-                    <a href="#terms">Terms of Service</a>
-                    <a href="#contact">Contact</a>
+                <div class="footer-section">
+                    <h3>Enam Consulting LLC</h3>
+                    <p>Professional mobile app development and digital transformation services. Building production-ready applications for startups and enterprises across Ohio and beyond.</p>
                 </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#skills">Tech Stack</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="/beacon-bookkeeping.html">Beacon Bookkeeping</a></li>
+                        <li><a href="/homelinkgh-bookkeeping.html">HomeLinkGH Bookkeeping</a></li>
+                        <li><a href="/privacy.html">Privacy Policy</a></li>
+                        <li><a href="/terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Enam Consulting LLC. All rights reserved. | Based in Ohio, Serving Clients Worldwide</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Smooth scrolling for navigation links
+        // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -669,17 +1051,11 @@
             });
         });
 
-        // Form submission handler
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Thank you for your message! We will contact you within 24 hours.');
-        });
-
-        // Add active navigation state
+        // Active navigation highlighting
         window.addEventListener('scroll', function() {
             const sections = document.querySelectorAll('section');
             const navLinks = document.querySelectorAll('nav a');
-            
+
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
@@ -696,6 +1072,18 @@
                 }
             });
         });
+
+        // Form submission
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // If formspree is not configured, show alert
+                if (this.action.includes('YOUR_FORM_ID')) {
+                    e.preventDefault();
+                    alert('Thank you for your interest! Please email directly at consulting.enam@gmail.com until the contact form is configured.');
+                }
+            });
+        }
     </script>
 </body>
-</html><!-- Cache bust Mon Jul 28 17:05:38 EDT 2025 -->
+</html>
