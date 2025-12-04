@@ -288,13 +288,21 @@
         }
 
         .portfolio-image {
-            height: 250px;
-            background: var(--gradient-primary);
+            height: 280px;
+            background: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 5rem;
-            padding: 2rem;
+            padding: 3rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .portfolio-image img {
+            max-width: 180px;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
         .portfolio-content {
@@ -356,6 +364,17 @@
             transform: scale(1.05);
         }
 
+        .app-link-disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .app-link-disabled:hover {
+            background: #94a3b8;
+            transform: none;
+        }
+
         /* About Section */
         .about {
             background: var(--light);
@@ -407,6 +426,46 @@
             color: var(--text);
             font-weight: 600;
             font-size: 0.95rem;
+        }
+
+        /* Trust/Technologies Bar */
+        .trust-bar {
+            background: white;
+            padding: 3rem 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .trust-content {
+            text-align: center;
+        }
+
+        .trust-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tech-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            opacity: 0.7;
+        }
+
+        .tech-logo {
+            font-size: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .tech-logo:hover {
+            opacity: 1;
+            transform: scale(1.1);
         }
 
         /* Skills Section */
@@ -678,8 +737,8 @@
     <section id="home" class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1>Building Production-Ready Mobile Applications</h1>
-                <p>Expert mobile app development and digital transformation services. From concept to App Store deployment, delivering scalable solutions for startups and enterprises.</p>
+                <h1>Drive Impact Through Innovation</h1>
+                <p>Expert mobile app development and digital transformation services. From concept to App Store deployment, delivering scalable, production-ready solutions that drive measurable business results.</p>
                 <div class="hero-buttons">
                     <a href="#contact" class="btn btn-primary">Start Your Project →</a>
                     <a href="#portfolio" class="btn btn-secondary">View Portfolio</a>
@@ -729,6 +788,24 @@
         </div>
     </section>
 
+    <section class="trust-bar">
+        <div class="container">
+            <div class="trust-content">
+                <div class="trust-title">Technologies & Platforms</div>
+                <div class="tech-logos">
+                    <div class="tech-logo" title="Flutter">🦋</div>
+                    <div class="tech-logo" title="Apple">🍎</div>
+                    <div class="tech-logo" title="Android">🤖</div>
+                    <div class="tech-logo" title="Firebase">🔥</div>
+                    <div class="tech-logo" title="React">⚛️</div>
+                    <div class="tech-logo" title="Node.js">🟢</div>
+                    <div class="tech-logo" title="Cloud">☁️</div>
+                    <div class="tech-logo" title="Database">🗄️</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="portfolio" class="portfolio">
         <div class="container">
             <div class="section-header">
@@ -737,8 +814,8 @@
             </div>
             <div class="portfolio-grid">
                 <div class="portfolio-item">
-                    <div class="portfolio-image" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                        🏠
+                    <div class="portfolio-image">
+                        <img src="images/homelinkgh-icon.png" alt="HomeLinkGH App Icon">
                     </div>
                     <div class="portfolio-content">
                         <h3>HomeLinkGH</h3>
@@ -754,15 +831,15 @@
                         </div>
                         <div class="app-links">
                             <a href="https://homelinkgh.com" target="_blank" class="app-link">🌐 Website</a>
-                            <a href="https://apps.apple.com/app/homelinkgh" target="_blank" class="app-link">🍎 App Store</a>
-                            <a href="https://play.google.com/store/apps/details?id=com.homelinkgh.app" target="_blank" class="app-link">📱 Google Play</a>
+                            <a href="https://apps.apple.com/us/app/homelinkgh/id6738836779" target="_blank" class="app-link">🍎 App Store</a>
+                            <a href="https://play.google.com/store/apps/details?id=com.homelinkgh.customer" target="_blank" class="app-link">📱 Google Play</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="portfolio-item">
-                    <div class="portfolio-image" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);">
-                        🕊️
+                    <div class="portfolio-image">
+                        <img src="images/beacon-icon.png" alt="Beacon of New Beginnings App Icon">
                     </div>
                     <div class="portfolio-content">
                         <h3>Beacon of New Beginnings</h3>
@@ -777,15 +854,15 @@
                         </div>
                         <div class="app-links">
                             <a href="https://beaconnewbeginnings.org" target="_blank" class="app-link">🌐 Website</a>
-                            <a href="#" target="_blank" class="app-link">🍎 App Store (Pending Review)</a>
-                            <a href="#" target="_blank" class="app-link">📱 Google Play (Pending Review)</a>
+                            <a href="https://apps.apple.com/us/app/beacon-of-new-beginnings/id6738857849" target="_blank" class="app-link">🍎 App Store</a>
+                            <a href="https://play.google.com/store/apps/details?id=com.beaconghana.supportapp" target="_blank" class="app-link">📱 Google Play</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="portfolio-item">
-                    <div class="portfolio-image" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
-                        ⛪
+                    <div class="portfolio-image">
+                        <img src="images/faithklinik-icon.png" alt="Faith Klinik Ministries App Icon">
                     </div>
                     <div class="portfolio-content">
                         <h3>Faith Klinik Ministries</h3>
@@ -800,8 +877,8 @@
                         </div>
                         <div class="app-links">
                             <a href="https://faithklinikministries.com" target="_blank" class="app-link">🌐 Website</a>
-                            <a href="#" target="_blank" class="app-link">🍎 App Store (Coming Soon)</a>
-                            <a href="#" target="_blank" class="app-link">📱 Google Play (Coming Soon)</a>
+                            <a href="#" class="app-link app-link-disabled">🍎 App Store (Coming Soon)</a>
+                            <a href="#" class="app-link app-link-disabled">📱 Google Play (Coming Soon)</a>
                         </div>
                     </div>
                 </div>
