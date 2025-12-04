@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Deletion Request - HomeLinkGH</title>
+    <meta name="description" content="Request personal data deletion from HomeLinkGH app - Ghana's smartest AI-powered services platform">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
+        :root {
+            --primary-color: #2E8B57;
+            --primary-dark: #1B5E42;
+            --emergency-color: #D32F2F;
+            --success-color: #388E3C;
+            --background-color: #F8F9FA;
+            --surface-color: #FFFFFF;
+            --text-color: #212121;
+            --text-light: #757575;
+            --orange-accent: #FF6B35;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #3CB371);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .ghana-flag {
+            display: inline-block;
+            width: 30px;
+            height: 20px;
+            background: linear-gradient(to bottom, #CE1126 33%, #FCD116 33%, #FCD116 66%, #006B3C 66%);
+            border-radius: 3px;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .info-box {
+            background-color: #E3F2FD;
+            border: 1px solid #2196F3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .contact-info {
+            background-color: #E8F5E8;
+            border: 1px solid var(--success-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .contact-info h3 {
+            color: var(--success-color);
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), #3CB371);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px 10px 10px 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background: #555;
+        }
+
+        .ai-data-types {
+            background: linear-gradient(135deg, var(--orange-accent), #FFA500);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .ai-data-types h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .gamification-data {
+            background: linear-gradient(135deg, #9C27B0, #E91E63);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .gamification-data h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: var(--text-light);
+        }
+
+        .ghana-card-section {
+            background: linear-gradient(135deg, #006B3C, #FCD116);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .ghana-card-section h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                🏠 HomeLinkGH
+                <span class="ghana-flag"></span>
+            </div>
+            <p>Ghana's Smartest AI-Powered Services Platform</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h1>🗂️ Personal Data Deletion Request</h1>
+            
+            <p>At <strong>HomeLinkGH</strong>, we respect your privacy rights and are committed to protecting your personal data. You have the right to request deletion of your personal information from our AI-powered platform.</p>
+
+            <div class="info-box">
+                <h3>🛡️ Your Data Rights</h3>
+                <p>Under privacy laws and our commitment to user privacy, you have the right to:</p>
+                <ul>
+                    <li>Know what personal data we collect and how we use it</li>
+                    <li>Request access to your personal data</li>
+                    <li>Request correction of inaccurate data</li>
+                    <li>Request deletion of your personal data</li>
+                    <li>Object to AI processing of your data</li>
+                </ul>
+            </div>
+
+            <div class="ai-data-types">
+                <h3>🤖 AI & Personalization Data We May Have</h3>
+                <p>The following types of AI and personalization data may be associated with your <strong>HomeLinkGH</strong> account:</p>
+                <ul>
+                    <li>AI personality analysis (Explorer, Premium Seeker, Budget Conscious, Efficiency Focused)</li>
+                    <li>Machine learning patterns and behavior analysis</li>
+                    <li>Smart recommendation history and preferences</li>
+                    <li>Predictive analytics data and habit recognition</li>
+                    <li>AI-generated personalization profiles</li>
+                    <li>Dynamic pricing history and preferences</li>
+                </ul>
+            </div>
+
+            <div class="gamification-data">
+                <h3>🎮 Gamification & Achievement Data</h3>
+                <p>Your gamification progress and achievements data including:</p>
+                <ul>
+                    <li>Points, levels, and progression history</li>
+                    <li>Achievement badges and unlocked rewards</li>
+                    <li>Leaderboard positions and rankings</li>
+                    <li>Streak counters and milestone tracking</li>
+                    <li>Loyalty program participation data</li>
+                </ul>
+            </div>
+
+            <div class="ghana-card-section">
+                <h3>🇬🇭 Ghana Card Verification Data</h3>
+                <p>If you have Ghana Card verification, we may have:</p>
+                <ul>
+                    <li>Ghana Card number and verification status</li>
+                    <li>Enhanced trust score and verification badges</li>
+                    <li>Priority service access records</li>
+                    <li>Diaspora connection and benefits data</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h3>📋 Standard User Data</h3>
+                <p>Traditional user data we may also have:</p>
+                <ul>
+                    <li>Account information (email, username, phone)</li>
+                    <li>Profile information (name, address, preferences)</li>
+                    <li>Service history and provider interactions</li>
+                    <li>Payment history and financial data</li>
+                    <li>Location data and address history</li>
+                    <li>Support communications and feedback</li>
+                </ul>
+            </div>
+
+            <h2>How to Request Data Deletion</h2>
+            
+            <div class="contact-info">
+                <h3>📧 Submit Your Request</h3>
+                <p>Send your data deletion request to: <strong>privacy@homelinkgh.com</strong></p>
+                <p>Please include the following information:</p>
+                <ul>
+                    <li>Your registered email address</li>
+                    <li>Your Ghana Card number (if verified)</li>
+                    <li>Specific data types you want deleted (or select "all personal data")</li>
+                    <li>Reason for deletion (optional)</li>
+                    <li>Preferred method of confirmation</li>
+                </ul>
+                <a href="mailto:privacy@homelinkgh.com?subject=Data%20Deletion%20Request%20-%20HomeLinkGH%20App&body=I%20request%20deletion%20of%20my%20personal%20data%20from%20the%20HomeLinkGH%20app.%0A%0ARegistered%20Email%3A%20%5BYour%20email%5D%0AGhana%20Card%20Number%20(if%20verified)%3A%20%5BYour%20Ghana%20Card%20number%5D%0AData%20to%20Delete%3A%20%5BAll%20personal%20data%20OR%20specify%20types%5D%0A%0APlease%20confirm%20when%20deletion%20is%20complete." class="btn">Send Data Deletion Request</a>
+            </div>
+
+            <div class="contact-info">
+                <h3>📋 Alternative Request Methods</h3>
+                <p>You can also request data deletion through:</p>
+                <ul>
+                    <li><strong>In-App:</strong> Settings > Privacy & Data > Delete My Data</li>
+                    <li><strong>Website:</strong> <a href="https://homelinkgh.com/account/delete">Account Deletion Page</a></li>
+                    <li><strong>Phone:</strong> +233 (0) 555 0123</li>
+                    <li><strong>Support:</strong> support@homelinkgh.com</li>
+                </ul>
+            </div>
+
+            <h2>⏰ Processing Timeline</h2>
+            <p>We will process your data deletion request according to the following timeline:</p>
+            <ul>
+                <li><strong>Acknowledgment:</strong> Within 24 hours of receiving your request</li>
+                <li><strong>Identity Verification:</strong> Within 3 business days (if required)</li>
+                <li><strong>AI Data Processing:</strong> Within 7 business days (complex AI data requires additional time)</li>
+                <li><strong>Complete Data Deletion:</strong> Within 14 business days of verification</li>
+                <li><strong>Confirmation:</strong> We'll notify you when deletion is complete</li>
+            </ul>
+
+            <h2>📄 Important Information</h2>
+            
+            <div class="info-box">
+                <h3>🔍 Data Retention Exceptions</h3>
+                <p>Some data may be retained for legitimate business purposes:</p>
+                <ul>
+                    <li>Legal compliance requirements</li>
+                    <li>Fraud prevention and security</li>
+                    <li>Anonymized AI model training data</li>
+                    <li>Aggregated statistical data for service improvement</li>
+                </ul>
+                <p>We will only retain what is necessary and legally required.</p>
+            </div>
+
+            <h2>📞 Need Help?</h2>
+            <p>If you have questions about data deletion or privacy:</p>
+            <ul>
+                <li><strong>Privacy Team:</strong> <a href="mailto:privacy@homelinkgh.com">privacy@homelinkgh.com</a></li>
+                <li><strong>General Support:</strong> <a href="mailto:support@homelinkgh.com">support@homelinkgh.com</a></li>
+                <li><strong>Phone:</strong> +233 (0) 555 0123</li>
+            </ul>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="https://homelinkgh.com" class="btn btn-secondary">← Back to Website</a>
+                <a href="https://homelinkgh.com/privacy/policy" class="btn btn-secondary">Privacy Policy</a>
+                <a href="https://homelinkgh.com/account/delete" class="btn btn-secondary">Delete Account</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 HomeLinkGH. All rights reserved.</p>
+            <p>This page is for the <strong>HomeLinkGH</strong> mobile app - Ghana's smartest AI-powered services platform.</p>
+        </div>
+    </div>
+</body>
+</html>
