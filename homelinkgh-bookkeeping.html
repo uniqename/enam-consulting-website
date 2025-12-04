@@ -482,6 +482,17 @@ gap: 15px;
 <label>Notes (Optional)</label>
 <textarea id="newNotes" placeholder="Additional notes..." style="min-height: 60px;"></textarea>
 </div>
+<div class="form-group">
+<label>Invoice/Receipt Attachment</label>
+<input type="file" id="invoiceFile" accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(event)" style="padding: 8px; border: 2px dashed #10b981; border-radius: 6px; background: #f0fdf4;">
+<div id="filePreview" style="margin-top: 10px; display: none;">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f0fdf4; border-radius: 6px; border: 1px solid #10b981;">
+<span id="fileName" style="font-size: 14px; color: #059669; font-weight: 600;"></span>
+<button type="button" onclick="removeFile()" style="margin-left: auto; padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+</div>
+<img id="imagePreview" style="max-width: 200px; max-height: 200px; margin-top: 10px; border-radius: 6px; display: none;">
+</div>
+</div>
 <div style="display: flex; gap: 10px; margin-top: 20px;">
 <button class="btn btn-success" onclick="saveExpense()">💾 Save Expense</button>
 <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
@@ -494,6 +505,8 @@ let expenses = [];
 let currentCurrency = 'USD';
 let exchangeRate = 12.50;
 let editingIndex = -1;
+let currentFileData = null;
+let currentFileName = null;
 
 // Load data from localStorage
 function loadData() {
@@ -584,9 +597,10 @@ tbody.innerHTML = '';
 data.forEach((exp, index) => {
 const actualIndex = expenses.indexOf(exp);
 const row = tbody.insertRow();
+const attachmentIcon = exp.fileName ? `<span style="cursor: pointer;" onclick="viewAttachment(${actualIndex})" title="View attachment: ${exp.fileName}">📎</span> ` : '';
 row.innerHTML = `
 <td>${exp.date}</td>
-<td><strong>${exp.invoice}</strong></td>
+<td><strong>${exp.invoice}</strong> ${attachmentIcon}</td>
 <td>${exp.category}</td>
 <td>${exp.description}</td>
 <td>${exp.vendor}</td>
@@ -638,6 +652,10 @@ document.getElementById('newAmountUSD').value = '';
 document.getElementById('newAmountGHS').value = '';
 document.getElementById('newStatus').selectedIndex = 0;
 document.getElementById('newNotes').value = '';
+document.getElementById('invoiceFile').value = '';
+currentFileData = null;
+currentFileName = null;
+document.getElementById('filePreview').style.display = 'none';
 document.getElementById('addModal').classList.add('active');
 }
 
@@ -654,6 +672,18 @@ document.getElementById('newAmountUSD').value = exp.amountUSD;
 document.getElementById('newAmountGHS').value = exp.amountGHS;
 document.getElementById('newStatus').value = exp.status;
 document.getElementById('newNotes').value = exp.notes || '';
+currentFileData = exp.fileData || null;
+currentFileName = exp.fileName || null;
+if (currentFileName) {
+document.getElementById('fileName').textContent = currentFileName;
+document.getElementById('filePreview').style.display = 'block';
+if (exp.fileData && exp.fileData.startsWith('data:image')) {
+document.getElementById('imagePreview').src = exp.fileData;
+document.getElementById('imagePreview').style.display = 'block';
+}
+} else {
+document.getElementById('filePreview').style.display = 'none';
+}
 document.getElementById('addModal').classList.add('active');
 }
 
@@ -681,7 +711,9 @@ vendor: document.getElementById('newVendor').value.trim(),
 amountUSD: amountUSD,
 amountGHS: amountGHS,
 status: document.getElementById('newStatus').value,
-notes: document.getElementById('newNotes').value.trim()
+notes: document.getElementById('newNotes').value.trim(),
+fileData: currentFileData,
+fileName: currentFileName
 };
 
 if (editingIndex >= 0) {
@@ -694,6 +726,52 @@ saveData();
 populateCategoryFilter();
 renderTable();
 closeModal();
+}
+
+function handleFileSelect(event) {
+const file = event.target.files[0];
+if (!file) return;
+
+const reader = new FileReader();
+reader.onload = function(e) {
+currentFileData = e.target.result;
+currentFileName = file.name;
+document.getElementById('fileName').textContent = file.name;
+document.getElementById('filePreview').style.display = 'block';
+
+if (file.type.startsWith('image/')) {
+document.getElementById('imagePreview').src = e.target.result;
+document.getElementById('imagePreview').style.display = 'block';
+} else {
+document.getElementById('imagePreview').style.display = 'none';
+}
+};
+reader.readAsDataURL(file);
+}
+
+function removeFile() {
+currentFileData = null;
+currentFileName = null;
+document.getElementById('invoiceFile').value = '';
+document.getElementById('filePreview').style.display = 'none';
+document.getElementById('imagePreview').style.display = 'none';
+}
+
+function viewAttachment(index) {
+const exp = expenses[index];
+if (exp.fileData) {
+const newWindow = window.open();
+if (exp.fileData.startsWith('data:image')) {
+newWindow.document.write(`<html><head><title>${exp.fileName}</title></head><body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#000;"><img src="${exp.fileData}" style="max-width:100%;max-height:100vh;"></body></html>`);
+} else if (exp.fileData.startsWith('data:application/pdf')) {
+newWindow.document.write(`<html><head><title>${exp.fileName}</title></head><body style="margin:0;"><embed src="${exp.fileData}" width="100%" height="100%" type="application/pdf"></body></html>`);
+} else {
+const link = document.createElement('a');
+link.href = exp.fileData;
+link.download = exp.fileName;
+link.click();
+}
+}
 }
 
 function deleteExpense(index) {
