@@ -1,0 +1,63 @@
+import { motion } from 'framer-motion';
+import { ShieldCheck, LineChart, Code2 } from 'lucide-react';
+import { staggerContainer } from '../../utils/animation';
+
+const About = () => {
+  return (
+    <section id="about" className="py-24 bg-stone-50 w-full">
+      <div className="w-full px-6 lg:px-16">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-20 items-center">
+          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <h2 className="text-4xl lg:text-5xl font-bold text-stone-900 mb-8">
+              Most consultants only give advice. <br />
+              <span className="text-emerald-600">I build the solution.</span>
+            </h2>
+            <div className="space-y-6 text-lg lg:text-xl text-stone-600 leading-relaxed max-w-2xl">
+              <p>With a Masters in Data Science and 10+ years leading initiatives at major banks, I speak the language of the Boardroom.</p>
+              <p>But as a developer who has built and deployed mobile apps to the App Store, I also speak the language of the Engineering team.</p>
+              <p>This hybrid expertise allows me to bridge the gap between "Business Requirements" and "Technical Reality," ensuring your project is delivered on time, on budget, and without the fluff.</p>
+            </div>
+
+            <div className="mt-10 pt-10 border-t border-stone-200 grid grid-cols-2 gap-12">
+              <div>
+                <div className="text-4xl font-bold text-stone-900">10+</div>
+                <div className="text-base text-stone-500 mt-1">Years Experience</div>
+              </div>
+              <div>
+                <div className="text-4xl font-bold text-stone-900">3+</div>
+                <div className="text-base text-stone-500 mt-1">Production Apps</div>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="bg-white p-10 rounded-3xl shadow-xl border border-stone-100 w-full">
+            <h3 className="text-xl font-bold text-stone-900 mb-8">Technical Arsenal</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Enterprise</p>
+                {['Archer GRC', 'Tableau', 'SQL / Data Science'].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 p-4 bg-stone-50 rounded-xl border border-stone-100">
+                    {i === 0 ? <ShieldCheck className="text-blue-600" /> : i === 1 ? <LineChart className="text-blue-600" /> : <Code2 className="text-blue-600" />}
+                    <span className="font-medium text-stone-700">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Engineering</p>
+                {['Flutter & Dart', 'React & Node.js', 'Firebase'].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 p-4 bg-stone-50 rounded-xl border border-stone-100">
+                    <span className="text-emerald-600"><Code2 /></span>
+                    <span className="font-medium text-stone-700">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default About;

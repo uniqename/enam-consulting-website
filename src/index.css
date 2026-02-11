@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+ 
+
+  /* BRAND: The main identity color (Emerald-600) */
+  --color-brand: #059669;
+  --color-brand-light: #d1fae5; /* emerald-100 (for subtle backgrounds) */
+  --color-brand-hover: #047857; /* emerald-700 (for hover states) */
+
+  /* ACCENT: High contrast CTA color (Teal-700) */
+  --color-accent: #0f766e;
+  --color-accent-hover: #115e59; /* teal-800 */
+
+  /* SURFACE: Backgrounds (Stone-50 & White) */
+  --color-surface: #fafaf9;     /* stone-50 (Main page bg) */
+  --color-surface-paper: #ffffff; /* pure white (Card bg) */
+  --color-surface-muted: #e7e5e4; /* stone-200 (Borders/Dividers) */
+
+  /* CONTENT: Text colors (Stone-900 & Stone-500) */
+  --color-content: #1c1917;       /* stone-900 (Headings) */
+  --color-content-muted: #78716c; /* stone-500 (Subtitles) */
+  --color-content-inverted: #ffffff; /* White text on dark buttons */
+
+  /* FONTS: Professional, clean typography */
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+}
+
+/* Global Reset & Base Styles 
+  Senior Tip: Set the global background here to avoid 'white flashes' 
+*/
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-content);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* :root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+} */
