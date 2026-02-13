@@ -7,7 +7,7 @@ import { CheckCircle2, ShieldCheck, Smartphone, LineChart, HelpCircle } from 'lu
 // Replace these with your ACTUAL Calendly event type URLs
 const CALENDLY_CONFIG = {
   strategy: {
-    url: "https://calendly.com/your-username/grc-strategy-session",
+    url: "https://calendly.com/epaphrasagyapong1/enterprise-grc-strategy",
     title: "Enterprise GRC Strategy",
     description: "Deep dive into your risk architecture. We'll map out a migration plan from manual processes to automated GRC workflows.",
     icon: <LineChart className="w-6 h-6 text-blue-600" />,
