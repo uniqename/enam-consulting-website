@@ -3,25 +3,24 @@ import { InlineWidget } from 'react-calendly';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ShieldCheck, Smartphone, LineChart, HelpCircle } from 'lucide-react';
 
-// --- CONFIGURATION ---
-// Replace these with your ACTUAL Calendly event type URLs
+
 const CALENDLY_CONFIG = {
   strategy: {
-    url: "https://calendly.com/epaphrasagyapong1/enterprise-grc-strategy",
+    url: "https://calendly.com/enam-egyir/enterprise-grc-strategy",
     title: "Enterprise GRC Strategy",
     description: "Deep dive into your risk architecture. We'll map out a migration plan from manual processes to automated GRC workflows.",
     icon: <LineChart className="w-6 h-6 text-blue-600" />,
     color: "bg-blue-50 border-blue-200"
   },
   mvp: {
-    url: "https://calendly.com/your-username/mvp-discovery",
+    url: "https://calendly.com/enam-egyir/mvp-development-discovery",
     title: "MVP Development Discovery",
     description: "Technical feasibility assessment for your mobile app idea. We'll discuss architecture, budget, and go-to-market timeline.",
     icon: <Smartphone className="w-6 h-6 text-emerald-600" />,
     color: "bg-emerald-50 border-emerald-200"
   },
   retainer: {
-    url: "https://calendly.com/your-username/fractional-po-intro",
+    url: "https://calendly.com/enam-egyir/fractional-product-leadership",
     title: "Fractional Product Leadership",
     description: "Discuss ongoing product management support. Perfect for startups needing a part-time CPO to manage backlog and sprints.",
     icon: <ShieldCheck className="w-6 h-6 text-purple-600" />,
@@ -29,7 +28,7 @@ const CALENDLY_CONFIG = {
   },
   // Default fallback
   intro: {
-    url: "https://calendly.com/your-username/30min-intro",
+    url: "https://calendly.com/enam-egyir/general-inquiry",
     title: "General Inquiry",
     description: "Not sure where to start? Let's have a quick chat to see if we're a good fit for your project.",
     icon: <HelpCircle className="w-6 h-6 text-stone-600" />,
