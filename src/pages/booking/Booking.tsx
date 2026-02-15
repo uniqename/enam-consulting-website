@@ -38,7 +38,7 @@ const CALENDLY_CONFIG = {
 
 const Booking = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  // Get 'type' from URL (e.g. /booking?type=mvp) or default to 'intro'
+  // Get 'type' from URL ( /booking?type=mvp) or default to 'intro'
   const activeType = searchParams.get('type') || 'intro';
 
   // Safe check to ensure valid type
@@ -54,7 +54,6 @@ const Booking = () => {
     <div className="min-h-screen bg-stone-50 pt-24 pb-12 px-4 lg:px-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
 
-        {/* LEFT COLUMN: Context & Value Prop */}
         <div className="lg:col-span-4 space-y-8">
 
           <div className="space-y-4">
@@ -64,7 +63,6 @@ const Booking = () => {
             </p>
           </div>
 
-          {/* Service Selector Tabs */}
           <div className="flex flex-col gap-3">
             {Object.entries(CALENDLY_CONFIG).map(([key, config]) => (
               <button
@@ -96,7 +94,6 @@ const Booking = () => {
             ))}
           </div>
 
-          {/* "What to Expect" Box */}
           <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
             <h4 className="font-bold text-stone-900 mb-4 uppercase tracking-wider text-xs">What happens next?</h4>
             <ul className="space-y-4">
@@ -117,20 +114,18 @@ const Booking = () => {
 
         </div>
 
-        {/* RIGHT COLUMN: The Widget */}
         <div className="lg:col-span-8">
           <motion.div
-            key={currentConfig.url} // Forces re-render on URL change
+            key={currentConfig.url} 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-200 h-[800px]"
+            className="bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-200 h-200"
           >
             <InlineWidget
               url={currentConfig.url}
               styles={{ height: '100%', width: '100%' }}
               prefill={{
-                // Optional: Prefill custom answers if you passed them via state
                 name: '',
                 email: '',
                 customAnswers: {
