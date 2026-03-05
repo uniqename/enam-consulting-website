@@ -73,11 +73,11 @@ const Navbar = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-xl shadow-lg group-hover:shadow-emerald-600/20 transition-all">
-              E
+              D
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-lg leading-tight tracking-tight text-stone-900">
-                Enam<span className="text-emerald-600">Consulting</span>
+                Doxa<span className="text-emerald-600"> and Co</span>
               </span>
               <span className="text-[10px] font-medium text-stone-500 uppercase tracking-wider">
                 Enterprise & Engineering

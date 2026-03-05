@@ -30,7 +30,7 @@ const Hero = () => {
           </h1>
 
           <p className="text-xl text-stone-600 mb-8 leading-relaxed max-w-2xl">
-            I help organizations navigate technology decisions with practical guidance backed by hands-on development knowledge. No ivory tower theories—just real-world solutions.
+            We help organizations navigate technology decisions with practical guidance backed by hands-on development knowledge. No ivory tower theories—just real-world solutions.
           </p>
 
           <div className="flex flex-wrap gap-4">
