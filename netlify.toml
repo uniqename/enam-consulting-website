@@ -74,3 +74,22 @@
   from = "/faithklinik/privacy"
   to = "/faithklinik/privacy-policy.html"
   status = 200
+
+# Ensure static HTML files for Faith Klinik are served directly (not intercepted by SPA catch-all)
+[[redirects]]
+  from = "/faithklinik/privacy-policy.html"
+  to = "/faithklinik/privacy-policy.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/faithklinik/support.html"
+  to = "/faithklinik/support.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/faithklinik/account/delete.html"
+  to = "/faithklinik/account/delete.html"
+  status = 200
+  force = false
