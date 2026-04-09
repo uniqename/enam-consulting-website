@@ -28,7 +28,7 @@ export const allProjects: Project[] = [
 
   {
     id: "homelink-gh",
-    category: "Engineering",
+    category: "Built Products",
     title: "HomeLinkGH Service Platform",
     role: "Founder & Product Owner",
     client: "Venture (Self-Funded)",
@@ -85,7 +85,7 @@ export const allProjects: Project[] = [
 
   {
     id: "beacon-app",
-    category: "Engineering",
+    category: "Built Products",
     title: "Beacon of New Beginnings",
     role: "Product Owner & Developer",
     client: "Non-Profit",
@@ -140,7 +140,7 @@ export const allProjects: Project[] = [
 
   {
     id: "faith-klinik",
-    category: "Engineering",
+    category: "Built Products",
     title: "Faith Klinik Ministries",
     role: "Product Owner & Developer",
     client: "Faith Klinik",
@@ -197,7 +197,7 @@ export const allProjects: Project[] = [
 
   {
     id: "comerica-grc",
-    category: "Enterprise",
+    category: "Corporate Experience",
     title: "Comerica Bank GRC Transformation",
     role: "Technical Lead / Product Owner",
     client: "Comerica Bank",
@@ -253,7 +253,7 @@ export const allProjects: Project[] = [
 
   {
     id: "huntington-risk",
-    category: "Enterprise",
+    category: "Corporate Experience",
     title: "Unified Risk Management Integration",
     role: "Sr. GRC Product Owner",
     client: "Huntington National Bank",
@@ -307,7 +307,7 @@ export const allProjects: Project[] = [
 
   {
     id: "jpmc-agile",
-    category: "Enterprise",
+    category: "Corporate Experience",
     title: "Agile Workflow Optimization",
     role: "Business Analyst / Project Coordinator",
     client: "JP Morgan Chase",
@@ -338,7 +338,7 @@ export const allProjects: Project[] = [
 
   {
     id: "target-systems",
-    category: "Enterprise",
+    category: "Corporate Experience",
     title: "Retail Systems Enhancement",
     role: "Business Analyst / Project Coordinator",
     client: "Target Corporation",

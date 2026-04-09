@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="396" viewBox="0 0 1584 396">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c1c0e"/>
+      <stop offset="60%" style="stop-color:#0f2d14"/>
+      <stop offset="100%" style="stop-color:#1a3a1e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#059669"/>
+      <stop offset="100%" style="stop-color:#10b981"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#d97706"/>
+      <stop offset="100%" style="stop-color:#f59e0b"/>
+    </linearGradient>
+    <!-- Subtle grid pattern -->
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    </pattern>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1584" height="396" fill="url(#bg)"/>
+  <rect width="1584" height="396" fill="url(#grid)"/>
+
+  <!-- Decorative circle top-right -->
+  <circle cx="1420" cy="-60" r="280" fill="none" stroke="rgba(5,150,105,0.12)" stroke-width="1"/>
+  <circle cx="1420" cy="-60" r="200" fill="none" stroke="rgba(5,150,105,0.08)" stroke-width="1"/>
+  <circle cx="1420" cy="-60" r="120" fill="rgba(5,150,105,0.06)"/>
+
+  <!-- Left accent bar -->
+  <rect x="80" y="80" width="4" height="236" fill="url(#accent)" rx="2"/>
+
+  <!-- Name -->
+  <text x="112" y="158" font-family="Georgia, serif" font-size="68" font-weight="bold" fill="#ffffff" letter-spacing="-1">Enam Egyir</text>
+
+  <!-- Title line -->
+  <text x="114" y="208" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" fill="#10b981" font-weight="600" letter-spacing="2">PRODUCT OWNER  ·  TECHNOLOGY CONSULTANT  ·  BUILDER</text>
+
+  <!-- Divider -->
+  <rect x="112" y="228" width="600" height="1" fill="rgba(255,255,255,0.12)"/>
+
+  <!-- Credential pills -->
+  <rect x="112" y="248" width="108" height="32" rx="16" fill="rgba(5,150,105,0.2)" stroke="rgba(5,150,105,0.4)" stroke-width="1"/>
+  <text x="166" y="269" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#10b981" text-anchor="middle" font-weight="600">PMP®</text>
+
+  <rect x="232" y="248" width="144" height="32" rx="16" fill="rgba(5,150,105,0.2)" stroke="rgba(5,150,105,0.4)" stroke-width="1"/>
+  <text x="304" y="269" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#10b981" text-anchor="middle" font-weight="600">Scrum Master</text>
+
+  <rect x="388" y="248" width="176" height="32" rx="16" fill="rgba(5,150,105,0.2)" stroke="rgba(5,150,105,0.4)" stroke-width="1"/>
+  <text x="476" y="269" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#10b981" text-anchor="middle" font-weight="600">MS Data Science</text>
+
+  <!-- Quote / tagline -->
+  <text x="112" y="316" font-family="Georgia, serif" font-size="19" fill="rgba(255,255,255,0.55)" font-style="italic">"Most consultants only give advice. I build the solution."</text>
+
+  <!-- Stats — right side -->
+  <!-- Divider -->
+  <rect x="900" y="80" width="1" height="236" fill="rgba(255,255,255,0.08)"/>
+
+  <text x="980" y="148" font-family="Georgia, serif" font-size="56" font-weight="bold" fill="#ffffff">10+</text>
+  <text x="980" y="178" font-family="'Helvetica Neue', Arial, sans-serif" font-size="15" fill="rgba(255,255,255,0.5)" letter-spacing="1">YEARS EXPERIENCE</text>
+
+  <text x="1200" y="148" font-family="Georgia, serif" font-size="56" font-weight="bold" fill="#ffffff">3</text>
+  <text x="1200" y="178" font-family="'Helvetica Neue', Arial, sans-serif" font-size="15" fill="rgba(255,255,255,0.5)" letter-spacing="1">PRODUCTS SHIPPED 0→1</text>
+
+  <text x="980" y="254" font-family="Georgia, serif" font-size="56" font-weight="bold" fill="#ffffff">500+</text>
+  <text x="980" y="284" font-family="'Helvetica Neue', Arial, sans-serif" font-size="15" fill="rgba(255,255,255,0.5)" letter-spacing="1">SPRINTS FACILITATED</text>
+
+  <text x="1200" y="254" font-family="Georgia, serif" font-size="56" font-weight="bold" fill="#ffffff">4</text>
+  <text x="1200" y="284" font-family="'Helvetica Neue', Arial, sans-serif" font-size="15" fill="rgba(255,255,255,0.5)" letter-spacing="1">FORTUNE 500 CLIENTS</text>
+
+  <!-- Bottom brand -->
+  <text x="112" y="368" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" fill="rgba(255,255,255,0.3)" letter-spacing="2">DOXA AND CO LLC  ·  consulting.homelinkgh.com</text>
+
+  <!-- Signature flourish bottom-right -->
+  <text x="1472" y="368" font-family="Georgia, serif" font-size="18" fill="rgba(5,150,105,0.6)" text-anchor="end" font-style="italic">— Enam Egyir</text>
+</svg>

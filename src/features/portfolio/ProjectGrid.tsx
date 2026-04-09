@@ -3,7 +3,6 @@ import ProjectCard from './ProjectCard';
 import { allProjects } from '../../data/portFolioData';
 import type { FilterType } from './FilterTabs';
 
-// Projects where I acted as Product Owner (by slug)
 const productOwnerSlugs = new Set([
   'homelink-gh',
   'beacon-app',

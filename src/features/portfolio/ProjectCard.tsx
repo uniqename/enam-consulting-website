@@ -29,7 +29,7 @@ const ProjectCard = ({ project }: ProjectCardProps) => {
              />
              <div className="absolute top-4 left-4">
                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide shadow-sm ${
-                 project.category === 'Enterprise' ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
+                 project.category === 'Corporate Experience' ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
                }`}>
                  {project.category}
                </span>
