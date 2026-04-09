@@ -1,5 +1,6 @@
 import About from "../../features/landing/About";
 import CallToAction from "../../features/landing/CallToAction";
+import FAQ from "../../features/landing/FAQ";
 import Hero from "../../features/landing/Hero";
 import HowIWork from "../../features/landing/HowIWork";
 import PortfolioPreview from "../../features/landing/PortfolioPreview";
@@ -16,6 +17,7 @@ const Landing = () => {
       <Services />
       <HowIWork />
       <PortfolioPreview />
+      <FAQ />
       <CallToAction />
     </div>
   );
