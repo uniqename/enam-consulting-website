@@ -20,7 +20,7 @@ const TrustedBy = () => {
 
             <figure className="bg-white rounded-2xl p-8 border border-stone-100 shadow-sm">
               <blockquote className="text-stone-700 text-lg leading-relaxed mb-6">
-                "Enam didn't just build us an app — he helped us think through what we actually needed before a single line of code was written. The platform replaced four tools we were juggling and gave our leadership real-time visibility into our finances for the first time. It changed how we operate."
+                "Enam didn't just build us an app — she helped us think through what we actually needed before a single line of code was written. The platform replaced four tools we were juggling and gave our leadership real-time visibility into our finances for the first time. It changed how we operate."
               </blockquote>
               <figcaption className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm shrink-0">FK</div>
@@ -33,7 +33,7 @@ const TrustedBy = () => {
 
             <figure className="bg-white rounded-2xl p-8 border border-stone-100 shadow-sm">
               <blockquote className="text-stone-700 text-lg leading-relaxed mb-6">
-                "What stood out was how quickly Enam got up to speed on our constraints — technically and organizationally. He ran sprints like a senior PM while also understanding exactly what the engineering team needed to ship. That combination is rare."
+                "What stood out was how quickly Enam got up to speed on our constraints — technically and organizationally. She ran sprints like a senior PM while also understanding exactly what the engineering team needed to ship. That combination is rare."
               </blockquote>
               <figcaption className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm shrink-0">CB</div>
