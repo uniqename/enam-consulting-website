@@ -53,7 +53,16 @@ const About = () => {
             </div>
           </motion.div>
 
-          <div className="bg-white p-10 rounded-3xl shadow-xl border border-stone-100 w-full">
+          <div className="flex flex-col gap-8 w-full">
+            <div className="rounded-3xl overflow-hidden shadow-xl border border-stone-100 aspect-[3/4] max-h-[520px] w-full">
+              <img
+                src="/assets/images/enam-headshot.jpg"
+                alt="Enam Egyir — Product Manager & Developer"
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
+
+            <div className="bg-white p-10 rounded-3xl shadow-xl border border-stone-100 w-full">
             <h3 className="text-xl font-bold text-stone-900 mb-8">Technical Arsenal</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <div className="space-y-4">
@@ -76,6 +85,7 @@ const About = () => {
                 ))}
               </div>
             </div>
+          </div>
           </div>
         </div>
       </div>
