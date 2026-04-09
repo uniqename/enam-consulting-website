@@ -1,6 +1,6 @@
-import { Filter, Building2, PackageOpen, ClipboardList } from 'lucide-react';
+import { Filter, Building2, Smartphone, ClipboardList } from 'lucide-react';
 
-export type FilterType = 'All' | 'Corporate Experience' | 'Built Products' | 'Product';
+export type FilterType = 'All' | 'Enterprise' | 'Engineering' | 'Product';
 
 interface FilterTabsProps {
   filter: FilterType;
@@ -8,10 +8,10 @@ interface FilterTabsProps {
 }
 
 const tabs: { label: string; value: FilterType; icon: React.ReactNode; activeClass: string }[] = [
-  { label: 'All Projects',         value: 'All',                 icon: null,                        activeClass: 'bg-stone-900 text-white shadow-lg' },
-  { label: 'Product Management',   value: 'Product',             icon: <ClipboardList size={16} />, activeClass: 'bg-violet-600 text-white shadow-lg shadow-violet-200' },
-  { label: 'Corporate Experience', value: 'Corporate Experience',icon: <Building2 size={16} />,     activeClass: 'bg-blue-600 text-white shadow-lg shadow-blue-200' },
-  { label: 'Built Products',       value: 'Built Products',      icon: <PackageOpen size={16} />,   activeClass: 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' },
+  { label: 'All Projects',       value: 'All',        icon: null,                        activeClass: 'bg-stone-900 text-white shadow-lg' },
+  { label: 'Product Management', value: 'Product',    icon: <ClipboardList size={16} />, activeClass: 'bg-violet-600 text-white shadow-lg shadow-violet-200' },
+  { label: 'Enterprise',         value: 'Enterprise', icon: <Building2 size={16} />,     activeClass: 'bg-blue-600 text-white shadow-lg shadow-blue-200' },
+  { label: 'Engineering',        value: 'Engineering',icon: <Smartphone size={16} />,    activeClass: 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' },
 ];
 
 const FilterTabs = ({ filter, setFilter }: FilterTabsProps) => {

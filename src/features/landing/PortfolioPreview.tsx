@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 const projects = [
   {
     slug: "homelink-gh",
-    badge: "Product & Built",
+    badge: "Product & Engineering",
     badgeColor: "bg-emerald-600",
     image: "/assets/images/homelinkgh_logo.png",
     title: "HomeLinkGH Service Platform",
@@ -14,7 +14,7 @@ const projects = [
   },
   {
     slug: "enterprise-grc",
-    badge: "Corporate Experience",
+    badge: "Product Management",
     badgeColor: "bg-blue-600",
     image: "assets/images/comerica.png",
     title: "Comerica Bank GRC Transformation",
@@ -24,7 +24,7 @@ const projects = [
   },
   {
     slug: "unified-risk-management",
-    badge: "Corporate Experience",
+    badge: "Product Management",
     badgeColor: "bg-blue-600",
     image: "/assets/images/huntington.png",
     title: "Huntington Bank Risk Integration",
@@ -34,7 +34,7 @@ const projects = [
   },
   {
     slug: "beacon-app",
-    badge: "Product & Built",
+    badge: "Product & Engineering",
     badgeColor: "bg-emerald-600",
     image: "/assets/images/beacon_logo.png",
     title: "Beacon of New Beginnings",

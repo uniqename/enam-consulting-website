@@ -57,7 +57,7 @@ const About = () => {
             <h3 className="text-xl font-bold text-stone-900 mb-8">Technical Arsenal</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Corporate</p>
+                <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Corporate Experience</p>
                 {['Archer GRC', 'Tableau', 'SQL / Data Science'].map((item, i) => (
                   <div key={i} className="flex items-center gap-3 p-4 bg-stone-50 rounded-xl border border-stone-100">
                     {i === 0 ? <ShieldCheck className="text-blue-600" /> : i === 1 ? <LineChart className="text-blue-600" /> : <Code2 className="text-blue-600" />}
