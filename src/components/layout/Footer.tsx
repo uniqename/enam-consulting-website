@@ -33,8 +33,7 @@ const Footer = () => {
               We build production-ready software and optimize GRC platforms for growth.
             </p>
             <div className="flex gap-4 pt-2">
-              {/* TODO: replace href with your actual LinkedIn profile URL */}
-              <a href="https://www.linkedin.com/in/enam-egyir" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/in/enamegyir/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="LinkedIn">
                 <Linkedin size={18} />
               </a>
               <a href="https://github.com/uniqename" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="GitHub">
@@ -47,13 +46,13 @@ const Footer = () => {
             <h3 className="font-semibold text-gray-900 mb-4">Company</h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <button onClick={() => handleScrollTo('about')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">About Us</button>
+                <button type="button" onClick={() => handleScrollTo('about')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">About Us</button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('portfolio')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Case Studies</button>
+                <button type="button" onClick={() => handleScrollTo('portfolio')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Case Studies</button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Services</button>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Services</button>
               </li>
               <li>
                 <Link to="/booking" className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Book Consultation</Link>
@@ -65,16 +64,16 @@ const Footer = () => {
             <h3 className="font-semibold text-gray-900 mb-4">Expertise</h3>
             <ul className="space-y-3 text-sm ">
               <li>
-                <button onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Mobile App Development</button>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Mobile App Development</button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">GRC Platform Transformation</button>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">GRC Platform Transformation</button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">MVP Strategy & Build</button>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">MVP Strategy & Build</button>
               </li>
               <li>
-                <button onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Technical Audits</button>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Technical Audits</button>
               </li>
             </ul>
           </div>
