@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, LineChart, Code2 } from 'lucide-react';
+import { ShieldCheck, LineChart, Code2, LayoutList, Users, GitBranch, TrendingUp } from 'lucide-react';
 import { staggerContainer } from '../../utils/animation';
 import SignatureGenerator from './SignatureGenerator';
 
@@ -22,15 +22,34 @@ const About = () => {
               <p>This hybrid expertise allows me to bridge the gap between "Business Requirements" and "Technical Reality," ensuring your project is delivered on time, on budget, and without the fluff.</p>
             </div>
 
-            <div className="mt-10 pt-10 border-t border-stone-200 grid grid-cols-2 gap-12">
+            <div className="mt-10 pt-10 border-t border-stone-200 grid grid-cols-3 gap-8">
               <div>
                 <div className="text-4xl font-bold text-stone-900">10+</div>
-                <div className="text-base text-stone-500 mt-1">Years Experience</div>
+                <div className="text-base text-stone-500 mt-1">Years PM Experience</div>
               </div>
               <div>
-                <div className="text-4xl font-bold text-stone-900">3+</div>
-                <div className="text-base text-stone-500 mt-1">Production Apps</div>
+                <div className="text-4xl font-bold text-stone-900">3</div>
+                <div className="text-base text-stone-500 mt-1">Products Shipped 0→1</div>
               </div>
+              <div>
+                <div className="text-4xl font-bold text-stone-900">500+</div>
+                <div className="text-base text-stone-500 mt-1">Sprints Facilitated</div>
+              </div>
+            </div>
+
+            {/* PM achievements strip */}
+            <div className="mt-10 grid grid-cols-2 gap-4">
+              {[
+                { icon: <LayoutList size={16} />, text: "Backlog ownership & roadmap definition" },
+                { icon: <Users size={16} />, text: "Cross-functional stakeholder alignment" },
+                { icon: <GitBranch size={16} />, text: "Agile / Scrum delivery across 5 orgs" },
+                { icon: <TrendingUp size={16} />, text: "Measurable outcomes: 79% ↑ security, 30% ↑ efficiency" },
+              ].map(({ icon, text }, i) => (
+                <div key={i} className="flex items-start gap-3 p-4 bg-white rounded-xl border border-stone-100 shadow-sm">
+                  <span className="text-emerald-600 mt-0.5 shrink-0">{icon}</span>
+                  <span className="text-sm text-stone-600 leading-snug">{text}</span>
+                </div>
+              ))}
             </div>
           </motion.div>
 
