@@ -18,12 +18,13 @@ const Services = () => {
             <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-700 mb-8">
               <LineChart size={28} />
             </div>
-            <h3 className="text-2xl font-bold text-stone-900 mb-4">Enterprise GRC</h3>
+            <h3 className="text-2xl font-bold text-stone-900 mb-1">Enterprise GRC</h3>
+            <p className="text-emerald-700 text-sm font-bold mb-4">Starting at $8,000 / engagement</p>
             <p className="text-stone-600 mb-8 leading-relaxed grow">
-              Transform manual risk processes into automated workflows. Expertise in Archer, Audit Management, and Risk Mitigation.
+              Transform manual risk processes into automated, auditable workflows. 10+ years of Archer GRC experience across Fortune 500 banks — I know where projects go wrong.
             </p>
             <ul className="space-y-3 mb-10 text-stone-600">
-              {['Roadmap Development', 'Gap Analysis', 'Vendor Selection'].map((item) => (
+              {['Roadmap & Gap Analysis', 'Backlog Ownership & Sprint Delivery', 'Executive Reporting & Metrics'].map((item) => (
                 <li key={item} className="flex gap-3"><CheckCircle2 size={20} className="text-emerald-600 shrink-0" /> {item}</li>
               ))}
             </ul>
@@ -37,12 +38,13 @@ const Services = () => {
             <div className="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-white mb-8">
               <Smartphone size={28} />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-4">MVP Development</h3>
+            <h3 className="text-2xl font-bold text-white mb-1">MVP Development</h3>
+            <p className="text-emerald-400 text-sm font-bold mb-4">Starting at $15,000 · 8–16 weeks</p>
             <p className="text-stone-300 mb-8 leading-relaxed grow">
-              Turn your idea into a production-ready iOS/Android app. Full-cycle development from architecture to App Store submission.
+              Turn your idea into a production-ready iOS/Android app. I own the product decisions and write the code — so you ship faster with fewer middlemen.
             </p>
             <ul className="space-y-3 mb-10 text-stone-300">
-              {['Cross-Platform (Flutter)', 'Rapid Prototyping', 'Scalable Architecture'].map((item) => (
+              {['Discovery → Backlog → App Store', 'Cross-Platform (Flutter)', 'Fixed-scope, milestone billing'].map((item) => (
                 <li key={item} className="flex gap-3"><CheckCircle2 size={20} className="text-emerald-400 shrink-0" /> {item}</li>
               ))}
             </ul>
@@ -55,12 +57,13 @@ const Services = () => {
             <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-700 mb-8">
               <ShieldCheck size={28} />
             </div>
-            <h3 className="text-2xl font-bold text-stone-900 mb-4">Fractional PO</h3>
+            <h3 className="text-2xl font-bold text-stone-900 mb-1">Fractional PO</h3>
+            <p className="text-emerald-700 text-sm font-bold mb-4">Starting at $4,500 / month · 10–15 hrs/week</p>
             <p className="text-stone-600 mb-8 leading-relaxed grow">
-              Senior product leadership for startups that aren't ready for a full-time CPO. Backlog management, sprint planning, and team alignment.
+              Senior product leadership without the full-time cost. I embed with your team on a monthly retainer — owning the backlog, running sprints, and keeping engineering aligned with business goals.
             </p>
             <ul className="space-y-3 mb-10 text-stone-600">
-              {['Agile Transformation', 'Stakeholder Management', 'Technical Audit'].map((item) => (
+              {['Weekly sprint planning & reviews', 'Backlog ownership & roadmap', 'Stakeholder reporting & OKRs'].map((item) => (
                 <li key={item} className="flex gap-3"><CheckCircle2 size={20} className="text-emerald-600 shrink-0" /> {item}</li>
               ))}
             </ul>

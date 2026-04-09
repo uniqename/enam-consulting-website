@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Building2, CheckCircle2, ListChecks, TrendingUp, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, CheckCircle2, Lightbulb, ListChecks, TrendingUp, User } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { allProjects } from "../../data/portFolioData";
@@ -146,6 +146,20 @@ const Casestudy = () => {
                     ))}
                   </div>
                 </section>
+                {/* Lessons Learned */}
+                {project.lessonsLearned && (
+                  <section>
+                    <h2 className="text-2xl font-bold text-stone-900 mb-4 flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                        <Lightbulb size={16} />
+                      </span>
+                      What I'd Do Differently
+                    </h2>
+                    <div className="bg-amber-50 border border-amber-100 rounded-2xl p-8">
+                      <p className="text-stone-700 leading-relaxed text-lg">{project.lessonsLearned}</p>
+                    </div>
+                  </section>
+                )}
               </>
             ) : (
               /* ── Legacy format (non-PO case studies) ── */

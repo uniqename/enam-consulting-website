@@ -20,6 +20,7 @@ export interface Project {
   action?: string[];
   outcome?: string[];
   metrics?: { value: string; label: string }[];
+  lessonsLearned?: string;
 }
 
 export const allProjects: Project[] = [
@@ -64,6 +65,7 @@ export const allProjects: Project[] = [
       { value: "3",    label: "User roles: homeowner, provider, admin" },
       { value: "2",    label: "App stores shipped simultaneously" },
     ],
+    lessonsLearned: "Building a two-sided marketplace solo taught me that the hardest product problem isn't what to build — it's which side of the marketplace to seed first. I initially invested heavily in the provider onboarding flow, only to discover that without homeowner demand, providers lost motivation quickly. I pivoted the roadmap to prioritize demand-side growth and homeowner trust features before deepening provider tools. The lesson: in marketplace products, sequencing is strategy. I now build explicit 'chicken-and-egg' assumptions into the v1 roadmap and validate the demand side first.",
     // Legacy fields (kept for CaseStudy page fallback)
     challenge: "Ghana's home services market was completely unstructured — no verified providers, no price transparency, no accountability. Homeowners relied entirely on word-of-mouth with no safety guarantees.",
     solution: "Led end-to-end product development — from 20+ user interviews through backlog definition, sprint execution, and App Store launch. Made trust (Ghana Card verification) the P0 feature and built a phased roadmap to control scope and ship fast.",
@@ -201,7 +203,7 @@ export const allProjects: Project[] = [
     title: "Comerica Bank GRC Transformation",
     role: "Technical Lead / Product Owner",
     client: "Comerica Bank",
-    duration: "Jul 2022 - Present",
+    duration: "Jul 2022 - Feb 2026",
 
     summary: "Owned the product backlog and roadmap for an enterprise GRC platform transformation. Delivered 17% portfolio risk reduction and 30% operational efficiency improvement as measurable product outcomes.",
     techStack: ["Archer GRC", "Tableau", "SQL", "Jira"],
@@ -233,6 +235,7 @@ export const allProjects: Project[] = [
       { value: "40%",  label: "Manual processes eliminated" },
       { value: "6",    label: "Business units aligned" },
     ],
+    lessonsLearned: "The biggest lesson from this engagement was that stakeholder alignment is itself a deliverable — not a prerequisite. Early on, I assumed executive sponsorship was enough to drive adoption across all six business units. In practice, I underestimated the change management burden at the analyst level — the people who had built their careers around spreadsheet-based risk workflows. Midway through the program, I recognized the gap and added a formal adoption and training workstream to the backlog, which materially improved rollout success in the final two business units. If I were starting over, I'd scope change management as a first-class track from day one, not as a reaction to resistance.",
     challenge: "Risk management across 6 business units was entirely manual — spreadsheet risk registers, ad hoc reporting, and zero real-time executive visibility. Portfolio risk was elevated and leadership couldn't respond to emerging threats quickly.",
     solution: "Acted as Product Owner for the full GRC platform lifecycle. Ran stakeholder interviews across 6 BUs, built a prioritized backlog, ran Agile sprints, and made scope tradeoffs to protect the two highest-ROI deliverables: automated risk registers and real-time executive dashboards.",
     results: [
