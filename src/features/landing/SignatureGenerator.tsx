@@ -2,13 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { PDFDocument } from "pdf-lib";
 import mammoth from "mammoth";
+import { X, PenLine, Upload, Download, FileSignature, BookMarked, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
 ).href;
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const INK_OPTIONS = [
   { id: "black", label: "Black", color: "#1a1a1a", stroke: 2.5 },
@@ -27,8 +28,7 @@ type Variants = Record<string, string>;
 
 function processSignatureCanvas(src: HTMLCanvasElement, ink: InkOption): HTMLCanvasElement {
   const out = document.createElement("canvas");
-  out.width = src.width;
-  out.height = src.height;
+  out.width = src.width; out.height = src.height;
   const ctx = out.getContext("2d")!;
   const imgData = src.getContext("2d")!.getImageData(0, 0, src.width, src.height);
   const d = imgData.data;
@@ -49,8 +49,8 @@ function removeBackground(canvas: HTMLCanvasElement): HTMLCanvasElement {
   ctx.drawImage(canvas, 0, 0);
   const imgData = ctx.getImageData(0, 0, out.width, out.height);
   const d = imgData.data;
-  const w = canvas.width;
-  const corners = [[0,1,2],[w*4,(w*4)+1,(w*4)+2],[(canvas.height-1)*w*4,((canvas.height-1)*w*4)+1,((canvas.height-1)*w*4)+2]];
+  const w = canvas.width, h = canvas.height;
+  const corners = [[0,1,2],[w*4,w*4+1,w*4+2],[(h-1)*w*4,(h-1)*w*4+1,(h-1)*w*4+2]];
   const [bgR,bgG,bgB] = [0,1,2].map((c) => Math.round(corners.reduce((s,p) => s + d[p[c]], 0) / 3));
   for (let i = 0; i < d.length; i += 4) {
     const dist = Math.sqrt((d[i]-bgR)**2 + (d[i+1]-bgG)**2 + (d[i+2]-bgB)**2);
@@ -61,12 +61,6 @@ function removeBackground(canvas: HTMLCanvasElement): HTMLCanvasElement {
   return out;
 }
 
-function btnStyle(bg: string, extra?: React.CSSProperties): React.CSSProperties {
-  return { background: bg, border: "none", borderRadius: 10, padding: "10px 18px",
-    cursor: "pointer", color: "#fff", fontFamily: "sans-serif", fontSize: 13,
-    fontWeight: "500", transition: "opacity 0.2s", ...extra };
-}
-
 async function renderHtmlToCanvas(html: string, w = 794, h = 1123): Promise<HTMLCanvasElement> {
   const canvas = document.createElement("canvas");
   canvas.width = w; canvas.height = h;
@@ -74,8 +68,7 @@ async function renderHtmlToCanvas(html: string, w = 794, h = 1123): Promise<HTML
   ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, w, h);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
     <foreignObject x="0" y="0" width="${w}" height="${h}">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="width:${w-80}px;padding:40px;
-        font-family:Georgia,serif;font-size:12px;line-height:1.7;background:#fff;color:#111;">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="width:${w-80}px;padding:40px;font-family:Georgia,serif;font-size:12px;line-height:1.7;background:#fff;color:#111;">
         ${html}
       </div>
     </foreignObject>
@@ -93,15 +86,13 @@ async function renderHtmlToCanvas(html: string, w = 794, h = 1123): Promise<HTML
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface SigBounds { x: number; y: number; w: number; h: number; }
-interface DocPage { dataUrl: string; pdfW: number; pdfH: number; } // pdfW/H = 0 for images/word
-
+interface DocPage { dataUrl: string; pdfW: number; pdfH: number; }
 interface Props { onClose: () => void; }
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function SignatureGenerator({ onClose }: Props) {
 
-  // — Signature creation state
   const [step, setStep] = useState(1);
   const [mode, setMode] = useState<"draw" | "upload" | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -110,9 +101,8 @@ export default function SignatureGenerator({ onClose }: Props) {
   const [strokeWidth, setStrokeWidth] = useState(2.5);
   const [savedSignatures, setSavedSignatures] = useState<Array<{ id: number; variants: Variants; label: string }>>([]);
   const [activeTab, setActiveTab] = useState("download");
-  const [notification, setNotification] = useState<{ msg: string; type: string } | null>(null);
+  const [notification, setNotification] = useState<{ msg: string; ok: boolean } | null>(null);
 
-  // — Document signing state
   const [docType, setDocType] = useState<"pdf" | "image" | "word" | null>(null);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [docArrayBuffer, setDocArrayBuffer] = useState<ArrayBuffer | null>(null);
@@ -128,7 +118,6 @@ export default function SignatureGenerator({ onClose }: Props) {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, w: 0, h: 0 });
 
-  // — Refs
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const isDrawingRef = useRef(false);
@@ -136,7 +125,7 @@ export default function SignatureGenerator({ onClose }: Props) {
   const docInputRef = useRef<HTMLInputElement>(null);
   const docViewerRef = useRef<HTMLDivElement>(null);
 
-  // ─ Touch drawing ────────────────────────────────────────────────────────────
+  // ─ Touch drawing ──────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -163,20 +152,17 @@ export default function SignatureGenerator({ onClose }: Props) {
     return () => { canvas.removeEventListener("touchstart", ts); canvas.removeEventListener("touchmove", tm); canvas.removeEventListener("touchend", te); };
   }, [step, mode, strokeWidth]);
 
-  const showNotif = (msg: string, type = "success") => {
-    setNotification({ msg, type });
+  const showNotif = (msg: string, ok = true) => {
+    setNotification({ msg, ok });
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // ─ Mouse drawing ────────────────────────────────────────────────────────────
+  // ─ Mouse drawing ──────────────────────────────────────────────────────────
   const mp = (e: React.MouseEvent, c: HTMLCanvasElement) => {
     const r = c.getBoundingClientRect();
     return { x: (e.clientX - r.left) * (c.width / r.width), y: (e.clientY - r.top) * (c.height / r.height) };
   };
-  const startDraw = (e: React.MouseEvent) => {
-    const c = canvasRef.current; if (!c) return;
-    setIsDrawing(true); lastPos.current = mp(e, c);
-  };
+  const startDraw = (e: React.MouseEvent) => { const c = canvasRef.current; if (!c) return; setIsDrawing(true); lastPos.current = mp(e, c); };
   const draw = (e: React.MouseEvent) => {
     if (!isDrawing || !lastPos.current) return;
     const c = canvasRef.current!; const ctx = c.getContext("2d")!;
@@ -189,7 +175,7 @@ export default function SignatureGenerator({ onClose }: Props) {
   const endDraw = () => { setIsDrawing(false); lastPos.current = null; };
   const clearCanvas = () => { const c = canvasRef.current!; c.getContext("2d")!.clearRect(0, 0, c.width, c.height); };
 
-  // ─ Generate variants ────────────────────────────────────────────────────────
+  // ─ Variants ───────────────────────────────────────────────────────────────
   const generateVariants = (src: HTMLCanvasElement) => {
     const v: Variants = {};
     INK_OPTIONS.forEach((opt) => { v[opt.id] = processSignatureCanvas(src, opt).toDataURL("image/png"); });
@@ -214,7 +200,7 @@ export default function SignatureGenerator({ onClose }: Props) {
     reader.readAsDataURL(f);
   };
 
-  // ─ Download helpers ─────────────────────────────────────────────────────────
+  // ─ Downloads ──────────────────────────────────────────────────────────────
   const downloadPNG = () => {
     if (!processedVariants) return;
     const a = document.createElement("a"); a.download = `signature_${selectedVariant}.png`;
@@ -232,7 +218,7 @@ export default function SignatureGenerator({ onClose }: Props) {
       const blob = await (await fetch(processedVariants[selectedVariant])).blob();
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
       showNotif("Copied to clipboard!");
-    } catch { showNotif("Copy failed — try Download instead", "error"); }
+    } catch { showNotif("Copy failed — use Download instead", false); }
   };
   const saveSignature = () => {
     if (!processedVariants) return;
@@ -240,7 +226,7 @@ export default function SignatureGenerator({ onClose }: Props) {
     showNotif("Saved for reuse!");
   };
 
-  // ─ Document loading ─────────────────────────────────────────────────────────
+  // ─ Document loading ───────────────────────────────────────────────────────
   const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f) return;
     setDocFile(f); setDocLoading(true); setSigBounds(null); setPlacingMode(false);
@@ -254,10 +240,7 @@ export default function SignatureGenerator({ onClose }: Props) {
       } else {
         setDocType("image"); await loadImage(f);
       }
-    } catch (err) {
-      showNotif("Could not load document", "error");
-      console.error(err);
-    }
+    } catch (err) { showNotif("Could not load document", false); console.error(err); }
     setDocLoading(false);
   };
 
@@ -266,11 +249,11 @@ export default function SignatureGenerator({ onClose }: Props) {
     const pages: DocPage[] = [];
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
-      const vpScale1 = page.getViewport({ scale: 1 });
-      const vp = page.getViewport({ scale: 2 }); // render at 2x for crispness
+      const vp1 = page.getViewport({ scale: 1 });
+      const vp = page.getViewport({ scale: 2 });
       const c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height;
       await page.render({ canvasContext: c.getContext("2d")!, viewport: vp }).promise;
-      pages.push({ dataUrl: c.toDataURL("image/png"), pdfW: vpScale1.width, pdfH: vpScale1.height });
+      pages.push({ dataUrl: c.toDataURL("image/png"), pdfW: vp1.width, pdfH: vp1.height });
     }
     setDocPages(pages); setCurrentPage(0);
   };
@@ -286,219 +269,121 @@ export default function SignatureGenerator({ onClose }: Props) {
     const reader = new FileReader();
     reader.onload = (ev) => {
       const img = new Image();
-      img.onload = () => {
-        setDocPages([{ dataUrl: ev.target?.result as string, pdfW: img.naturalWidth, pdfH: img.naturalHeight }]);
-        setCurrentPage(0); res();
-      };
+      img.onload = () => { setDocPages([{ dataUrl: ev.target?.result as string, pdfW: img.naturalWidth, pdfH: img.naturalHeight }]); setCurrentPage(0); res(); };
       img.src = ev.target?.result as string;
     };
     reader.readAsDataURL(f);
   });
 
-  // ─ Signature placement ──────────────────────────────────────────────────────
+  // ─ Signature placement ────────────────────────────────────────────────────
   const handleDocClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!placingMode || !docViewerRef.current) return;
     const r = docViewerRef.current.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    setSigBounds({ x: x - DEFAULT_SIG_W / 2, y: y - DEFAULT_SIG_H / 2, w: DEFAULT_SIG_W, h: DEFAULT_SIG_H });
+    setSigBounds({ x: e.clientX - r.left - DEFAULT_SIG_W / 2, y: e.clientY - r.top - DEFAULT_SIG_H / 2, w: DEFAULT_SIG_W, h: DEFAULT_SIG_H });
     setPlacingMode(false);
   };
-
   const handleSigMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!sigBounds) return;
     setDragging(true);
     setDragStart({ x: e.clientX - sigBounds.x, y: e.clientY - sigBounds.y });
   };
-
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation(); e.preventDefault();
     if (!sigBounds) return;
     setResizing(true);
     setResizeStart({ x: e.clientX, y: e.clientY, w: sigBounds.w, h: sigBounds.h });
   };
-
   const handleViewerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (dragging && sigBounds) {
-      setSigBounds({ ...sigBounds, x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-    } else if (resizing && sigBounds) {
-      const dw = e.clientX - resizeStart.x;
-      const dh = e.clientY - resizeStart.y;
-      setSigBounds({ ...sigBounds, w: Math.max(60, resizeStart.w + dw), h: Math.max(20, resizeStart.h + dh) });
-    }
+    if (dragging && sigBounds) setSigBounds({ ...sigBounds, x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    else if (resizing && sigBounds) setSigBounds({ ...sigBounds, w: Math.max(60, resizeStart.w + e.clientX - resizeStart.x), h: Math.max(20, resizeStart.h + e.clientY - resizeStart.y) });
   };
-
   const handleViewerMouseUp = () => { setDragging(false); setResizing(false); };
 
-  // ─ Export signed document ───────────────────────────────────────────────────
+  // ─ Export ─────────────────────────────────────────────────────────────────
   const exportSigned = async () => {
     if (!sigBounds || !processedVariants || !docViewerRef.current) return;
-    const viewerEl = docViewerRef.current;
-    const { width: displayW, height: displayH } = viewerEl.getBoundingClientRect();
+    const { width: displayW, height: displayH } = docViewerRef.current.getBoundingClientRect();
     const sigDataUrl = processedVariants[selectedVariant];
     showNotif("Preparing download…");
-
     try {
       if (docType === "pdf" && docArrayBuffer) {
-        await exportAsPDF(displayW, displayH, sigDataUrl);
+        const pdfDoc = await PDFDocument.load(docArrayBuffer);
+        const page = pdfDoc.getPages()[currentPage];
+        const { width: pW, height: pH } = page.getSize();
+        const sx = pW / displayW, sy = pH / displayH;
+        const pngBytes = await (await fetch(sigDataUrl)).arrayBuffer();
+        page.drawImage(await pdfDoc.embedPng(pngBytes), { x: sigBounds.x * sx, y: pH - (sigBounds.y + sigBounds.h) * sy, width: sigBounds.w * sx, height: sigBounds.h * sy });
+        const a = document.createElement("a"); a.download = `signed_${docFile?.name}.pdf`;
+        a.href = URL.createObjectURL(new Blob([await pdfDoc.save()], { type: "application/pdf" }));
+        a.click(); showNotif("Signed PDF downloaded!");
       } else if (docType === "image") {
-        await exportAsImage(displayW, displayH, sigDataUrl);
+        const page = docPages[currentPage];
+        const imgEl = docViewerRef.current.querySelector("img");
+        const natW = imgEl?.naturalWidth || displayW, natH = imgEl?.naturalHeight || displayH;
+        const c = document.createElement("canvas"); c.width = natW; c.height = natH;
+        const ctx = c.getContext("2d")!;
+        await new Promise<void>((res) => { const di = new Image(); di.onload = () => { ctx.drawImage(di, 0, 0); res(); }; di.src = page.dataUrl; });
+        await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(natW/displayW), sigBounds.y*(natH/displayH), sigBounds.w*(natW/displayW), sigBounds.h*(natH/displayH)); res(); }; si.src = sigDataUrl; });
+        const a = document.createElement("a"); a.download = `signed_${docFile?.name}.png`; a.href = c.toDataURL("image/png"); a.click(); showNotif("Signed image downloaded!");
       } else if (docType === "word" && wordHtml) {
-        await exportWordAsPDF(displayW, displayH, sigDataUrl);
+        const W = 794, H = 1123;
+        const wc = await renderHtmlToCanvas(wordHtml, W, H);
+        const ctx = wc.getContext("2d")!;
+        await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(W/displayW), sigBounds.y*(H/displayH), sigBounds.w*(W/displayW), sigBounds.h*(H/displayH)); res(); }; si.src = sigDataUrl; });
+        const pdfDoc = await PDFDocument.create();
+        const pp = pdfDoc.addPage([W, H]);
+        pp.drawImage(await pdfDoc.embedPng(await (await fetch(wc.toDataURL("image/png"))).arrayBuffer()), { x: 0, y: 0, width: W, height: H });
+        const a = document.createElement("a"); a.download = `signed_${docFile?.name}.pdf`;
+        a.href = URL.createObjectURL(new Blob([await pdfDoc.save()], { type: "application/pdf" })); a.click(); showNotif("Signed document downloaded as PDF!");
       }
-    } catch (err) {
-      showNotif("Export failed", "error");
-      console.error(err);
-    }
+    } catch (err) { showNotif("Export failed", false); console.error(err); }
   };
 
-  const exportAsPDF = async (displayW: number, displayH: number, sigDataUrl: string) => {
-    const pdfDoc = await PDFDocument.load(docArrayBuffer!);
-    const page = pdfDoc.getPages()[currentPage];
-    const { width: pageW, height: pageH } = page.getSize();
-
-    // Display coords → PDF pts (PDF origin = bottom-left)
-    const sx = pageW / displayW;
-    const sy = pageH / displayH;
-    const pdfX = sigBounds!.x * sx;
-    const pdfY = pageH - (sigBounds!.y + sigBounds!.h) * sy;
-    const pdfW = sigBounds!.w * sx;
-    const pdfH = sigBounds!.h * sy;
-
-    const pngBytes = await (await fetch(sigDataUrl)).arrayBuffer();
-    const pngImage = await pdfDoc.embedPng(pngBytes);
-    page.drawImage(pngImage, { x: pdfX, y: pdfY, width: pdfW, height: pdfH });
-
-    const bytes = await pdfDoc.save();
-    const a = document.createElement("a");
-    a.download = `signed_${docFile?.name ?? "document"}.pdf`;
-    a.href = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
-    a.click(); showNotif("Signed PDF downloaded!");
-  };
-
-  const exportAsImage = async (displayW: number, displayH: number, sigDataUrl: string) => {
-    const page = docPages[currentPage];
-    const imgEl = docViewerRef.current!.querySelector("img");
-    const natW = imgEl?.naturalWidth || page.pdfW || displayW;
-    const natH = imgEl?.naturalHeight || page.pdfH || displayH;
-
-    const c = document.createElement("canvas"); c.width = natW; c.height = natH;
-    const ctx = c.getContext("2d")!;
-
-    await new Promise<void>((res) => {
-      const docImg = new Image();
-      docImg.onload = () => { ctx.drawImage(docImg, 0, 0); res(); };
-      docImg.src = page.dataUrl;
-    });
-
-    const sx = natW / displayW; const sy = natH / displayH;
-    await new Promise<void>((res) => {
-      const sigImg = new Image();
-      sigImg.onload = () => {
-        ctx.drawImage(sigImg, sigBounds!.x * sx, sigBounds!.y * sy, sigBounds!.w * sx, sigBounds!.h * sy);
-        res();
-      };
-      sigImg.src = sigDataUrl;
-    });
-
-    const a = document.createElement("a");
-    a.download = `signed_${docFile?.name ?? "document"}.png`;
-    a.href = c.toDataURL("image/png"); a.click(); showNotif("Signed image downloaded!");
-  };
-
-  const exportWordAsPDF = async (displayW: number, displayH: number, sigDataUrl: string) => {
-    const W = 794, H = 1123;
-    const wordCanvas = await renderHtmlToCanvas(wordHtml!, W, H);
-    const ctx = wordCanvas.getContext("2d")!;
-    const sx = W / displayW; const sy = H / displayH;
-    await new Promise<void>((res) => {
-      const sigImg = new Image();
-      sigImg.onload = () => {
-        ctx.drawImage(sigImg, sigBounds!.x * sx, sigBounds!.y * sy, sigBounds!.w * sx, sigBounds!.h * sy);
-        res();
-      };
-      sigImg.src = sigDataUrl;
-    });
-
-    const pdfDoc = await PDFDocument.create();
-    const pdfPage = pdfDoc.addPage([W, H]);
-    const pngBytes = await (await fetch(wordCanvas.toDataURL("image/png"))).arrayBuffer();
-    pdfPage.drawImage(await pdfDoc.embedPng(pngBytes), { x: 0, y: 0, width: W, height: H });
-
-    const bytes = await pdfDoc.save();
-    const a = document.createElement("a");
-    a.download = `signed_${docFile?.name ?? "document"}.pdf`;
-    a.href = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
-    a.click(); showNotif("Signed document downloaded as PDF!");
-  };
-
-  // ─ Derived ──────────────────────────────────────────────────────────────────
   const currentVariantData = processedVariants?.[selectedVariant];
   const totalPages = docPages.length;
 
-  // ─ Styles ───────────────────────────────────────────────────────────────────
-  const gold = "#c9a96e"; const goldLight = "#f0d090";
-  const surface = "rgba(255,255,255,0.04)";
-  const border = "1px solid rgba(255,255,255,0.1)";
-
-  // ══════════════════════════════════════════════════════════════════════════════
+  // ─ Render ─────────────────────────────────────────────────────────────────
   return (
+    /* Overlay */
     <div
-      style={{ position: "fixed", inset: 0, zIndex: 1000,
-        background: "rgba(0,0,0,0.65)", display: "flex",
-        alignItems: "center", justifyContent: "center", padding: 16 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/70 backdrop-blur-sm"
       onClick={onClose}
     >
+      {/* Modal */}
       <div
+        className="relative bg-white rounded-3xl w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
-        style={{ background: "linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 50%,#16213e 100%)",
-          borderRadius: 20, width: "100%", maxWidth: 880, maxHeight: "93vh",
-          overflowY: "auto", fontFamily: "'Georgia','Times New Roman',serif",
-          color: "#e8e4dc", position: "relative",
-          boxShadow: "0 24px 80px rgba(0,0,0,0.7)" }}
       >
-        {/* Notification */}
+        {/* Notification toast */}
         {notification && (
-          <div style={{ position: "absolute", top: 14, right: 60, zIndex: 9999,
-            background: notification.type === "error" ? "#7f1d1d" : "#14532d",
-            color: "#fff", padding: "9px 16px", borderRadius: 9, fontSize: 13,
-            fontFamily: "sans-serif", boxShadow: "0 4px 20px rgba(0,0,0,0.4)" }}>
+          <div className={`absolute top-4 right-14 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium shadow-lg ${notification.ok ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>
+            {notification.ok ? <CheckCircle2 size={15} /> : null}
             {notification.msg}
           </div>
         )}
 
-        {/* Close */}
-        <button type="button" onClick={onClose}
-          style={{ position: "absolute", top: 14, right: 14, background: "rgba(255,255,255,0.1)",
-            border: "none", borderRadius: "50%", width: 34, height: 34, cursor: "pointer",
-            color: "#e8e4dc", fontSize: 16, display: "flex", alignItems: "center",
-            justifyContent: "center", zIndex: 10 }}>✕</button>
+        {/* Close button */}
+        <button type="button" onClick={onClose} aria-label="Close"
+          className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition-colors">
+          <X size={17} />
+        </button>
 
         {/* Header */}
-        <div style={{ background: "rgba(255,255,255,0.03)",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          padding: "18px 22px", display: "flex", alignItems: "center", gap: 14,
-          borderRadius: "20px 20px 0 0" }}>
-          <div style={{ width: 38, height: 38, borderRadius: 10,
-            background: `linear-gradient(135deg,${gold},${goldLight})`,
-            display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>✍️</div>
+        <div className="flex items-center gap-4 px-8 pt-8 pb-6 border-b border-stone-100">
+          <div className="w-11 h-11 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-600/20">
+            <FileSignature size={22} />
+          </div>
           <div>
-            <div style={{ fontSize: 17, fontWeight: "bold", letterSpacing: 1, color: goldLight }}>
-              Digital Signature Generator
-            </div>
-            <div style={{ fontSize: 11, color: "#9a8a70", fontFamily: "sans-serif" }}>
-              Draw or upload · Choose style · Sign documents
-            </div>
+            <h2 className="text-xl font-bold text-stone-900">Digital Signature Generator</h2>
+            <p className="text-sm text-stone-500">Draw or upload · Choose style · Sign documents</p>
           </div>
           {savedSignatures.length > 0 && (
-            <div style={{ marginLeft: "auto", display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div className="ml-auto flex gap-2 flex-wrap">
               {savedSignatures.map((s) => (
                 <button key={s.id} type="button"
-                  onClick={() => { setProcessedVariants(s.variants); setStep(3); showNotif("Signature loaded!"); }}
-                  style={{ background: "rgba(240,208,144,0.12)", border: `1px solid rgba(240,208,144,0.3)`,
-                    color: goldLight, borderRadius: 8, padding: "4px 10px", cursor: "pointer",
-                    fontSize: 11, fontFamily: "sans-serif" }}>
+                  onClick={() => { setProcessedVariants(s.variants); setStep(3); showNotif("Loaded!"); }}
+                  className="px-3 py-1 rounded-full bg-stone-100 hover:bg-emerald-50 text-stone-600 hover:text-emerald-700 text-xs font-medium transition-colors border border-stone-200">
                   {s.label}
                 </button>
               ))}
@@ -507,263 +392,252 @@ export default function SignatureGenerator({ onClose }: Props) {
         </div>
 
         {/* Step indicator */}
-        <div style={{ display: "flex", justifyContent: "center", padding: "18px 16px 6px", gap: 0 }}>
-          {["Create","Style","Sign"].map((label, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-                <div style={{ width: 26, height: 26, borderRadius: "50%",
-                  background: step > i+1 ? gold : step === i+1 ? `linear-gradient(135deg,${gold},${goldLight})` : "transparent",
-                  border: step >= i+1 ? `2px solid ${gold}` : "2px solid rgba(255,255,255,0.15)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontFamily: "sans-serif",
-                  color: step >= i+1 ? "#1a1a1a" : "#666", fontWeight: "bold" }}>
+        <div className="flex items-center justify-center gap-0 px-8 py-5">
+          {["Create", "Style & Export", "Sign Doc"].map((label, i) => (
+            <div key={i} className="flex items-center">
+              <div className="flex flex-col items-center gap-1.5">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  step > i+1 ? "bg-emerald-600 text-white" :
+                  step === i+1 ? "bg-stone-900 text-white" :
+                  "bg-stone-100 text-stone-400"
+                }`}>
                   {step > i+1 ? "✓" : i+1}
                 </div>
-                <div style={{ fontSize: 10, fontFamily: "sans-serif", color: step === i+1 ? goldLight : "#666" }}>
+                <span className={`text-[10px] font-medium uppercase tracking-wide ${step === i+1 ? "text-stone-900" : "text-stone-400"}`}>
                   {label}
-                </div>
+                </span>
               </div>
-              {i < 2 && <div style={{ width: 40, height: 2, margin: "0 4px", marginBottom: 18,
-                background: step > i+1 ? gold : "rgba(255,255,255,0.08)" }} />}
+              {i < 2 && (
+                <div className={`w-12 h-px mx-2 mb-4 ${step > i+1 ? "bg-emerald-600" : "bg-stone-200"}`} />
+              )}
             </div>
           ))}
         </div>
 
         {/* Body */}
-        <div style={{ padding: "14px 20px 28px", maxWidth: 840, margin: "0 auto" }}>
+        <div className="px-8 pb-10">
 
-          {/* ── STEP 1: Choose mode ──────────────────────────────────────── */}
+          {/* ── STEP 1: Choose ──────────────────────────────────────────── */}
           {step === 1 && (
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 19, color: goldLight, marginBottom: 6 }}>
-                How would you like to create your signature?
-              </div>
-              <div style={{ fontSize: 13, fontFamily: "sans-serif", color: "#9a8a70", marginBottom: 26 }}>
-                Draw it by hand, or upload a photo of your existing signature
-              </div>
-              <div style={{ display: "flex", gap: 18, justifyContent: "center", flexWrap: "wrap" }}>
-                {[{ k: "draw", icon: "✏️", title: "Draw", sub: "Mouse, touch, or stylus" },
-                  { k: "upload", icon: "📤", title: "Upload Photo", sub: "JPG, PNG, HEIC — auto-cleaned" }].map(({ k, icon, title, sub }) => (
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-stone-900 mb-2">How would you like to sign?</h3>
+              <p className="text-stone-500 mb-8">Draw it by hand, or upload a photo of your existing signature</p>
+              <div className="flex gap-5 justify-center flex-wrap">
+                {[
+                  { k: "draw",   icon: <PenLine size={32} />,  title: "Draw",          sub: "Mouse, touch, or stylus" },
+                  { k: "upload", icon: <Upload size={32} />,   title: "Upload Photo",  sub: "JPG, PNG, HEIC — auto-cleaned" },
+                ].map(({ k, icon, title, sub }) => (
                   <button key={k} type="button"
                     onClick={() => { setMode(k as "draw" | "upload"); setStep(2); }}
-                    style={{ background: "rgba(240,208,144,0.07)", border: "1px solid rgba(240,208,144,0.2)",
-                      borderRadius: 14, padding: "26px 34px", cursor: "pointer", color: goldLight,
-                      display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-                      minWidth: 155, transition: "background 0.2s" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(240,208,144,0.14)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(240,208,144,0.07)")}>
-                    <div style={{ fontSize: 38 }}>{icon}</div>
-                    <div style={{ fontSize: 15, fontWeight: "bold" }}>{title}</div>
-                    <div style={{ fontSize: 12, fontFamily: "sans-serif", color: "#9a8a70" }}>{sub}</div>
+                    className="flex flex-col items-center gap-4 p-10 rounded-2xl border-2 border-stone-100 hover:border-emerald-300 hover:bg-emerald-50 bg-white text-stone-900 transition-all cursor-pointer min-w-44 shadow-sm hover:shadow-md">
+                    <span className="text-emerald-600">{icon}</span>
+                    <div>
+                      <div className="text-lg font-bold mb-1">{title}</div>
+                      <div className="text-sm text-stone-500">{sub}</div>
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* ── STEP 2: Draw ──────────────────────────────────────────────── */}
+          {/* ── STEP 2: Draw ────────────────────────────────────────────── */}
           {step === 2 && mode === "draw" && (
             <div>
-              <div style={{ textAlign: "center", marginBottom: 14 }}>
-                <div style={{ fontSize: 19, color: goldLight, marginBottom: 3 }}>Sign in the box below</div>
-                <div style={{ fontSize: 12, fontFamily: "sans-serif", color: "#9a8a70" }}>
-                  Use your finger, mouse, or stylus. Keep it natural — imperfections are authentic.
-                </div>
+              <div className="text-center mb-5">
+                <h3 className="text-xl font-bold text-stone-900 mb-1">Sign in the box below</h3>
+                <p className="text-sm text-stone-500">Use your finger, mouse, or stylus — keep it natural</p>
               </div>
-              <div style={{ marginBottom: 10, display: "flex", alignItems: "center", gap: 10, justifyContent: "center" }}>
-                <span style={{ fontSize: 12, fontFamily: "sans-serif", color: "#9a8a70" }}>Stroke:</span>
+              {/* Stroke selector */}
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <span className="text-sm text-stone-500 font-medium">Stroke:</span>
                 {[{ v: 1.2, l: "Thin" }, { v: 2.5, l: "Medium" }, { v: 4.5, l: "Bold" }].map(({ v, l }) => (
                   <button key={v} type="button" onClick={() => setStrokeWidth(v)}
-                    style={{ background: strokeWidth === v ? "rgba(240,208,144,0.2)" : "rgba(255,255,255,0.05)",
-                      border: strokeWidth === v ? `1px solid ${gold}` : border,
-                      borderRadius: 8, padding: "4px 12px", cursor: "pointer",
-                      color: strokeWidth === v ? goldLight : "#9a8a70",
-                      fontSize: 12, fontFamily: "sans-serif" }}>{l}</button>
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                      strokeWidth === v ? "bg-stone-900 text-white border-stone-900" : "bg-white text-stone-600 border-stone-200 hover:border-stone-400"
+                    }`}>{l}</button>
                 ))}
               </div>
-              <div style={{ background: "#fff", borderRadius: 10, overflow: "hidden",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.5)", cursor: "crosshair", touchAction: "none" }}>
+              {/* Canvas */}
+              <div className="rounded-2xl overflow-hidden border-2 border-stone-200 cursor-crosshair touch-none shadow-inner bg-white">
                 <canvas ref={canvasRef} width={600} height={200}
-                  style={{ display: "block", width: "100%", maxWidth: 600, margin: "0 auto" }}
+                  className="block w-full max-w-full"
                   onMouseDown={startDraw} onMouseMove={draw} onMouseUp={endDraw} onMouseLeave={endDraw} />
               </div>
-              <div style={{ display: "flex", gap: 10, marginTop: 14, justifyContent: "center", flexWrap: "wrap" }}>
-                <button type="button" onClick={clearCanvas} style={btnStyle("rgba(255,255,255,0.1)", { border })}>Clear</button>
-                <button type="button" onClick={() => setStep(1)} style={btnStyle("rgba(255,255,255,0.1)", { border })}>← Back</button>
+              <div className="flex gap-3 mt-5 justify-center flex-wrap">
+                <button type="button" onClick={clearCanvas}
+                  className="px-5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:bg-stone-50 transition-colors">
+                  Clear
+                </button>
+                <button type="button" onClick={() => setStep(1)}
+                  className="px-5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:bg-stone-50 transition-colors">
+                  ← Back
+                </button>
                 <button type="button" onClick={generateFromDraw}
-                  style={btnStyle(`linear-gradient(135deg,${gold},${goldLight})`, { color: "#1a1a1a", fontWeight: "bold" })}>
+                  className="px-6 py-2.5 rounded-xl bg-stone-900 text-white text-sm font-bold hover:bg-emerald-600 transition-colors shadow-sm">
                   Continue →
                 </button>
               </div>
             </div>
           )}
 
-          {/* ── STEP 2: Upload ────────────────────────────────────────────── */}
+          {/* ── STEP 2: Upload ──────────────────────────────────────────── */}
           {step === 2 && mode === "upload" && (
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 19, color: goldLight, marginBottom: 6 }}>Upload your signature</div>
-              <div style={{ fontSize: 12, fontFamily: "sans-serif", color: "#9a8a70", marginBottom: 18 }}>
-                Take a photo of your handwritten signature. Background is automatically removed.
-              </div>
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-stone-900 mb-2">Upload your signature</h3>
+              <p className="text-sm text-stone-500 mb-6">Take a photo of your handwritten signature. Background is automatically removed.</p>
               <div onClick={() => fileInputRef.current?.click()}
-                style={{ border: "2px dashed rgba(240,208,144,0.3)", borderRadius: 14, padding: "38px 24px",
-                  cursor: "pointer", background: "rgba(240,208,144,0.04)", transition: "background 0.2s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(240,208,144,0.09)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(240,208,144,0.04)")}>
-                <div style={{ fontSize: 38, marginBottom: 10 }}>📁</div>
-                <div style={{ fontSize: 14, color: goldLight, marginBottom: 6 }}>Click to browse or drag &amp; drop</div>
-                <div style={{ fontSize: 12, fontFamily: "sans-serif", color: "#9a8a70" }}>JPG · PNG · HEIC</div>
+                className="border-2 border-dashed border-stone-200 hover:border-emerald-400 rounded-2xl py-12 px-8 cursor-pointer hover:bg-emerald-50 transition-all">
+                <Upload size={36} className="text-stone-300 mx-auto mb-3" />
+                <p className="text-stone-700 font-semibold mb-1">Click to browse or drag &amp; drop</p>
+                <p className="text-sm text-stone-400">JPG · PNG · HEIC</p>
               </div>
               <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png,.heic,image/*"
-                style={{ display: "none" }} onChange={handleImageUpload} />
-              <div style={{ marginTop: 14 }}>
-                <button type="button" onClick={() => setStep(1)} style={btnStyle("rgba(255,255,255,0.1)", { border })}>← Back</button>
+                className="hidden" onChange={handleImageUpload} />
+              <div className="mt-4">
+                <button type="button" onClick={() => setStep(1)}
+                  className="px-5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:bg-stone-50 transition-colors">
+                  ← Back
+                </button>
               </div>
             </div>
           )}
 
-          {/* ── STEP 3: Style + Export ────────────────────────────────────── */}
+          {/* ── STEP 3: Style + Export ──────────────────────────────────── */}
           {step === 3 && processedVariants && (
             <div>
               {/* Ink selector */}
-              <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 16, flexWrap: "wrap" }}>
+              <div className="flex gap-2 flex-wrap mb-5">
                 {INK_OPTIONS.map((opt) => (
                   <button key={opt.id} type="button" onClick={() => setSelectedVariant(opt.id)}
-                    style={{ background: selectedVariant === opt.id ? "rgba(240,208,144,0.18)" : surface,
-                      border: selectedVariant === opt.id ? `1px solid ${gold}` : border,
-                      borderRadius: 10, padding: "6px 14px", cursor: "pointer",
-                      color: selectedVariant === opt.id ? goldLight : "#9a8a70",
-                      fontFamily: "sans-serif", fontSize: 12,
-                      display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%",
-                      background: opt.color, border: "1px solid rgba(255,255,255,0.2)" }} />
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+                      selectedVariant === opt.id
+                        ? "bg-stone-900 text-white border-stone-900 shadow-sm"
+                        : "bg-white text-stone-600 border-stone-200 hover:border-stone-400"
+                    }`}>
+                    <span className="w-2.5 h-2.5 rounded-full border border-stone-300 shrink-0"
+                      style={{ background: opt.color }} />
                     {opt.label}
                   </button>
                 ))}
               </div>
 
-              {/* Signature preview */}
-              <div style={{ background: "repeating-conic-gradient(#2a2a3a 0% 25%,#1e1e2e 0% 50%) 0 0/20px 20px",
-                borderRadius: 10, padding: 20, display: "flex", alignItems: "center", justifyContent: "center",
-                minHeight: 110, marginBottom: 18, border: "1px solid rgba(255,255,255,0.06)" }}>
+              {/* Preview */}
+              <div className="bg-stone-50 border border-stone-200 rounded-2xl flex items-center justify-center min-h-28 mb-5 overflow-hidden">
                 {currentVariantData && (
                   <img src={currentVariantData} alt="Signature preview"
-                    style={{ maxWidth: "90%", maxHeight: 110, imageRendering: "crisp-edges" }} />
+                    className="max-h-24 max-w-full object-contain"
+                    style={{ imageRendering: "crisp-edges" }} />
                 )}
               </div>
 
               {/* Tabs */}
-              <div style={{ display: "flex", borderBottom: "1px solid rgba(255,255,255,0.1)", marginBottom: 16 }}>
-                {[["download","⬇ Download"],["sign","📄 Sign Document"],["saved","🗂 Saved"]].map(([tab, label]) => (
-                  <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 16px",
-                      color: activeTab === tab ? goldLight : "#9a8a70",
-                      borderBottom: activeTab === tab ? `2px solid ${gold}` : "2px solid transparent",
-                      fontFamily: "sans-serif", fontSize: 13 }}>
-                    {label}
+              <div className="flex border-b border-stone-100 mb-6">
+                {[
+                  { id: "download", label: "Download",         icon: <Download size={15} /> },
+                  { id: "sign",     label: "Sign Document",    icon: <FileSignature size={15} /> },
+                  { id: "saved",    label: "Saved",            icon: <BookMarked size={15} /> },
+                ].map(({ id, label, icon }) => (
+                  <button key={id} type="button" onClick={() => setActiveTab(id)}
+                    className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-all ${
+                      activeTab === id
+                        ? "border-emerald-600 text-emerald-700"
+                        : "border-transparent text-stone-400 hover:text-stone-600"
+                    }`}>
+                    {icon}{label}
                   </button>
                 ))}
               </div>
 
-              {/* ── Download tab ── */}
+              {/* ── Download ── */}
               {activeTab === "download" && (
                 <div>
-                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", marginBottom: 12 }}>
-                    <button type="button" onClick={downloadPNG} style={btnStyle("#1a5c3a")}>PNG (Transparent)</button>
-                    <button type="button" onClick={downloadSVG} style={btnStyle("#1a3a5c")}>SVG (Scalable)</button>
-                    <button type="button" onClick={copyToClipboard} style={btnStyle("#3a1a5c")}>Copy to Clipboard</button>
-                    <button type="button" onClick={saveSignature} style={btnStyle("#5c3a1a")}>Save for Reuse</button>
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <button type="button" onClick={downloadPNG}
+                      className="flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-900 text-white text-sm font-semibold hover:bg-emerald-600 transition-colors shadow-sm">
+                      <Download size={16} /> PNG (Transparent)
+                    </button>
+                    <button type="button" onClick={downloadSVG}
+                      className="flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-900 text-white text-sm font-semibold hover:bg-emerald-600 transition-colors shadow-sm">
+                      <Download size={16} /> SVG (Scalable)
+                    </button>
+                    <button type="button" onClick={copyToClipboard}
+                      className="flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-stone-200 text-stone-700 text-sm font-semibold hover:border-emerald-400 hover:text-emerald-700 transition-colors">
+                      Copy to Clipboard
+                    </button>
+                    <button type="button" onClick={saveSignature}
+                      className="flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-stone-200 text-stone-700 text-sm font-semibold hover:border-emerald-400 hover:text-emerald-700 transition-colors">
+                      <BookMarked size={16} /> Save for Reuse
+                    </button>
                   </div>
-                  <div style={{ textAlign: "center", fontSize: 11, fontFamily: "sans-serif", color: "#9a8a70" }}>
-                    PNG has transparent background — paste directly into Word, Gmail, PDFs, or any app.
-                  </div>
+                  <p className="text-xs text-stone-400 text-center">PNG has a transparent background — paste into Word, Gmail, PDFs, or any app.</p>
                 </div>
               )}
 
-              {/* ── Sign Document tab ── */}
+              {/* ── Sign Document ── */}
               {activeTab === "sign" && (
                 <div>
                   {!docFile ? (
-                    /* Upload zone */
                     <div>
-                      <div style={{ fontSize: 13, fontFamily: "sans-serif", color: "#9a8a70", marginBottom: 14, textAlign: "center" }}>
-                        Upload your document below — then click to place your signature exactly where you need it.
-                      </div>
+                      <p className="text-sm text-stone-500 mb-4">Upload your document — then click to place your signature exactly where you need it.</p>
                       <div onClick={() => docInputRef.current?.click()}
-                        style={{ border: "2px dashed rgba(240,208,144,0.28)", borderRadius: 14, padding: "36px 24px",
-                          textAlign: "center", cursor: "pointer", background: "rgba(240,208,144,0.04)",
-                          transition: "background 0.2s" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(240,208,144,0.09)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(240,208,144,0.04)")}>
-                        <div style={{ fontSize: 38, marginBottom: 10 }}>📂</div>
-                        <div style={{ color: goldLight, fontFamily: "sans-serif", fontSize: 15, marginBottom: 8 }}>
-                          Upload Document to Sign
-                        </div>
-                        <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
-                          {[["📄","PDF"],["📝","Word (.docx)"],["🖼","Image (PNG/JPG)"]].map(([icon, label]) => (
-                            <span key={label} style={{ background: "rgba(255,255,255,0.06)", borderRadius: 6,
-                              padding: "4px 10px", fontSize: 11, fontFamily: "sans-serif", color: "#9a8a70" }}>
-                              {icon} {label}
-                            </span>
+                        className="border-2 border-dashed border-stone-200 hover:border-emerald-400 rounded-2xl py-10 px-8 cursor-pointer hover:bg-emerald-50 transition-all text-center">
+                        <Upload size={32} className="text-stone-300 mx-auto mb-3" />
+                        <p className="text-stone-700 font-semibold mb-3">Upload Document to Sign</p>
+                        <div className="flex gap-2 justify-center flex-wrap">
+                          {[["PDF"], ["Word (.docx)"], ["Image (PNG/JPG)"]].map(([label]) => (
+                            <span key={label} className="px-3 py-1 rounded-full bg-stone-100 text-stone-500 text-xs font-medium">{label}</span>
                           ))}
                         </div>
                       </div>
                       <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,image/*"
-                        style={{ display: "none" }} onChange={handleDocUpload} />
+                        className="hidden" onChange={handleDocUpload} />
                     </div>
                   ) : docLoading ? (
-                    <div style={{ textAlign: "center", padding: 40, color: "#9a8a70", fontFamily: "sans-serif" }}>
-                      <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+                    <div className="text-center py-12 text-stone-400">
+                      <div className="animate-spin w-8 h-8 border-2 border-stone-200 border-t-emerald-600 rounded-full mx-auto mb-3" />
                       Loading document…
                     </div>
                   ) : (
-                    /* Document viewer */
                     <div>
                       {/* Toolbar */}
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
-                        <div style={{ fontSize: 12, fontFamily: "sans-serif", color: "#9a8a70", flex: 1 }}>
-                          {docFile.name}
-                          {totalPages > 1 && (
-                            <span style={{ marginLeft: 10 }}>
-                              <button type="button" onClick={() => setCurrentPage(Math.max(0, currentPage-1))}
-                                disabled={currentPage === 0}
-                                style={{ background: "none", border: border, borderRadius: 6, color: "#9a8a70",
-                                  cursor: "pointer", padding: "2px 8px", fontSize: 12, marginRight: 6 }}>◀</button>
-                              Page {currentPage+1} / {totalPages}
-                              <button type="button" onClick={() => setCurrentPage(Math.min(totalPages-1, currentPage+1))}
-                                disabled={currentPage === totalPages-1}
-                                style={{ background: "none", border: border, borderRadius: 6, color: "#9a8a70",
-                                  cursor: "pointer", padding: "2px 8px", fontSize: 12, marginLeft: 6 }}>▶</button>
-                            </span>
-                          )}
-                        </div>
-                        <button type="button"
-                          onClick={() => { setDocFile(null); setDocPages([]); setSigBounds(null); setWordHtml(null); setDocArrayBuffer(null); }}
-                          style={{ ...btnStyle("rgba(255,255,255,0.08)", { border, fontSize: 12, padding: "6px 12px" }) }}>
-                          Change Doc
+                      <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <span className="text-sm text-stone-500 truncate flex-1 min-w-0">{docFile.name}</span>
+                        {totalPages > 1 && (
+                          <div className="flex items-center gap-2 text-sm text-stone-600">
+                            <button type="button" aria-label="Previous page" onClick={() => setCurrentPage(Math.max(0, currentPage-1))} disabled={currentPage === 0}
+                              className="p-1 rounded-lg hover:bg-stone-100 disabled:opacity-30 transition-colors">
+                              <ChevronLeft size={16} />
+                            </button>
+                            <span className="font-medium">{currentPage+1} / {totalPages}</span>
+                            <button type="button" aria-label="Next page" onClick={() => setCurrentPage(Math.min(totalPages-1, currentPage+1))} disabled={currentPage === totalPages-1}
+                              className="p-1 rounded-lg hover:bg-stone-100 disabled:opacity-30 transition-colors">
+                              <ChevronRight size={16} />
+                            </button>
+                          </div>
+                        )}
+                        <button type="button" onClick={() => { setDocFile(null); setDocPages([]); setSigBounds(null); setWordHtml(null); setDocArrayBuffer(null); }}
+                          className="px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs font-medium hover:bg-stone-50 transition-colors">
+                          Change
                         </button>
                         {!sigBounds ? (
-                          <button type="button"
-                            onClick={() => setPlacingMode(!placingMode)}
-                            style={btnStyle(placingMode ? `linear-gradient(135deg,${gold},${goldLight})` : "#1a5c3a",
-                              { color: placingMode ? "#1a1a1a" : "#fff", fontWeight: "bold", fontSize: 12, padding: "7px 14px" })}>
-                            {placingMode ? "✦ Click on document to sign" : "✍ Place Signature"}
+                          <button type="button" onClick={() => setPlacingMode(!placingMode)}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                              placingMode ? "bg-emerald-600 text-white" : "bg-stone-900 text-white hover:bg-emerald-600"
+                            }`}>
+                            {placingMode ? "✦ Click to place" : "✍ Place Signature"}
                           </button>
                         ) : (
                           <button type="button" onClick={exportSigned}
-                            style={btnStyle(`linear-gradient(135deg,${gold},${goldLight})`,
-                              { color: "#1a1a1a", fontWeight: "bold", fontSize: 12, padding: "7px 14px" })}>
-                            ⬇ Download Signed {docType === "pdf" ? "PDF" : docType === "word" ? "as PDF" : "Image"}
+                            className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm">
+                            <Download size={15} />
+                            Download Signed {docType === "image" ? "Image" : "PDF"}
                           </button>
                         )}
                       </div>
 
-                      {/* Instructions banner (placing mode) */}
                       {placingMode && (
-                        <div style={{ background: `linear-gradient(135deg,${gold}22,${goldLight}11)`,
-                          border: `1px solid ${gold}55`, borderRadius: 8, padding: "8px 14px",
-                          fontSize: 12, fontFamily: "sans-serif", color: goldLight, marginBottom: 8,
-                          textAlign: "center" }}>
+                        <div className="mb-2 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-700 font-medium text-center">
                           ✦ Click anywhere on the document to place your signature
                         </div>
                       )}
@@ -775,108 +649,74 @@ export default function SignatureGenerator({ onClose }: Props) {
                         onMouseMove={handleViewerMouseMove}
                         onMouseUp={handleViewerMouseUp}
                         onMouseLeave={handleViewerMouseUp}
-                        style={{ position: "relative", background: "#f0ede8",
-                          borderRadius: 8, overflow: "hidden",
-                          cursor: placingMode ? "crosshair" : dragging || resizing ? "grabbing" : "default",
-                          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-                          border: placingMode ? `2px solid ${gold}` : "2px solid transparent",
-                          maxHeight: "60vh", overflowY: "auto", userSelect: "none" }}
+                        className={`relative bg-white rounded-xl overflow-auto max-h-96 shadow-inner border-2 select-none transition-colors ${
+                          placingMode ? "border-emerald-400 cursor-crosshair" :
+                          dragging || resizing ? "border-stone-300 cursor-grabbing" :
+                          "border-stone-200"
+                        }`}
                       >
-                        {/* Page content */}
                         {docType === "word" && wordHtml ? (
-                          <div style={{ padding: 40, background: "#fff", minHeight: 400,
-                            fontFamily: "Georgia, serif", fontSize: 12, lineHeight: 1.7, color: "#111" }}
+                          <div className="p-10 font-serif text-sm leading-relaxed text-stone-900 min-h-96"
                             dangerouslySetInnerHTML={{ __html: wordHtml }} />
                         ) : docPages[currentPage] ? (
-                          <img
-                            src={docPages[currentPage].dataUrl}
-                            alt="Document page"
-                            style={{ width: "100%", display: "block", verticalAlign: "top" }}
-                          />
+                          <img src={docPages[currentPage].dataUrl} alt="Document page"
+                            className="w-full block align-top" />
                         ) : null}
 
-                        {/* Signature overlay */}
+                        {/* Draggable signature */}
                         {sigBounds && currentVariantData && (
                           <div
                             onMouseDown={handleSigMouseDown}
-                            style={{ position: "absolute",
-                              left: sigBounds.x, top: sigBounds.y,
-                              width: sigBounds.w, height: sigBounds.h,
-                              cursor: dragging ? "grabbing" : "grab",
-                              border: `2px solid ${gold}`,
-                              borderRadius: 4,
-                              boxSizing: "border-box" }}
+                            className="absolute border-2 border-emerald-500 rounded"
+                            style={{ left: sigBounds.x, top: sigBounds.y, width: sigBounds.w, height: sigBounds.h, cursor: dragging ? "grabbing" : "grab", boxSizing: "border-box" }}
                           >
-                            <img
-                              src={currentVariantData}
-                              alt="Signature"
-                              style={{ width: "100%", height: "100%", objectFit: "contain",
-                                display: "block", pointerEvents: "none" }}
-                            />
-                            {/* SE resize handle */}
-                            <div
-                              onMouseDown={handleResizeMouseDown}
-                              style={{ position: "absolute", bottom: -5, right: -5,
-                                width: 12, height: 12, borderRadius: 2,
-                                background: gold, cursor: "se-resize" }}
-                            />
-                            {/* Remove button */}
-                            <div
-                              onClick={(e) => { e.stopPropagation(); setSigBounds(null); }}
-                              style={{ position: "absolute", top: -10, right: -10,
-                                width: 18, height: 18, borderRadius: "50%",
-                                background: "#7f1d1d", color: "#fff",
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                fontSize: 10, cursor: "pointer", fontFamily: "sans-serif" }}>✕</div>
+                            <img src={currentVariantData} alt="Signature"
+                              className="w-full h-full object-contain block pointer-events-none" />
+                            {/* Resize handle */}
+                            <div onMouseDown={handleResizeMouseDown}
+                              className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 rounded-sm bg-emerald-600 cursor-se-resize" />
+                            {/* Remove */}
+                            <button type="button" aria-label="Remove signature" onClick={(e) => { e.stopPropagation(); setSigBounds(null); }}
+                              className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 shadow-sm">
+                              <X size={11} />
+                            </button>
                           </div>
                         )}
                       </div>
 
-                      {/* Hint */}
                       {sigBounds && (
-                        <div style={{ marginTop: 8, fontSize: 11, fontFamily: "sans-serif",
-                          color: "#9a8a70", textAlign: "center" }}>
-                          Drag to move · Drag corner handle to resize · Click ✕ to remove
-                        </div>
+                        <p className="text-xs text-stone-400 text-center mt-2">
+                          Drag to move · Corner handle to resize · ✕ to remove
+                        </p>
                       )}
-
                       {docType === "word" && (
-                        <div style={{ marginTop: 6, fontSize: 11, fontFamily: "sans-serif",
-                          color: "#9a8a70", textAlign: "center" }}>
-                          Word documents are exported as PDF with your signature embedded.
-                        </div>
+                        <p className="text-xs text-stone-400 text-center mt-1">Word documents export as PDF with your signature embedded.</p>
                       )}
                     </div>
                   )}
                 </div>
               )}
 
-              {/* ── Saved tab ── */}
+              {/* ── Saved ── */}
               {activeTab === "saved" && (
                 <div>
                   {savedSignatures.length === 0 ? (
-                    <div style={{ textAlign: "center", color: "#9a8a70", fontFamily: "sans-serif",
-                      fontSize: 13, padding: 24 }}>
-                      No saved signatures yet. Use "Save for Reuse" in the Download tab.
+                    <div className="text-center py-10 text-stone-400">
+                      <BookMarked size={32} className="mx-auto mb-3 opacity-30" />
+                      <p className="text-sm">No saved signatures yet.</p>
+                      <p className="text-xs mt-1">Use "Save for Reuse" in the Download tab.</p>
                     </div>
                   ) : (
-                    <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                    <div className="flex gap-4 flex-wrap">
                       {savedSignatures.map((s) => (
-                        <div key={s.id} style={{ border, borderRadius: 10, padding: 12,
-                          background: surface, flex: "0 0 160px", textAlign: "center" }}>
-                          <div style={{ background: "repeating-conic-gradient(#2a2a3a 0% 25%,#1e1e2e 0% 50%) 0 0/16px 16px",
-                            borderRadius: 6, padding: 6, marginBottom: 8 }}>
-                            <img src={s.variants["black"]} alt="saved"
-                              style={{ width: "100%", display: "block" }} />
+                        <div key={s.id} className="flex-none w-44 rounded-xl border border-stone-100 p-3 text-center bg-stone-50">
+                          <div className="bg-white rounded-lg p-2 mb-2 border border-stone-100">
+                            <img src={s.variants["black"]} alt="saved" className="w-full block" />
                           </div>
-                          <div style={{ fontSize: 11, color: "#9a8a70", fontFamily: "sans-serif", marginBottom: 6 }}>
-                            {s.label}
-                          </div>
+                          <p className="text-xs text-stone-500 mb-2">{s.label}</p>
                           <button type="button"
-                            onClick={() => { setProcessedVariants(s.variants); setStep(3); showNotif("Signature loaded!"); }}
-                            style={{ background: "rgba(240,208,144,0.1)", border: `1px solid rgba(240,208,144,0.3)`,
-                              borderRadius: 6, padding: "3px 10px", cursor: "pointer",
-                              color: goldLight, fontFamily: "sans-serif", fontSize: 11 }}>
+                            onClick={() => { setProcessedVariants(s.variants); setStep(3); showNotif("Loaded!"); }}
+                            className="px-4 py-1 rounded-full bg-stone-900 text-white text-xs font-medium hover:bg-emerald-600 transition-colors">
                             Load
                           </button>
                         </div>
@@ -887,23 +727,21 @@ export default function SignatureGenerator({ onClose }: Props) {
               )}
 
               {/* Footer nav */}
-              <div style={{ marginTop: 20, display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+              <div className="flex gap-3 mt-8 pt-6 border-t border-stone-100 justify-center flex-wrap">
                 <button type="button"
                   onClick={() => { setStep(2); setProcessedVariants(null); }}
-                  style={btnStyle("rgba(255,255,255,0.07)", { border, fontSize: 12 })}>
+                  className="px-5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:bg-stone-50 transition-colors">
                   ← Redo Signature
                 </button>
                 <button type="button"
                   onClick={() => { setStep(1); setMode(null); setProcessedVariants(null); setDocFile(null); setDocPages([]); setSigBounds(null); }}
-                  style={btnStyle("rgba(255,255,255,0.07)", { border, fontSize: 12 })}>
+                  className="px-5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:bg-stone-50 transition-colors">
                   ↩ Start Over
                 </button>
               </div>
             </div>
           )}
         </div>
-
-        <style>{`input[type=range]{height:4px;cursor:pointer;accent-color:${gold};}`}</style>
       </div>
     </div>
   );
