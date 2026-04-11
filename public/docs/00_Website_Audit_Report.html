@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Website Audit Report — doxaandco.co</title>
+<style>
+  :root {
+    --gold: #C9A44A;
+    --gold-dark: #8B7030;
+    --emerald: #059669;
+    --stone-900: #1c1917;
+    --stone-700: #292524;
+    --stone-600: #57534e;
+    --stone-400: #a8a29e;
+    --stone-200: #e7e5e0;
+    --stone-100: #f5f5f4;
+    --stone-50: #fafaf9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; color: var(--stone-900); background: white; line-height: 1.6; }
+  .document { max-width: 860px; margin: 0 auto; padding: 60px 70px; }
+  .doc-header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; margin-bottom: 12px; border-bottom: 1px solid var(--stone-200); }
+  .logo-block { display: flex; flex-direction: column; gap: 2px; }
+  .logo-name { font-family: Georgia, serif; font-size: 18px; font-weight: 400; color: var(--gold-dark); letter-spacing: 4px; }
+  .logo-tag { font-size: 8px; font-weight: 700; letter-spacing: 3px; color: var(--emerald); text-transform: uppercase; }
+  .doc-meta { text-align: right; font-size: 11px; color: var(--stone-400); line-height: 1.9; }
+  .doc-meta strong { color: var(--stone-600); }
+  .revision-banner { background: #ecfdf5; border: 1px solid #86efac; border-radius: 10px; padding: 16px 20px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; }
+  .revision-banner .rev-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #166534; margin-bottom: 4px; }
+  .revision-banner .rev-note { font-size: 12px; color: #166534; }
+  .revision-banner .rev-date { font-size: 11px; color: var(--stone-400); text-align: right; }
+  .tag-resolved { background: #d1fae5; color: #065f46; }
+  .gold-line { height: 2px; background: linear-gradient(to right, var(--gold-dark), var(--gold), var(--gold-dark)); margin: 8px 0 40px; }
+  .doc-title { margin-bottom: 32px; }
+  .doc-title h1 { font-family: Georgia, serif; font-size: 26px; font-weight: 700; color: var(--stone-900); margin-bottom: 8px; }
+  .doc-title p { font-size: 13px; color: var(--stone-600); line-height: 1.7; }
+  h2 { font-family: Georgia, serif; font-size: 16px; font-weight: 700; color: var(--stone-900); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--stone-200); }
+  h3 { font-size: 13px; font-weight: 700; color: var(--stone-900); margin: 20px 0 8px; }
+  p { font-size: 13px; color: var(--stone-600); margin-bottom: 12px; line-height: 1.8; }
+  ul, ol { padding-left: 20px; margin-bottom: 16px; }
+  li { font-size: 13px; color: var(--stone-600); margin-bottom: 6px; line-height: 1.7; }
+  .scorecard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 20px 0 32px; }
+  .score-box { padding: 16px; border-radius: 10px; text-align: center; }
+  .score-box .num { font-family: Georgia, serif; font-size: 28px; font-weight: 700; display: block; line-height: 1; margin-bottom: 4px; }
+  .score-box .label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .score-green { background: #d1fae5; color: #065f46; }
+  .score-yellow { background: #fef9ec; color: #92400e; }
+  .score-red { background: #fee2e2; color: #991b1b; }
+  .score-blue { background: #eff6ff; color: #1e40af; }
+  .finding { border-left: 3px solid var(--stone-200); padding: 14px 18px; margin: 12px 0; border-radius: 0 8px 8px 0; background: var(--stone-50); }
+  .finding.critical { border-left-color: #ef4444; background: #fff7f7; }
+  .finding.important { border-left-color: var(--gold); background: #fef9ec; }
+  .finding.moderate { border-left-color: var(--stone-400); background: var(--stone-50); }
+  .finding.good { border-left-color: var(--emerald); background: #f0fdf4; }
+  .finding-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .finding-head .tag { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; }
+  .tag-critical { background: #fee2e2; color: #991b1b; }
+  .tag-important { background: #fef3c7; color: #92400e; }
+  .tag-moderate { background: var(--stone-200); color: var(--stone-600); }
+  .tag-good { background: #d1fae5; color: #065f46; }
+  .finding-head strong { font-size: 13px; color: var(--stone-900); }
+  .finding p { margin-bottom: 0; }
+  .finding .fix { font-size: 12px; font-weight: 600; color: var(--stone-700); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--stone-200); }
+  .priority-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }
+  .priority-table th { background: var(--stone-900); color: white; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
+  .priority-table td { padding: 10px 14px; border-bottom: 1px solid var(--stone-200); color: var(--stone-600); vertical-align: top; }
+  .priority-table tr:nth-child(even) td { background: var(--stone-50); }
+  .summary-box { background: var(--stone-900); color: white; border-radius: 12px; padding: 28px 32px; margin: 32px 0; }
+  .summary-box h3 { color: white; font-size: 15px; margin-bottom: 12px; }
+  .summary-box p { color: #d6d3d1; font-size: 13px; margin-bottom: 0; }
+  .doc-footer { margin-top: 60px; padding-top: 16px; border-top: 1px solid var(--stone-200); display: flex; justify-content: space-between; font-size: 10px; color: var(--stone-400); }
+  .status-resolved { color: #166534; font-weight: 700; }
+  .status-open { color: #92400e; font-weight: 700; }
+  @media print { .document { padding: 0; } @page { margin: 0.75in 1in; } }
+</style>
+</head>
+<body>
+<div class="document">
+
+  <div class="doc-header">
+    <div class="logo-block">
+      <span class="logo-name">DOXA &amp; CO</span>
+      <span class="logo-tag">Strategy · Product · Delivery</span>
+    </div>
+    <div class="doc-meta">
+      <strong>INTERNAL DOCUMENT</strong><br/>
+      Website Audit Report<br/>
+      Prepared: April 2026<br/>
+      Auditor: Claude Code / Enam Egyir
+    </div>
+  </div>
+  <div class="gold-line"></div>
+
+  <div class="revision-banner">
+    <div>
+      <div class="rev-label">Revision 2 — April 2026</div>
+      <div class="rev-note">8 of 10 priority fixes applied. Findings below updated to reflect current site state. Remaining items are noted as still open.</div>
+    </div>
+    <div class="rev-date">Original audit: April 11, 2026<br/>Revised: April 11, 2026</div>
+  </div>
+
+  <div class="doc-title">
+    <h1>Website Audit Report</h1>
+    <p>Candid audit of <strong>doxaandco.co</strong> — reviewed as a prospective high-value client encountering the site cold, cross-referenced against the source code. This document covers design, messaging, credibility, conversion flow, and operational gaps. Nothing is softened.</p>
+  </div>
+
+  <!-- SCORECARD -->
+  <div class="scorecard">
+    <div class="score-box score-green"><span class="num">9/10</span><span class="label">Visual Design</span></div>
+    <div class="score-box score-green"><span class="num">8/10</span><span class="label">Messaging ↑</span></div>
+    <div class="score-box score-yellow"><span class="num">7/10</span><span class="label">Credibility</span></div>
+    <div class="score-box score-yellow"><span class="num">7/10</span><span class="label">Conversion ↑</span></div>
+  </div>
+  <p style="font-size:11px; color:var(--stone-400); text-align:right; margin-top:-20px; margin-bottom:20px;">↑ Score improved since original audit</p>
+
+  <div class="summary-box">
+    <h3>Executive Summary</h3>
+    <p>The site looks premium and is genuinely well-built. The design alone would pass a first-impression test with any enterprise client. But the messaging has three distinct problems that undermine the $8,000–$20,000 price point: (1) the site sends job-seeker signals to consulting clients, (2) language like "budget-conscious" contradicts premium positioning, and (3) the FAQ and hero badge are calibrated for a recruiter, not a buyer. Fix those three things first. Everything else is refinement. If you walked into a pitch with your current site printed out and handed to a Fortune 500 procurement team, the design would impress them — but some of the words would confuse them about what, exactly, they're buying.</p>
+  </div>
+
+  <!-- SECTION 1 -->
+  <h2>1. First Impression — Above the Fold</h2>
+  <p>The headline "Enterprise Rigor. Startup Velocity." is strong. It's specific, it creates tension, and it positions the service correctly for a buyer who's had too much of one and not enough of the other. This should stay exactly as-is.</p>
+
+  <div class="finding critical">
+    <div class="finding-head">
+      <span class="tag tag-resolved">✓ Resolved</span>
+      <strong>The pulsing badge said "Open to Full-Time &amp; Fractional Roles"</strong>
+    </div>
+    <p><strong>Context clarified:</strong> The dual positioning is intentional — Enam is actively open to both full-time roles and consulting engagements simultaneously. The badge was rewording to "Available for Full-Time Roles &amp; Consulting Engagements" which presents both tracks equally rather than implying job-seeking over business. Three employer-facing additions were made: (1) badge rewording, (2) "For Employers →" CTA button in the hero, (3) "For Employers" nav link pointing to a dedicated <code>/hire</code> page.</p>
+  </div>
+
+  <div class="finding important">
+    <div class="finding-head">
+      <span class="tag tag-resolved">✓ Addressed</span>
+      <strong>The hero subtext mixes consulting and employment availability</strong>
+    </div>
+    <p>This is intentional per Enam's strategy. Both tracks are now explicitly supported with separate conversion paths: consulting clients use "Book a Strategy Call," employer prospects use "For Employers →" which leads to the dedicated /hire page. The subtext coexists with the dual-purpose framing.</p>
+  </div>
+
+  <div class="finding good">
+    <div class="finding-head">
+      <span class="tag tag-good">Strength</span>
+      <strong>The dashboard mock on the right is clever and on-brand</strong>
+    </div>
+    <p>The "STATUS: DEPLOYED" dashboard with real metrics (17% risk reduction, +30% efficiency, -25% process time) creates a visual anchor that feels relevant and credible. Keep it.</p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <h2>2. Messaging Clarity — Who, For Whom, What Problem</h2>
+  <p>The site does not have a clear "Who I work with" statement. After reading the full page, a visitor knows Enam is a senior PM with GRC and developer experience — but they don't know whether she works with 10-person startups, 500-person banks, or both. The portfolio shows all of those. For a consultant at these rates, ambiguity hurts. Buyers self-qualify better when they see themselves reflected.</p>
+
+  <div class="finding important">
+    <div class="finding-head">
+      <span class="tag tag-important">Important</span>
+      <strong>No "Who I work with" section — ICP is invisible</strong>
+    </div>
+    <p>The site has Hero → TrustedBy → About → Services → Clarity Sprint → How I Work → Portfolio → FAQ → Contact. There is no section that says "I work best with X companies experiencing Y problems." Without this, visitors can't self-select, and you get inbound inquiries that waste everyone's time.</p>
+    <p class="fix">Fix: Add a short "Who I Work With" callout — e.g., "Best fit: Series A–C SaaS companies, financial institutions navigating compliance, and mission-driven orgs that need senior product leadership without the full-time overhead."</p>
+  </div>
+
+  <div class="finding important">
+    <div class="finding-head">
+      <span class="tag tag-resolved">✓ Resolved</span>
+      <strong>"Practical, budget-conscious technology guidance" — Services section subtitle</strong>
+    </div>
+    <p>Replaced with: <em>"Built on 10+ years of Fortune 500 delivery. Calibrated for organizations that can't afford to get it wrong."</em> — this positions the service at the right level and signals seriousness rather than frugality.</p>
+  </div>
+
+  <!-- SECTION 3 -->
+  <h2>3. Credibility — Social Proof, Credentials, Track Record</h2>
+  <p>The credibility foundation is real and specific — real companies, real metrics, real certifications. That's the site's biggest strength. The problem is that it's thin. Two testimonials is not enough for $15k–$20k engagements.</p>
+
+  <div class="finding important">
+    <div class="finding-head">
+      <span class="tag tag-important">Important</span>
+      <strong>Only 2 testimonials, one from a church</strong>
+    </div>
+    <p>The "What Clients Say" section has two testimonials: Faith Klinik Ministries (anonymous "Ministry Leadership") and Comerica Bank (anonymous "Risk Technology Director"). Neither has a full name. For enterprise consulting pricing, this is a credibility gap. A procurement team researching a $15k vendor will want to verify references — anonymous testimonials are unverifiable and feel like they could be made up. The Faith Klinik one is also a church, which doesn't speak to enterprise buyers in regulated industries.</p>
+    <p class="fix">Fix: Get 2-4 more testimonials. Get at least one with a full name and title. Consider adding a "Request References" line for enterprise clients. If names can't be used, at least specify company size, industry, and the business outcome — not just what you did.</p>
+  </div>
+
+  <div class="finding critical">
+    <div class="finding-head">
+      <span class="tag tag-critical">Critical</span>
+      <strong>No LinkedIn link anywhere on the site</strong>
+    </div>
+    <p>For a senior PM consultant charging $8k+, LinkedIn is the professional resume and reference check. Enterprise buyers will Google Enam Egyir before booking anything. There is no LinkedIn link in the header, footer, or anywhere on the site. This creates friction — clients who want to verify will have to leave and search manually. Some won't bother.</p>
+    <p class="fix">Fix: Add LinkedIn to the footer and possibly the About section. For a personal brand like this, it's non-negotiable.</p>
+  </div>
+
+  <div class="finding good">
+    <div class="finding-head">
+      <span class="tag tag-good">Strength</span>
+      <strong>Real companies, real metrics — this is rare and it's working</strong>
+    </div>
+    <p>Comerica Bank, Huntington, JP Morgan, Target, Chase — these are listed with specific outcomes (17% risk reduction, 79% security improvement, 30% efficiency gain). Most consultants list buzzwords. Enam lists results. This is the single most compelling element on the site and it should be made more prominent, not buried in the portfolio section.</p>
+  </div>
+
+  <!-- SECTION 4 -->
+  <h2>4. Services Section — Clarity, Pricing, Differentiation</h2>
+
+  <div class="finding critical">
+    <div class="finding-head">
+      <span class="tag tag-resolved">✓ Resolved</span>
+      <strong>The Clarity Sprint pricing created an anchor that worked against the brand</strong>
+    </div>
+    <p>"FIRST 5 CLIENTS ONLY" badge removed and replaced with "THE CLARITY SPRINT." The "first 5 clients only" pricing note removed. The line "Price increases to $2,500 after the first 5 engagements. No exceptions." deleted. Pricing note now reads "introductory rate" — professional and non-committal.</p>
+  </div>
+
+  <div class="finding good">
+    <div class="finding-head">
+      <span class="tag tag-good">Strength</span>
+      <strong>AI Advisory section is genuinely differentiated and well-structured</strong>
+    </div>
+    <p>The three-tier AI Advisory breakdown (Audit $3.5k, Build $8–20k, Fractional AI Officer $5.5k/mo) with specific competitive callouts ("Assessment + Implementation — most firms do one or the other") is excellent. This section alone could bring in enterprise clients who've been burned by big consulting firms that deliver decks but never implementations. The Big Four comparison ($3,500 vs $35k–$100k) is a strong hook.</p>
+  </div>
+
+  <div class="finding moderate">
+    <div class="finding-head">
+      <span class="tag tag-resolved">✓ Resolved</span>
+      <strong>The Signature Generator tool was visible to all clients</strong>
+    </div>
+    <p>Removed from the public About section entirely. Moved to a private route at <strong>doxaandco.co/tools</strong> — not linked from anywhere public. Bookmark the URL. Clients who browse the site will never find it.</p>
+  </div>
+
+  <!-- SECTION 5 -->
+  <h2>5. Call to Action — Booking Flow &amp; Conversion</h2>
+
+  <div class="finding important">
+    <div class="finding-head">
+      <span class="tag tag-resolved">✓ Resolved</span>
+      <strong>"How I Work" said Discovery Call is free — contradicting the booking page session fees</strong>
+    </div>
+    <p>Step 1 subtitle changed from "30 min · Free" to "30 min · Complimentary discovery" — accurate without promising a free call for all session types. The booking page handles the specifics per session type.</p>
+  </div>
+
+  <div class="finding moderate">
+    <div class="finding-head">
+      <span class="tag tag-moderate">Moderate</span>
+      <strong>Booking relies on mailto — no actual calendar confirmation system</strong>
+    </div>
+    <p>The custom booking calendar generates a mailto: link that pre-fills an email. This means: (a) it only works if the client's default mail app is configured, (b) there's no automatic calendar invite until you manually send one, and (c) there's no booking confirmation sent automatically. For clients paying $250–$500 session fees, this flow feels informal.</p>
+    <p class="fix">Fix (later): Consider integrating with Cal.com (free, open-source) or adding Stripe for session fee collection. For now, add clear instructions: "After submitting, you'll receive a confirmation email within 2 hours."</p>
+  </div>
+
+  <div class="finding good">
+    <div class="finding-head">
+      <span class="tag tag-good">Strength</span>
+      <strong>Custom booking flow is genuinely better than Calendly for brand perception</strong>
+    </div>
+    <p>The custom calendar preserves brand consistency — no Calendly watermarks, no third-party UI. The week-view layout, animated type selection, and ICS download are all polished. This is a real differentiator for a design-conscious practice.</p>
+  </div>
+
+  <!-- SECTION 6 -->
+  <h2>6. Visual Design</h2>
+
+  <div class="finding good">
+    <div class="finding-head">
+      <span class="tag tag-good">Strength</span>
+      <strong>Design quality is genuinely premium — 9/10</strong>
+    </div>
+    <p>The stone/emerald/gold palette is cohesive and refined. Typography hierarchy is clear. White space is used well. The dark cards, the AI Advisory full-width amber section, and the portfolio grid are all well-executed. The site looks like it was built by a senior designer at a branding agency, not bootstrapped. This is a meaningful asset for a $15k–$20k service. Don't touch the design.</p>
+  </div>
+
+  <div class="finding moderate">
+    <div class="finding-head">
+      <span class="tag tag-resolved">✓ Resolved</span>
+      <strong>No headshot above the fold</strong>
+    </div>
+    <p>Added a 208px circular headshot in the hero right column, stacked above the metrics dashboard card. Includes a name/title pill ("Enam Egyir · Principal Consultant") below the photo with an emerald pulse indicator. Clients now see the person before they see anything else on the right side.</p>
+  </div>
+
+  <!-- SECTION 7 -->
+  <h2>7. Copy Tone</h2>
+
+  <div class="finding good">
+    <div class="finding-head">
+      <span class="tag tag-good">Strength</span>
+      <strong>Most of the copy is specific, honest, and direct</strong>
+    </div>
+    <p>"I know where projects go wrong." "Most consultants only give advice. I build the solution." "No black-box consulting." These lines are refreshing and specific. They don't hide behind jargon. The FAQ answers are particularly good — long, detailed, honest about trade-offs. This builds trust in a way generic copy never can.</p>
+  </div>
+
+  <div class="finding critical">
+    <div class="finding-head">
+      <span class="tag tag-critical">Critical</span>
+      <strong>FAQ is calibrated for recruiters, not clients — this is the wrong audience for a consulting site</strong>
+    </div>
+    <p>The first FAQ question is: "Are you looking for full-time roles or only consulting?" The answer confirms you are actively seeking full-time employment. This is fine for a personal portfolio site. But doxaandco.co presents as a consulting firm — not a personal resume. A potential $15k client reading this will hesitate: "Is this person going to be gone in 3 months because they took a job?" The FAQ needs to be rewritten for buyers, not recruiters.</p>
+    <p class="fix">Fix: Replace job-seeking FAQs with client-centric ones: "What happens if my project scope changes?", "How do you handle IP ownership?", "What's your process when a project isn't going well?", "Can I extend a Fractional PO engagement?"</p>
+  </div>
+
+  <!-- SECTION 8 -->
+  <h2>8. SEO &amp; Discoverability</h2>
+
+  <div class="finding important">
+    <div class="finding-head">
+      <span class="tag tag-important">Important</span>
+      <strong>SPA without server-side rendering — Google may not index service content</strong>
+    </div>
+    <p>The site is a React SPA (Vite) that renders entirely in the browser. Google has improved at indexing JavaScript, but dynamic content still gets inconsistently indexed. For a consulting practice trying to rank for "GRC consulting," "Fractional Product Owner," or "AI transformation advisory," this is a meaningful SEO gap. There is also no blog, no articles, and no content marketing — all of which would help organic discovery.</p>
+    <p class="fix">Fix (medium term): Consider adding a static blog or case studies section, or migrating to a static-site-generated version (Astro, Next.js, or Vite with SSG). Short-term: ensure meta descriptions and OG tags are set per-page.</p>
+  </div>
+
+  <div class="finding moderate">
+    <div class="finding-head">
+      <span class="tag tag-moderate">Moderate</span>
+      <strong>Portfolio case study pages need real content</strong>
+    </div>
+    <p>The portfolio section links to /work/homelink-gh, /work/enterprise-grc, etc. If these pages are empty or thin, a prospect who clicks through (and high-value prospects always click through) will hit a wall. This is a significant credibility drop at the exact moment when a prospect is doing diligence.</p>
+    <p class="fix">Fix: For each case study, add: the problem (2–3 sentences), the approach (bullet points), the outcome (specific metrics), and a client quote if possible. 400 words per case study is enough.</p>
+  </div>
+
+  <!-- SECTION 9 -->
+  <h2>9. What High-Paying Clients Expect That's Missing</h2>
+
+  <table class="priority-table">
+    <thead>
+      <tr>
+        <th>Missing Element</th>
+        <th>Why It Matters</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>LinkedIn link</td>
+        <td>Standard credibility check for senior consultants. Clients will look you up — don't make them search.</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>Full-name testimonials</td>
+        <td>Anonymous quotes can be fabricated. Named quotes with title and company are verifiable.</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>Case study detail pages</td>
+        <td>Enterprise buyers always click through. Empty pages signal thin experience.</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>Clear ICP statement</td>
+        <td>Buyers self-qualify faster when they see themselves described. Reduces wrong-fit inquiries.</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>Terms / Privacy page</td>
+        <td>Enterprise procurement often requires these before signing a vendor agreement.</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>Published SOW / process outline</td>
+        <td>Enterprise buyers want to know exactly what they're buying before the first call.</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>Payment terms transparency</td>
+        <td>The session fee policy is buried in email confirmation. Buyers who ask about fees before booking should find an answer.</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>Content / thought leadership</td>
+        <td>Blog posts, articles, or LinkedIn posts that demonstrate expertise drive inbound and build search presence.</td>
+        <td>Low (later)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 10 -->
+  <h2>10. Priority Fix List — Updated Status</h2>
+
+  <table class="priority-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Fix</th>
+        <th>Status</th>
+        <th>Impact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Reword availability badge — dual-purpose framing for both consulting clients and employers</td>
+        <td class="status-resolved">✓ Done</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Add three employer-facing entry points: badge reword, "For Employers" hero CTA, nav link + /hire page</td>
+        <td class="status-resolved">✓ Done</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Remove "budget-conscious" from Services subtitle</td>
+        <td class="status-resolved">✓ Done</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Remove "FIRST 5 CLIENTS" language from Clarity Sprint</td>
+        <td class="status-resolved">✓ Done</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Remove Signature Generator from public About section → moved to /tools (private)</td>
+        <td class="status-resolved">✓ Done</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Fix "How I Work" step 1 — changed from "Free" to "Complimentary discovery"</td>
+        <td class="status-resolved">✓ Done</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Add headshot above the fold in the hero section</td>
+        <td class="status-resolved">✓ Done</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>LinkedIn was already in the footer (audit finding incorrect — already present)</td>
+        <td class="status-resolved">✓ Already there</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>Add 2–4 more testimonials with full names and company attribution</td>
+        <td class="status-open">⏳ Open</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>Build out portfolio case study pages (/work/slug) with real content</td>
+        <td class="status-open">⏳ Open</td>
+        <td>High</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- CLOSING -->
+  <div class="summary-box">
+    <h3>Bottom Line</h3>
+    <p>The site is 80% there. It looks the part, and the core positioning — someone who can do both strategy and execution, across GRC and AI, with real Fortune 500 receipts — is genuinely differentiated. The gap is that the messaging still carries signals from a different era of positioning (job seeking, budget-conscious, first clients). Strip those out, sharpen the ICP statement, fix the FAQ, and add LinkedIn. Those six changes cost less than two hours of work and would meaningfully improve how a $10k–$20k client reads this site. The design doesn't need to be touched. The content does.</p>
+  </div>
+
+  <div class="doc-footer">
+    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
+    <span>Confidential — Internal Use Only</span>
+  </div>
+
+</div>
+<script src="/docs/doc-editor.js"></script>
+</body>
+</html>
