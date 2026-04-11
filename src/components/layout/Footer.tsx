@@ -1,4 +1,4 @@
-import { Linkedin, Github, Mail, MapPin } from 'lucide-react';
+import { Linkedin, Github, Instagram, Mail, MapPin } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 
 const Footer = () => {
@@ -37,6 +37,9 @@ const Footer = () => {
               </a>
               <a href="https://github.com/uniqename" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="GitHub">
                 <Github size={18} />
+              </a>
+              <a href="https://www.instagram.com/co.doxa/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="Instagram">
+                <Instagram size={18} />
               </a>
             </div>
           </div>
