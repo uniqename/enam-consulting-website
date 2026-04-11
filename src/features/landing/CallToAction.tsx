@@ -19,7 +19,7 @@ const CallToAction = () => {
             Start Your Project
           </Link>
           <a
-            href="mailto:consulting.enam@gmail.com"
+            href="mailto:ename@doxaandco.co"
             className="px-12 py-5 rounded-full bg-transparent border-2 border-stone-700 text-white font-bold text-xl hover:bg-stone-800 hover:border-stone-600 transition-all"
           >
             Email Me
