@@ -19,7 +19,7 @@ const Hero = () => {
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wide mb-6 w-fit">
             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-            Open to Full-Time & Fractional Roles
+            Available for Full-Time Roles &amp; Consulting Engagements
           </div>
 
           <h1 className="text-5xl lg:text-7xl xl:text-8xl font-bold text-stone-900 leading-[1.1] mb-6">
@@ -52,6 +52,12 @@ const Hero = () => {
               View Case Studies
             </button>
               </Link>
+            <Link
+              to="/hire"
+              className="px-8 py-4 rounded-full bg-transparent text-stone-500 border border-dashed border-stone-300 font-semibold text-base hover:bg-stone-50 hover:text-stone-700 hover:border-stone-400 transition-all"
+            >
+              For Employers →
+            </Link>
           </div>
 
           <div className="mt-10 flex flex-wrap items-center gap-6 text-sm font-medium text-stone-500">
@@ -65,9 +71,25 @@ const Hero = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
-          className="relative lg:block w-full h-full min-h-150 flex items-center justify-center"
+          className="relative lg:flex flex-col items-center gap-8 w-full"
         >
-           <div className="relative z-10 bg-white p-8 rounded-2xl shadow-2xl border border-stone-100 rotate-2 hover:rotate-0 transition-transform duration-500 max-w-xl w-full">
+          {/* Headshot */}
+          <div className="relative flex flex-col items-center">
+            <div className="w-52 h-52 rounded-full overflow-hidden border-4 border-white shadow-2xl ring-2 ring-emerald-200">
+              <img
+                src="/assets/images/enam-headshot.jpg"
+                alt="Enam Egyir — Principal Consultant, Doxa & Co"
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
+            <div className="mt-4 flex items-center gap-2 bg-stone-900 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Enam Egyir · Principal Consultant
+            </div>
+          </div>
+
+          {/* Metrics dashboard card */}
+          <div className="relative z-10 bg-white p-8 rounded-2xl shadow-2xl border border-stone-100 rotate-1 hover:rotate-0 transition-transform duration-500 max-w-xl w-full">
              <div className="flex items-center justify-between mb-8">
                <div className="flex gap-2">
                  <div className="w-3 h-3 rounded-full bg-red-400" />

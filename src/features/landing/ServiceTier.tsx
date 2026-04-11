@@ -9,7 +9,7 @@ const Services = () => {
         <div className="text-center max-w-3xl mx-auto mb-20">
           <h2 className="text-4xl lg:text-5xl font-bold text-stone-900 mb-6">Strategic Consulting Services</h2>
           <p className="text-stone-600 text-xl">
-            Practical, budget-conscious technology guidance backed by real-world implementation experience.
+            Built on 10+ years of Fortune 500 delivery. Calibrated for organizations that can't afford to get it wrong.
           </p>
         </div>
 

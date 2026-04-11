@@ -5,6 +5,8 @@ import Booking from "../pages/booking/Booking";
 import Casestudy from "../pages/casestudy/Casestudy";
 import Portfolio from "../pages/projects/Project";
 import Education from "../pages/education/Education";
+import Hire from "../pages/hire/Hire";
+import Tools from "../pages/tools/Tools";
 
 
 
@@ -37,9 +39,16 @@ export const router = createBrowserRouter([
         element: <Education />
       },
       {
-        
         path: 'work/:slug',
         element: <Casestudy />,
+      },
+      {
+        path: 'hire',
+        element: <Hire />,
+      },
+      {
+        path: 'tools',
+        element: <Tools />,
       },
     ],
   },

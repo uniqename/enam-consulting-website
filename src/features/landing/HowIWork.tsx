@@ -6,7 +6,7 @@ const steps = [
     number: '01',
     icon: <Search size={24} />,
     title: 'Discovery Call',
-    subtitle: '30 min · Free',
+    subtitle: '30 min · Complimentary discovery',
     description:
       'We talk through your goals, current state, and constraints. I ask hard questions upfront — about timeline, budget, team, and what success actually looks like — so neither of us wastes time on a bad fit.',
     color: 'bg-stone-100 text-stone-700',

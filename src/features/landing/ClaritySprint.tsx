@@ -23,7 +23,7 @@ const ClaritySprint = () => {
           <div className="flex justify-center mb-8">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-900/60 border border-emerald-700/50 text-emerald-400 text-sm font-bold tracking-wide">
               <Zap size={14} className="fill-emerald-400" />
-              ENTRY POINT · FIRST 5 CLIENTS
+              ENTRY POINT · THE CLARITY SPRINT
             </span>
           </div>
 
@@ -56,7 +56,7 @@ const ClaritySprint = () => {
                 <div className="flex items-center gap-2 text-white">
                   <DollarSign size={18} className="text-emerald-400" />
                   <span className="font-bold text-2xl">$750</span>
-                  <span className="text-stone-400 text-sm">· first 5 clients only</span>
+                  <span className="text-stone-400 text-sm">· introductory rate</span>
                 </div>
               </div>
 
@@ -102,11 +102,6 @@ const ClaritySprint = () => {
                 ))}
               </div>
 
-              <div className="mt-2 pt-6 border-t border-stone-700/50">
-                <p className="text-stone-400 text-xs italic">
-                  Price increases to $2,500 after the first 5 engagements. No exceptions.
-                </p>
-              </div>
             </motion.div>
 
           </div>

@@ -1,12 +1,8 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, LineChart, Code2, LayoutList, Users, GitBranch, TrendingUp } from 'lucide-react';
 import { staggerContainer } from '../../utils/animation';
-import SignatureGenerator from './SignatureGenerator';
 
 const About = () => {
-  const [showSigGen, setShowSigGen] = useState(false);
-
   return (
     <section id="about" className="py-24 bg-stone-50 w-full relative">
       <div className="w-full px-6 lg:px-16">
@@ -90,19 +86,6 @@ const About = () => {
         </div>
       </div>
 
-      {/* Signature Generator floating button — bottom-right of section */}
-      <div className="absolute bottom-6 right-6">
-        <button
-          type="button"
-          onClick={() => setShowSigGen(true)}
-          title="Digital Signature Generator"
-          className="flex items-center gap-2 bg-stone-900 hover:bg-emerald-700 text-white text-xs font-medium font-sans px-4 py-2.5 rounded-full shadow-lg transition-all duration-200 hover:shadow-emerald-200 hover:scale-105"
-        >
-          ✍️ Signature Generator
-        </button>
-      </div>
-
-      {showSigGen && <SignatureGenerator onClose={() => setShowSigGen(false)} />}
     </section>
   );
 };
