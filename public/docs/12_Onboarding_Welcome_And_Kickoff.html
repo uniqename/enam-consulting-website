@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Onboarding Welcome Letter &amp; Kickoff Agenda — Doxa &amp; Co</title>
+<style>
+  :root {
+    --gold: #C9A44A; --gold-dark: #8B7030; --emerald: #059669;
+    --stone-900: #1c1917; --stone-700: #292524; --stone-600: #57534e;
+    --stone-400: #a8a29e; --stone-200: #e7e5e0; --stone-100: #f5f5f4; --stone-50: #fafaf9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; color: var(--stone-900); background: white; line-height: 1.6; }
+  .document { max-width: 760px; margin: 0 auto; padding: 60px 70px; }
+  .doc-header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; margin-bottom: 8px; border-bottom: 1px solid var(--stone-200); }
+  .logo-name { font-family: Georgia, serif; font-size: 18px; font-weight: 400; color: var(--gold-dark); letter-spacing: 4px; display: block; }
+  .logo-tag { font-size: 8px; font-weight: 700; letter-spacing: 3px; color: var(--emerald); text-transform: uppercase; display: block; margin-top: 2px; }
+  .doc-meta { text-align: right; font-size: 11px; color: var(--stone-400); line-height: 1.9; }
+  .gold-line { height: 2px; background: linear-gradient(to right, var(--gold-dark), var(--gold), var(--gold-dark)); margin: 8px 0 40px; }
+  h1 { font-family: Georgia, serif; font-size: 22px; color: var(--stone-900); margin-bottom: 6px; }
+  .subtitle { font-size: 12px; color: var(--stone-400); margin-bottom: 32px; }
+  h2 { font-family: Georgia, serif; font-size: 14px; font-weight: 700; color: var(--stone-900); margin: 32px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--stone-200); }
+  h3 { font-size: 13px; font-weight: 700; color: var(--stone-900); margin: 18px 0 8px; }
+  p { font-size: 13px; color: var(--stone-600); margin-bottom: 12px; line-height: 1.8; }
+  ul, ol { padding-left: 20px; margin-bottom: 14px; }
+  li { font-size: 13px; color: var(--stone-600); margin-bottom: 7px; line-height: 1.7; }
+  strong { color: var(--stone-900); }
+  .welcome-card { background: var(--stone-900); color: white; border-radius: 14px; padding: 32px 36px; margin: 24px 0 36px; }
+  .welcome-card p { color: #d6d3d1; font-size: 14px; line-height: 1.9; margin-bottom: 14px; }
+  .welcome-card p:last-child { margin-bottom: 0; }
+  .welcome-card .sign { color: var(--gold); font-size: 13px; margin-top: 20px; }
+  .checklist-card { background: var(--stone-50); border: 1px solid var(--stone-200); border-radius: 10px; padding: 20px 24px; margin: 14px 0; }
+  .checklist-card h3 { color: var(--stone-900); margin-top: 0; margin-bottom: 12px; font-size: 13px; }
+  .check-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; font-size: 13px; color: var(--stone-600); }
+  .check-box { width: 16px; height: 16px; border: 1.5px solid var(--stone-300); border-radius: 3px; shrink: 0; margin-top: 2px; flex-shrink: 0; }
+  .agenda-step { display: flex; gap: 16px; margin-bottom: 20px; }
+  .agenda-num { width: 32px; height: 32px; background: var(--emerald); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .agenda-content h3 { margin-top: 0; margin-bottom: 4px; color: var(--stone-900); }
+  .agenda-content .time { font-size: 11px; color: var(--stone-400); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .agenda-content p { margin: 0; }
+  .callout-emerald { background: #ecfdf5; border-left: 3px solid var(--emerald); padding: 14px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .callout-emerald p { margin: 0; color: var(--stone-700); font-size: 13px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
+  .info-box { background: var(--stone-50); border: 1px solid var(--stone-200); border-radius: 8px; padding: 14px 16px; }
+  .info-box .label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--stone-400); margin-bottom: 6px; }
+  .info-box p { margin: 0; font-size: 13px; }
+  .doc-footer { margin-top: 50px; padding-top: 14px; border-top: 1px solid var(--stone-200); display: flex; justify-content: space-between; font-size: 10px; color: var(--stone-400); }
+
+  /* Page break for kickoff agenda section */
+  .kickoff-break { margin-top: 60px; padding-top: 48px; border-top: 2px solid var(--stone-200); }
+  @media print { .document { padding: 0; } @page { margin: 0.75in 1in; } .kickoff-break { page-break-before: always; padding-top: 0; border-top: none; } }
+</style>
+</head>
+<body>
+<div class="document">
+
+  <div class="doc-header">
+    <div>
+      <span class="logo-name">DOXA &amp; CO</span>
+      <span class="logo-tag">Strategy · Product · Delivery</span>
+    </div>
+    <div class="doc-meta">
+      Enam Egyir<br/>
+      ename@doxaandco.co<br/>
+      doxaandco.co
+    </div>
+  </div>
+  <div class="gold-line"></div>
+
+  <h1>Welcome to Doxa &amp; Co</h1>
+  <p class="subtitle">Sent to the client upon signing — includes onboarding checklist and kickoff agenda</p>
+
+  <!-- WELCOME LETTER -->
+  <div class="welcome-card">
+    <p>Dear [Client Name],</p>
+    <p>Welcome — and thank you for choosing Doxa &amp; Co. I don't take it lightly that you're trusting me with work that matters.</p>
+    <p>I've put this document together so you know exactly what to expect from day one. No surprises, no guessing. Everything you need before our kickoff call is in the checklist on the next page, and the kickoff agenda lays out how we'll use that first session together.</p>
+    <p>My job from here is simple: show up prepared, ask the right questions, and deliver work that actually moves your organization forward. If anything is unclear before our kickoff, reply to this email. I typically respond within one business day.</p>
+    <p>Let's build something that lasts.</p>
+    <p class="sign">— Enam Egyir<br/>Principal Consultant, Doxa &amp; Co<br/>ename@doxaandco.co</p>
+  </div>
+
+  <h2>Before the Kickoff — Your Onboarding Checklist</h2>
+  <p>Complete these items before our kickoff session. The more context you share upfront, the more useful our first session will be.</p>
+
+  <div class="checklist-card">
+    <h3>Documents to Send</h3>
+    <div class="check-row"><div class="check-box"></div>Signed Consulting Agreement and/or Retainer Agreement</div>
+    <div class="check-row"><div class="check-box"></div>Signed Statement of Work (SOW)</div>
+    <div class="check-row"><div class="check-box"></div>First invoice paid / payment confirmed</div>
+    <div class="check-row"><div class="check-box"></div>Any existing roadmap, product strategy doc, or requirements document</div>
+    <div class="check-row"><div class="check-box"></div>Org chart or team structure (even a rough one)</div>
+    <div class="check-row"><div class="check-box"></div>Current tools/platforms in use (project management, engineering, GRC, etc.)</div>
+  </div>
+
+  <div class="checklist-card">
+    <h3>Access to Provide</h3>
+    <div class="check-row"><div class="check-box"></div>Jira / Linear / Trello / Notion — whichever project tool your team uses</div>
+    <div class="check-row"><div class="check-box"></div>Slack or Teams — add ename@doxaandco.co to relevant channels</div>
+    <div class="check-row"><div class="check-box"></div>GitHub / GitLab (for MVP/build engagements)</div>
+    <div class="check-row"><div class="check-box"></div>GRC platform (read access to begin; write access post-kickoff)</div>
+    <div class="check-row"><div class="check-box"></div>Shared drive or Confluence space for documentation</div>
+  </div>
+
+  <div class="checklist-card">
+    <h3>People to Introduce</h3>
+    <div class="check-row"><div class="check-box"></div>Engineering lead or CTO (for MVP or build engagements)</div>
+    <div class="check-row"><div class="check-box"></div>Risk/compliance lead (for GRC engagements)</div>
+    <div class="check-row"><div class="check-box"></div>Key stakeholders who will attend sprint reviews or milestone presentations</div>
+    <div class="check-row"><div class="check-box"></div>Finance contact for invoicing / billing questions</div>
+  </div>
+
+  <h2>How We'll Work Together</h2>
+
+  <div class="info-grid">
+    <div class="info-box">
+      <div class="label">Primary Communication</div>
+      <p>Slack (preferred) or email. I'll join your workspace and respond within one business day to async messages.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Video Calls</div>
+      <p>Google Meet or Zoom, your preference. Calendar invites are sent from ename@doxaandco.co.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Sprint Cadence</div>
+      <p>2-week sprints (default). Sprint planning on Day 1, review/retro on Day 14. Adjusted to your team's rhythm.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Documentation</div>
+      <p>All deliverables written in your system of record (Notion, Confluence, etc.) — not in a format only I can access.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Invoicing</div>
+      <p>Invoices sent on the schedule in your SOW/Retainer. Payment due within 7 days of invoice date.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Escalation</div>
+      <p>If something isn't working, say so early. I'd rather have an awkward conversation in week 2 than a failed engagement in week 8.</p>
+    </div>
+  </div>
+
+  <!-- KICKOFF AGENDA — PAGE 2 -->
+  <div class="kickoff-break">
+    <h1>Kickoff Session Agenda</h1>
+    <p class="subtitle">Send this agenda to all attendees 24 hours before the kickoff call. Duration: 60–90 minutes.</p>
+
+    <p>The kickoff is not a demo or a sales call — it's the first working session. Come prepared to share the real picture: what's broken, what's been tried, and what success actually looks like. Everything said here is confidential.</p>
+
+    <div class="callout-emerald">
+      <p><strong>Attendees needed:</strong> The primary point of contact, any relevant technical leads, and ideally the executive sponsor or decision-maker. I'll take notes — you don't need to.</p>
+    </div>
+
+    <h2>Agenda</h2>
+
+    <div class="agenda-step">
+      <div class="agenda-num">1</div>
+      <div class="agenda-content">
+        <h3>Introductions &amp; Context-Setting</h3>
+        <div class="time">10 minutes</div>
+        <p>Brief round of introductions — name, role, and what each person's stake is in this engagement. Enam shares working style, communication preferences, and how she approaches the first 2 weeks.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">2</div>
+      <div class="agenda-content">
+        <h3>Current State Deep Dive</h3>
+        <div class="time">20–25 minutes</div>
+        <p>Walk through where things stand today. Not the polished version — the real one. What's working, what isn't, what's been tried and failed. For product engagements: existing backlog, technical architecture, team capacity. For GRC: current platform state, audit findings, compliance gaps. For AI: current tool stack, data readiness, team familiarity.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">3</div>
+      <div class="agenda-content">
+        <h3>Define "Done" — Success Criteria</h3>
+        <div class="time">15 minutes</div>
+        <p>What does a successful engagement look like at 30 days? At the end of the contract? Defining this now means we have a shared yardstick — and it prevents "I thought this would include…" conversations later. Enam will document these criteria and share them before the next session.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">4</div>
+      <div class="agenda-content">
+        <h3>Constraints, Risks &amp; Hard Questions</h3>
+        <div class="time">10–15 minutes</div>
+        <p>What might get in the way? Budget limits, team bandwidth, organizational politics, technical debt, upcoming audits or deadlines? What's the thing nobody says in meetings? This is the conversation most consultants avoid in week one. We won't.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">5</div>
+      <div class="agenda-content">
+        <h3>Tools, Access &amp; Team Introductions</h3>
+        <div class="time">10 minutes</div>
+        <p>Confirm all tool access from the onboarding checklist has been set up. Introduce any team members who weren't on the call. Set up recurring sprint ceremonies if applicable.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">6</div>
+      <div class="agenda-content">
+        <h3>Next Steps &amp; First Deliverable</h3>
+        <div class="time">5–10 minutes</div>
+        <p>What happens in the first 7 days after this call? Enam will confirm the first concrete output — whether that's a backlog structure, a gap analysis, an AI readiness report, or a sprint planning session. No vague "we'll align on scope." Specific output, specific deadline.</p>
+      </div>
+    </div>
+
+    <h2>Post-Kickoff: What to Expect</h2>
+    <ul>
+      <li><strong>Within 24 hours:</strong> Kickoff notes and action items shared via email and your project tool</li>
+      <li><strong>Within 48 hours:</strong> Confirmed sprint cadence or milestone schedule added to shared calendar</li>
+      <li><strong>Within 7 days:</strong> First substantive deliverable delivered (per SOW)</li>
+      <li><strong>Ongoing:</strong> Weekly async status update every Friday — what was done, what's next, any blockers</li>
+    </ul>
+  </div>
+
+  <div class="doc-footer">
+    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
+    <span>Onboarding &amp; Kickoff · Rev. April 2026</span>
+  </div>
+
+</div>
+<script src="/docs/doc-editor.js"></script>
+</body>
+</html>
