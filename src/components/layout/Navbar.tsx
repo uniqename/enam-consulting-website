@@ -67,22 +67,16 @@ const Navbar = () => {
         }`}
       >
         <div className="w-full mx-auto px-6 lg:px-8 flex items-center justify-between">
-          <Link 
-            to="/" 
-            className="flex items-center gap-2 group" 
+          <Link
+            to="/"
+            className="flex items-center gap-2 group"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-xl shadow-lg group-hover:shadow-emerald-600/20 transition-all">
-              D
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-lg leading-tight tracking-tight text-stone-900">
-                Doxa<span className="text-emerald-600"> and Co</span>
-              </span>
-              <span className="text-[10px] font-medium text-stone-500 uppercase tracking-wider">
-                Enterprise & Engineering
-              </span>
-            </div>
+            <img
+              src="/assets/images/doxa-logo-horizontal.svg"
+              alt="Doxa & Co"
+              className="h-9 w-auto"
+            />
           </Link>
 
           <div className="hidden md:block">

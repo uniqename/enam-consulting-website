@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="lmg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Transparent background — use on white/cream pages -->
+
+  <!-- Outer triangle: apex (32,6), BL (6,56), BR (58,56) -->
+  <polygon points="32,6 58,56 6,56" fill="url(#lmg)"/>
+  <!-- Inner white cutout -->
+  <polygon points="32,18 46,48 18,48" fill="white"/>
+  <!-- Center dot -->
+  <circle cx="32" cy="36" r="5.5" fill="url(#lmg)"/>
+</svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 240" width="560" height="240">
+  <defs>
+    <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="560" height="240" fill="#FAFAF9" rx="16"/>
+
+  <!-- Header -->
+  <text x="28" y="36" font-family="Georgia,'Times New Roman',serif" font-size="16" font-weight="700" fill="#1C1917">Doxa and Co — Brand Colors</text>
+  <line x1="28" y1="46" x2="532" y2="46" stroke="#E7E0D5" stroke-width="1"/>
+
+  <!-- Color swatches — row 1 -->
+  <!-- Swatch 1: Doxa Emerald -->
+  <rect x="28" y="62" width="72" height="72" rx="10" fill="#059669"/>
+  <text x="64" y="152" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" font-weight="700" fill="#1C1917" text-anchor="middle">EMERALD</text>
+  <text x="64" y="164" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" fill="#78716C" text-anchor="middle">#059669</text>
+
+  <!-- Swatch 2: Doxa Forest -->
+  <rect x="116" y="62" width="72" height="72" rx="10" fill="#047857"/>
+  <text x="152" y="152" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" font-weight="700" fill="#1C1917" text-anchor="middle">FOREST</text>
+  <text x="152" y="164" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" fill="#78716C" text-anchor="middle">#047857</text>
+
+  <!-- Swatch 3: Doxa Stone Dark -->
+  <rect x="204" y="62" width="72" height="72" rx="10" fill="#1C1917"/>
+  <text x="240" y="152" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" font-weight="700" fill="#1C1917" text-anchor="middle">STONE</text>
+  <text x="240" y="164" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" fill="#78716C" text-anchor="middle">#1C1917</text>
+
+  <!-- Swatch 4: Doxa Warm (stone-500) -->
+  <rect x="292" y="62" width="72" height="72" rx="10" fill="#78716C"/>
+  <text x="328" y="152" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" font-weight="700" fill="#1C1917" text-anchor="middle">WARM</text>
+  <text x="328" y="164" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" fill="#78716C" text-anchor="middle">#78716C</text>
+
+  <!-- Swatch 5: Doxa Cream -->
+  <rect x="380" y="62" width="72" height="72" rx="10" fill="#FAFAF9" stroke="#E7E0D5" stroke-width="1.5"/>
+  <text x="416" y="152" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" font-weight="700" fill="#1C1917" text-anchor="middle">CREAM</text>
+  <text x="416" y="164" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" fill="#78716C" text-anchor="middle">#FAFAF9</text>
+
+  <!-- Swatch 6: Doxa Amber (AI Advisory) -->
+  <rect x="468" y="62" width="72" height="72" rx="10" fill="#D97706"/>
+  <text x="504" y="152" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" font-weight="700" fill="#1C1917" text-anchor="middle">AMBER</text>
+  <text x="504" y="164" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" fill="#78716C" text-anchor="middle">#D97706 · AI</text>
+
+  <!-- Bottom: Logo preview -->
+  <line x1="28" y1="180" x2="532" y2="180" stroke="#E7E0D5" stroke-width="1"/>
+  <text x="28" y="200" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2" fill="#A8A29E">TYPOGRAPHY</text>
+  <text x="140" y="200" font-family="Georgia,'Times New Roman',serif" font-size="14" font-weight="700" fill="#1C1917">DOXA AND CO</text>
+  <text x="300" y="200" font-family="'Helvetica Neue',Arial,sans-serif" font-size="12" fill="#78716C">Strategy · Product · Delivery</text>
+  <text x="28" y="222" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2" fill="#A8A29E">MARK</text>
+  <text x="80" y="222" font-family="'Helvetica Neue',Arial,sans-serif" font-size="9" fill="#78716C">Δ Delta — Greek for change, transformation, growth. References the etymology of Doxa (δόξα).</text>
+</svg>
