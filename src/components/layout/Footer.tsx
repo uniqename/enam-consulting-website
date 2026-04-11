@@ -20,13 +20,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           
           <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
-                D
-              </div>
-              <span className="font-bold text-lg text-gray-900">
-                Doxa<span className="text-emerald-600"> and Co</span>
-              </span>
+            <Link to="/">
+              <img
+                src="/assets/images/doxa-logo-horizontal.svg"
+                alt="Doxa & Co"
+                className="h-8 w-auto"
+              />
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed">
               Bridging the gap between Enterprise Rigor and Startup Agility. 
