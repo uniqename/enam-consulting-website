@@ -20,6 +20,7 @@ const phases: { label: string; docs: Doc[] }[] = [
         desc: 'Branded letterhead for formal correspondence, proposals, and printed documents.',
         tag: 'Template',
         tagColor: 'bg-stone-100 text-stone-600',
+        html: '/docs/Doxa_Letterhead_Template.html',
         docx: '/docs/Doxa_Letterhead_Template.docx',
       },
       {
@@ -27,6 +28,7 @@ const phases: { label: string; docs: Doc[] }[] = [
         desc: 'Full service menu with pricing tiers. Share with prospects who ask "what do you offer?"',
         tag: 'Client-facing',
         tagColor: 'bg-emerald-100 text-emerald-700',
+        html: '/docs/Doxa_Services_Pricing.html',
         docx: '/docs/Doxa_Services_Pricing.docx',
       },
       {
@@ -50,6 +52,7 @@ const phases: { label: string; docs: Doc[] }[] = [
         desc: 'Internal preparation guide for discovery calls — goals, questions, and talking points.',
         tag: 'Internal',
         tagColor: 'bg-stone-100 text-stone-600',
+        html: '/docs/Doxa_Discovery_Brief.html',
         docx: '/docs/Doxa_Discovery_Brief.docx',
       },
     ],
@@ -62,6 +65,7 @@ const phases: { label: string; docs: Doc[] }[] = [
         desc: 'Structured proposal template: problem statement, approach, deliverables, timeline, and investment.',
         tag: 'Client-facing',
         tagColor: 'bg-emerald-100 text-emerald-700',
+        html: '/docs/Doxa_Project_Proposal.html',
         docx: '/docs/Doxa_Project_Proposal.docx',
       },
       {
@@ -69,6 +73,7 @@ const phases: { label: string; docs: Doc[] }[] = [
         desc: 'Master services agreement covering IP, confidentiality, payment, and scope. Sign before any work begins.',
         tag: 'Legal',
         tagColor: 'bg-red-100 text-red-700',
+        html: '/docs/Doxa_Consulting_Agreement.html',
         docx: '/docs/Doxa_Consulting_Agreement.docx',
       },
       {
@@ -76,6 +81,7 @@ const phases: { label: string; docs: Doc[] }[] = [
         desc: 'Defines exactly what will be delivered, when, and for how much. Attaches to the consulting agreement.',
         tag: 'Legal',
         tagColor: 'bg-red-100 text-red-700',
+        html: '/docs/Doxa_Statement_of_Work.html',
         docx: '/docs/Doxa_Statement_of_Work.docx',
       },
       {
@@ -112,6 +118,7 @@ const phases: { label: string; docs: Doc[] }[] = [
         desc: 'Branded invoice for milestone payments, monthly retainers, and session fees.',
         tag: 'Billing',
         tagColor: 'bg-amber-100 text-amber-700',
+        html: '/docs/Doxa_Invoice_Template.html',
         docx: '/docs/Doxa_Invoice_Template.docx',
       },
     ],
