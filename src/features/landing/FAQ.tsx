@@ -31,6 +31,10 @@ const faqs = [
     q: 'Do you require long-term commitments?',
     a: 'No. MVP Development is fixed-scope and milestone-billed. Enterprise GRC consulting is engagement-based with a defined SOW. Fractional PO is month-to-month with 30 days notice. I prefer relationships that last because the work is good — not because you\'re locked in.',
   },
+  {
+    q: 'How does payment work, and what are the fees involved?',
+    a: "Invoices are due within 7 days of issue. Late payments accrue 1.5% per month. For strategy calls and MVP scoping sessions, a non-refundable session fee ($250–$500 depending on scope) is collected before the call — this is credited toward your project if you move forward within 30 days. Milestone-based projects are split 50% upfront / 50% on delivery. Retainers are billed monthly in advance. All fees are outlined in the SOW before any work begins — no surprise invoices.",
+  },
 ];
 
 const FAQ = () => {

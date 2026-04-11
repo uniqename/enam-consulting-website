@@ -7,6 +7,8 @@ import Portfolio from "../pages/projects/Project";
 import Education from "../pages/education/Education";
 import Hire from "../pages/hire/Hire";
 import Tools from "../pages/tools/Tools";
+import Privacy from "../pages/legal/Privacy";
+import Terms from "../pages/legal/Terms";
 
 
 
@@ -49,6 +51,14 @@ export const router = createBrowserRouter([
       {
         path: 'tools',
         element: <Tools />,
+      },
+      {
+        path: 'privacy',
+        element: <Privacy />,
+      },
+      {
+        path: 'terms',
+        element: <Terms />,
       },
     ],
   },

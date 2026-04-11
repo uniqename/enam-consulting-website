@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ShieldCheck, LineChart, Code2, LayoutList, Users, GitBranch, TrendingUp } from 'lucide-react';
+import { ShieldCheck, LineChart, Code2, LayoutList, Users, GitBranch, TrendingUp, Linkedin } from 'lucide-react';
 import { staggerContainer } from '../../utils/animation';
 
 const About = () => {
@@ -18,7 +18,16 @@ const About = () => {
               <p>This hybrid expertise allows me to bridge the gap between "Business Requirements" and "Technical Reality," ensuring your project is delivered on time, on budget, and without the fluff.</p>
             </div>
 
-            <div className="mt-10 pt-10 border-t border-stone-200 grid grid-cols-3 gap-8">
+            <a
+              href="https://www.linkedin.com/in/enamegyir/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 inline-flex items-center gap-2 text-[#0A66C2] font-semibold text-sm hover:underline"
+            >
+              <Linkedin size={16} /> View full profile on LinkedIn →
+            </a>
+
+            <div className="mt-8 pt-10 border-t border-stone-200 grid grid-cols-3 gap-8">
               <div>
                 <div className="text-4xl font-bold text-stone-900">10+</div>
                 <div className="text-base text-stone-500 mt-1">Years PM Experience</div>
