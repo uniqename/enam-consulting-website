@@ -61,7 +61,7 @@ const Services = () => {
             <h3 className="text-2xl font-bold text-stone-900 mb-1">Fractional PO</h3>
             <p className="text-emerald-700 text-sm font-bold mb-4">Starting at $4,500 / month · 10–15 hrs/week</p>
             <p className="text-stone-600 mb-8 leading-relaxed grow">
-              Senior product leadership without the full-time cost. I embed with your team on a monthly retainer — owning the backlog, running sprints, and keeping engineering aligned with business goals.
+              Senior product leadership on demand. I embed with your team on a monthly retainer — owning the backlog, running sprints, and keeping engineering and business objectives in sync.
             </p>
             <ul className="space-y-3 mb-10 text-stone-600">
               {['Weekly sprint planning & reviews', 'Backlog ownership & roadmap', 'Stakeholder reporting & OKRs'].map((item) => (

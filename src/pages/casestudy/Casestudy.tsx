@@ -222,7 +222,7 @@ const Casestudy = () => {
                   className="w-full py-4 rounded-xl bg-stone-900 text-white font-bold flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors shadow-lg">
                   Hire Me for Results <ArrowRight size={18} />
                 </Link>
-                <p className="text-xs text-center text-stone-400 mt-3">Available for fractional or full-time roles</p>
+                <p className="text-xs text-center text-stone-400 mt-3">Fractional and project-based engagements</p>
               </div>
             </div>
           </div>

@@ -5,7 +5,7 @@ const fits = [
   'Financial institutions and banks navigating GRC platform upgrades or compliance mandates',
   'Startups with a validated idea that need a technical co-pilot to get from prototype to App Store',
   'Organizations exploring AI adoption who need assessment + implementation, not just a strategy deck',
-  'Mission-driven orgs that need enterprise-grade product thinking on a non-enterprise budget',
+  'Mission-driven organizations that demand enterprise-grade delivery without enterprise-scale bureaucracy',
 ];
 
 const notFits = [

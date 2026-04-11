@@ -19,7 +19,7 @@ const Hero = () => {
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wide mb-6 w-fit">
             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-            Available for Full-Time Roles &amp; Consulting Engagements
+            Now Accepting New Engagements
           </div>
 
           <h1 className="text-5xl lg:text-7xl xl:text-8xl font-bold text-stone-900 leading-[1.1] mb-6">
@@ -33,7 +33,7 @@ const Hero = () => {
             Senior Product Manager and developer who has shipped enterprise GRC platforms at Fortune 500 banks and built B2B SaaS products from 0→1 — including two live apps on the App Store.
           </p>
           <p className="text-base text-stone-500 mb-8 leading-relaxed max-w-2xl">
-            Available full-time or as a Fractional PO — based in the US, working globally.
+            Fractional or embedded. Based in the US, working globally.
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -52,12 +52,6 @@ const Hero = () => {
               View Case Studies
             </button>
               </Link>
-            <Link
-              to="/hire"
-              className="px-8 py-4 rounded-full bg-transparent text-stone-500 border border-dashed border-stone-300 font-semibold text-base hover:bg-stone-50 hover:text-stone-700 hover:border-stone-400 transition-all"
-            >
-              For Employers →
-            </Link>
           </div>
 
           <div className="mt-10 flex flex-wrap items-center gap-6 text-sm font-medium text-stone-500">

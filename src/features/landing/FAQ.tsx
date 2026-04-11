@@ -4,8 +4,8 @@ import { Link } from 'react-router';
 
 const faqs = [
   {
-    q: 'Are you looking for full-time roles or only consulting?',
-    a: "Both — and I'm open about that. I'm actively available for full-time Senior PM or Director of Product roles. I also take on consulting engagements (Fractional PO, MVP builds, GRC transformation) in parallel. If you're a recruiter or hiring manager, the best starting point is a 30-minute call.",
+    q: 'Do you work independently, or do you bring a team?',
+    a: "I work independently as the primary point of accountability — which is the point. You get one person who owns the outcome, not an agency that rotates junior staff. For builds that require additional engineering capacity, I coordinate with a vetted network of developers. Either way, the strategic and product decisions run through me.",
   },
   {
     q: 'What does a Fractional PO engagement actually look like week-to-week?',
@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: 'How quickly can you start?',
-    a: "For fractional or consulting engagements: typically within 1–2 weeks of a signed agreement. For full-time roles: flexible, but I can start relatively quickly. The first two weeks of any engagement are always discovery — I won't commit to a roadmap until I understand the actual problem.",
+    a: "Typically within 1–2 weeks of a signed agreement. The first two weeks of any engagement are always discovery — I won't commit to a roadmap until I understand the actual problem, the constraints, and the team. Fast starts that skip discovery almost always cost more in the long run.",
   },
   {
     q: 'Do you require long-term commitments?',

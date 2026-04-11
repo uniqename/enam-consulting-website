@@ -31,7 +31,6 @@ const Navbar = () => {
   const directLinks: NavItem[] = [
     { name: 'Projects', target: '/projects', type: 'route' },
     { name: 'Education', target: '/education', type: 'route' },
-    { name: 'For Employers', target: '/hire', type: 'route' },
   ];
 
   const mobileLinks = [...dropdownLinks, ...directLinks];
