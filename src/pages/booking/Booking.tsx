@@ -19,6 +19,8 @@ interface MeetingTypeConfig {
   bgClass: string;
   subject: string;
   whatToBring: string[];
+  fee: string | null;
+  feeNote: string | null;
 }
 
 type Step = 'type' | 'schedule' | 'details' | 'confirmed';
@@ -37,6 +39,8 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     bgClass: 'bg-blue-50 border-blue-200',
     subject: 'Enterprise GRC Strategy Session',
     whatToBring: ['Current risk register or audit findings', 'Compliance framework in use (SOX, ISO, etc.)', 'Org chart / team structure', 'Any pending audit deadlines'],
+    fee: '$350',
+    feeNote: 'Credited toward your engagement if you move forward.',
   },
   {
     key: 'mvp',
@@ -48,6 +52,8 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     bgClass: 'bg-emerald-50 border-emerald-200',
     subject: 'MVP Development Discovery Call',
     whatToBring: ['Product brief or 1-page concept doc', 'Rough budget range', 'Target launch date', 'Competing apps you admire'],
+    fee: '$500',
+    feeNote: 'Credited toward your project if you move forward.',
   },
   {
     key: 'retainer',
@@ -59,6 +65,8 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     bgClass: 'bg-purple-50 border-purple-200',
     subject: 'Fractional Product Leadership Inquiry',
     whatToBring: ['Current team structure', 'Sprint cadence or delivery process', 'Biggest product bottleneck right now', 'Recent roadmap or backlog (if any)'],
+    fee: null,
+    feeNote: 'Free discovery call. First month paid upfront before work begins.',
   },
   {
     key: 'ai',
@@ -70,6 +78,8 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     bgClass: 'bg-amber-50 border-amber-200',
     subject: 'AI Transformation Advisory Session',
     whatToBring: ["Overview of your current operations & tools", "Biggest time/cost bottlenecks in your workflow", "Any AI tools you've tried or explored", 'Budget range or engagement tier interest'],
+    fee: '$250',
+    feeNote: 'Credited toward your audit or build engagement if you move forward.',
   },
   {
     key: 'intro',
@@ -81,6 +91,8 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     bgClass: 'bg-stone-50 border-stone-200',
     subject: 'General Inquiry',
     whatToBring: ['A quick summary of your challenge', 'Any relevant context about your team or product'],
+    fee: null,
+    feeNote: 'Complimentary — no commitment required.',
   },
 ];
 
@@ -272,7 +284,10 @@ const Booking = () => {
     const allRecipients = ['ename@doxaandco.co', ...validGuests];
     const [to, ...cc] = allRecipients;
     const ccParam = cc.length ? `&cc=${encodeURIComponent(cc.join(','))}` : '';
-    const body = `Hi Enam,\n\nI'm reaching out regarding: ${selectedType.title}\n\nDate/Time: ${DAY_SHORT[selectedDate.getDay()]} ${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()} at ${selectedSlot} EDT\n\nAgenda:\n${form.message}\n\n---\nName: ${form.name}${form.company ? `\nCompany: ${form.company}` : ''}\nEmail: ${form.email}${validGuests.length ? `\nAdditional guests: ${validGuests.join(', ')}` : ''}\n\n(Calendar invite attached)`;
+    const feeSection = selectedType.fee
+      ? `\n\nSession Fee: ${selectedType.fee}\n${selectedType.feeNote}\nPayment details will be confirmed by Enam before the call.`
+      : '';
+    const body = `Hi Enam,\n\nI'm reaching out regarding: ${selectedType.title}\n\nDate/Time: ${DAY_SHORT[selectedDate.getDay()]} ${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()} at ${selectedSlot} EDT\n\nAgenda:\n${form.message}${feeSection}\n\n---\nName: ${form.name}${form.company ? `\nCompany: ${form.company}` : ''}\nEmail: ${form.email}${validGuests.length ? `\nAdditional guests: ${validGuests.join(', ')}` : ''}\n\n(Calendar invite attached)`;
     window.location.href = `mailto:${to}?subject=${encodeURIComponent(title)}${ccParam}&body=${encodeURIComponent(body)}`;
     setStep('confirmed');
   };
@@ -320,6 +335,12 @@ const Booking = () => {
                     <div className={`mb-3 ${m.colorClass}`}>{m.icon}</div>
                     <div className="font-bold text-stone-900 mb-0.5">{m.title}</div>
                     <div className="text-xs text-stone-400 mb-3">{m.tagline}</div>
+                    <div className="mb-3">
+                      {m.fee
+                        ? <span className="inline-block text-xs font-bold px-2 py-0.5 rounded-full bg-stone-900 text-white">Session fee applies</span>
+                        : <span className="inline-block text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Free</span>
+                      }
+                    </div>
                     <div className="flex items-center gap-1.5 text-xs font-semibold text-stone-500 group-hover:text-emerald-600 transition-colors">
                       Select <ArrowRight size={12} />
                     </div>
@@ -344,6 +365,17 @@ const Booking = () => {
                     <div className="flex items-center gap-2"><Video size={14} /> Google Meet</div>
                     <div className="flex items-center gap-2"><Calendar size={14} /> Eastern Time (EDT)</div>
                   </div>
+                  {selectedType.fee && (
+                    <div className="rounded-xl p-3 text-xs leading-relaxed bg-stone-900 text-white">
+                      <p className="font-bold mb-0.5">Session fee applies</p>
+                      <p className="text-stone-300">Fee details will be shared in your confirmation email before the call.</p>
+                    </div>
+                  )}
+                  {!selectedType.fee && selectedType.feeNote && (
+                    <div className="rounded-xl p-3 text-xs leading-relaxed bg-emerald-50 text-emerald-800 border border-emerald-100">
+                      <p className="font-medium">{selectedType.feeNote}</p>
+                    </div>
+                  )}
                   <div className="bg-white rounded-xl border border-stone-100 p-4 space-y-2">
                     <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">What to bring</p>
                     <ul className="space-y-1.5">
@@ -519,6 +551,12 @@ const Booking = () => {
                 <h2 className="text-2xl font-bold text-stone-900 mb-2">You're all set!</h2>
                 <p className="text-stone-500">A calendar invite has been downloaded and your email app should have opened.</p>
               </div>
+              {selectedType.fee && (
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl px-6 py-4 text-sm text-amber-900">
+                  <p className="font-bold mb-0.5">Session fee reminder</p>
+                  <p>Enam will confirm the session fee ({selectedType.fee}) and payment details by email before the call. {selectedType.feeNote}</p>
+                </div>
+              )}
               <div className="bg-stone-50 rounded-2xl p-5 text-left space-y-3">
                 <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Meeting Summary</p>
                 <p className="font-semibold text-stone-800 text-sm leading-relaxed">{meetingTitle}</p>
