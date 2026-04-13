@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Project Closeout &amp; Handoff Report — Doxa &amp; Co</title>
+<style>
+  :root {
+    --gold: #C9A44A; --gold-dark: #8B7030; --emerald: #059669;
+    --stone-900: #1c1917; --stone-700: #292524; --stone-600: #57534e;
+    --stone-400: #a8a29e; --stone-200: #e7e5e0; --stone-100: #f5f5f4; --stone-50: #fafaf9;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; color: var(--stone-900); background: white; line-height: 1.6; }
+  .document { max-width: 760px; margin: 0 auto; padding: 60px 70px; }
+  .doc-header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; margin-bottom: 8px; border-bottom: 1px solid var(--stone-200); }
+  .logo-name { font-family: Georgia, serif; font-size: 18px; font-weight: 400; color: var(--gold-dark); letter-spacing: 4px; display: block; }
+  .logo-tag { font-size: 8px; font-weight: 700; letter-spacing: 3px; color: var(--emerald); text-transform: uppercase; display: block; margin-top: 2px; }
+  .doc-meta { text-align: right; font-size: 11px; color: var(--stone-400); line-height: 1.9; }
+  .gold-line { height: 2px; background: linear-gradient(to right, var(--gold-dark), var(--gold), var(--gold-dark)); margin: 8px 0 40px; }
+  h1 { font-family: Georgia, serif; font-size: 22px; color: var(--stone-900); margin-bottom: 6px; }
+  .subtitle { font-size: 12px; color: var(--stone-400); margin-bottom: 32px; }
+  h2 { font-family: Georgia, serif; font-size: 14px; font-weight: 700; color: var(--stone-900); margin: 28px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--stone-200); }
+  h3 { font-size: 13px; font-weight: 700; color: var(--stone-900); margin: 16px 0 8px; }
+  p { font-size: 13px; color: var(--stone-600); margin-bottom: 12px; line-height: 1.8; }
+  ul, ol { padding-left: 20px; margin-bottom: 14px; }
+  li { font-size: 13px; color: var(--stone-600); margin-bottom: 6px; line-height: 1.7; }
+  strong { color: var(--stone-900); }
+  .fill-table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; }
+  .fill-table td { padding: 10px 14px; border: 1px solid var(--stone-200); font-size: 13px; color: var(--stone-600); }
+  .fill-table td:first-child { background: var(--stone-50); font-weight: 600; font-size: 11px; letter-spacing: 0.3px; color: var(--stone-700); white-space: nowrap; width: 38%; }
+  .deliverables-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 12px; }
+  .deliverables-table th { background: var(--stone-900); color: white; padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
+  .deliverables-table td { padding: 10px 12px; border-bottom: 1px solid var(--stone-200); color: var(--stone-600); vertical-align: top; }
+  .deliverables-table tr:nth-child(even) td { background: var(--stone-50); }
+  .status-done { color: #166534; font-weight: 700; font-size: 11px; }
+  .status-partial { color: #92400e; font-weight: 700; font-size: 11px; }
+  .status-no { color: #991b1b; font-weight: 700; font-size: 11px; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+  .metric-box { background: var(--stone-50); border: 1px solid var(--stone-200); border-radius: 8px; padding: 14px; text-align: center; }
+  .metric-box .val { font-family: Georgia, serif; font-size: 24px; font-weight: 700; color: var(--stone-900); display: block; line-height: 1.2; }
+  .metric-box .lbl { font-size: 11px; color: var(--stone-400); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; display: block; }
+  .metric-box .baseline { font-size: 11px; color: var(--stone-400); margin-top: 2px; display: block; }
+  .write-box { border: 1px solid var(--stone-200); border-radius: 6px; min-height: 56px; padding: 8px 12px; font-size: 13px; color: var(--stone-600); background: var(--stone-50); margin-top: 6px; width: 100%; }
+  .callout-gold { background: #fef9ec; border-left: 3px solid var(--gold); padding: 14px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .callout-gold p { margin: 0; color: var(--stone-700); font-size: 13px; }
+  .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 32px; }
+  .sig-block .pre-sign { height: 44px; }
+  .sig-line { border-top: 1px solid var(--stone-900); padding-top: 8px; font-size: 11px; color: var(--stone-500); line-height: 2; }
+  .doc-footer { margin-top: 50px; padding-top: 14px; border-top: 1px solid var(--stone-200); display: flex; justify-content: space-between; font-size: 10px; color: var(--stone-400); }
+  @media print { .document { padding: 0; } @page { margin: 0.75in 1in; } }
+</style>
+</head>
+<body>
+<div class="document">
+
+  <div class="doc-header">
+    <div>
+      <span class="logo-name">DOXA &amp; CO</span>
+      <span class="logo-tag">Strategy · Product · Delivery</span>
+    </div>
+    <div class="doc-meta">
+      Enam Egyir<br/>
+      ename@doxaandco.co<br/>
+      doxaandco.co
+    </div>
+  </div>
+  <div class="gold-line"></div>
+
+  <h1>Project Closeout &amp; Handoff Report</h1>
+  <p class="subtitle">Completed at the end of each fixed-scope engagement. Shared with the client and retained by Doxa &amp; Co.</p>
+
+  <h2>Engagement Summary</h2>
+  <table class="fill-table">
+    <tr><td>Client / Organization</td><td>&nbsp;</td></tr>
+    <tr><td>Engagement Type</td><td>&nbsp;</td></tr>
+    <tr><td>Start Date</td><td>&nbsp;</td></tr>
+    <tr><td>End Date</td><td>&nbsp;</td></tr>
+    <tr><td>Total Engagement Duration</td><td>&nbsp;</td></tr>
+    <tr><td>Total Hours Worked</td><td>&nbsp;</td></tr>
+    <tr><td>Total Invoiced</td><td>$</td></tr>
+    <tr><td>Outstanding Balance</td><td>$</td></tr>
+    <tr><td>Final Invoice Date</td><td>&nbsp;</td></tr>
+  </table>
+
+  <h2>Deliverables — Status &amp; Handoff</h2>
+  <p>Review each deliverable defined in the original SOW. Mark status and confirm handoff location.</p>
+
+  <table class="deliverables-table">
+    <thead>
+      <tr>
+        <th>Deliverable (from SOW)</th>
+        <th>Status</th>
+        <th>Location / Format</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>&nbsp;</td>
+        <td><span class="status-done">Delivered</span></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><span class="status-done">Delivered</span></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><span class="status-partial">Partial</span></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Outcomes &amp; Results</h2>
+  <p>Record measurable outcomes achieved during the engagement. Compare against success criteria defined at kickoff.</p>
+
+  <div class="metrics-grid">
+    <div class="metric-box">
+      <span class="val">___</span>
+      <span class="lbl">Metric 1</span>
+      <span class="baseline">Baseline: ___</span>
+    </div>
+    <div class="metric-box">
+      <span class="val">___</span>
+      <span class="lbl">Metric 2</span>
+      <span class="baseline">Baseline: ___</span>
+    </div>
+    <div class="metric-box">
+      <span class="val">___</span>
+      <span class="lbl">Metric 3</span>
+      <span class="baseline">Baseline: ___</span>
+    </div>
+  </div>
+
+  <h3>Narrative Summary of Impact</h3>
+  <div class="write-box">&nbsp;</div>
+
+  <h2>What Was Descoped or Deferred</h2>
+  <p>Anything from the original SOW that was removed, reduced, or pushed out — with reason:</p>
+  <div class="write-box">&nbsp;</div>
+
+  <h2>Open Items &amp; Recommended Next Steps</h2>
+  <p>These are items that are outside the current engagement scope but should be addressed by the client's team or in a follow-on engagement:</p>
+  <div class="write-box">&nbsp;</div>
+
+  <h2>Handoff Documentation Index</h2>
+  <p>List all documents, repositories, and assets transferred to the client as part of this closeout:</p>
+
+  <table class="deliverables-table">
+    <thead>
+      <tr><th>Document / Asset</th><th>Format</th><th>Location</th><th>Access Granted To</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Access Revocation</h2>
+  <p>The following access granted to Doxa &amp; Co during the engagement will be revoked or transferred at closeout:</p>
+  <ul>
+    <li>Jira / project management workspace: ☐ Revoked &nbsp; ☐ Downgraded to read-only</li>
+    <li>Slack / Teams channels: ☐ Removed</li>
+    <li>GitHub / GitLab repository: ☐ Revoked &nbsp; ☐ Read-only</li>
+    <li>GRC platform: ☐ Revoked</li>
+    <li>Shared drive / Confluence: ☐ Revoked &nbsp; ☐ Read-only</li>
+    <li>Other: ___________________________ ☐ Revoked</li>
+  </ul>
+
+  <h2>Consultant's Final Notes</h2>
+  <p>Honest assessment of the engagement — what went well, what didn't, and what the client should know going forward:</p>
+  <div class="write-box" style="min-height: 80px;">&nbsp;</div>
+
+  <div class="callout-gold">
+    <p><strong>Referral &amp; Continuation:</strong> If you'd like to continue working together or refer Doxa &amp; Co to someone in your network, I'd appreciate it. Referrals are the primary way I take on new clients, and a brief note to ename@doxaandco.co is all it takes to make an introduction.</p>
+  </div>
+
+  <h2>Closeout Acknowledgment</h2>
+  <p>Both parties confirm that all deliverables have been received, all final payments have been made or scheduled, and the engagement is formally closed. Any further work requires a new Consulting Agreement and SOW.</p>
+
+  <div class="sig-grid">
+    <div class="sig-block">
+      <p style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--stone-500); margin-bottom:4px;">Client</p>
+      <div class="pre-sign"></div>
+      <div class="sig-line">
+        Signature<br/>
+        Printed Name: ___________________________<br/>
+        Title: ___________________________<br/>
+        Date: ___________________________
+      </div>
+    </div>
+    <div class="sig-block">
+      <p style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--stone-500); margin-bottom:4px;">Doxa &amp; Co</p>
+      <div class="pre-sign"></div>
+      <div class="sig-line">
+        Enam Egyir, Principal Consultant<br/>
+        Signature: ___________________________<br/>
+        &nbsp;<br/>
+        Date: ___________________________
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
+    <span>Project Closeout &amp; Handoff Report · Rev. April 2026</span>
+  </div>
+
+</div>
+</body>
+</html>

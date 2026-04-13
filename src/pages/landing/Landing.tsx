@@ -8,6 +8,7 @@ import HowIWork from "../../features/landing/HowIWork";
 import PortfolioPreview from "../../features/landing/PortfolioPreview";
 import Services from "../../features/landing/ServiceTier";
 import TrustedBy from "../../features/landing/TrustedBy";
+import WhoIWorkWith from "../../features/landing/WhoIWorkWith";
 
 
 const Landing = () => {
@@ -16,6 +17,7 @@ const Landing = () => {
       <Hero />
       <TrustedBy />
       <About />
+      <WhoIWorkWith />
       <Services />
       <ClaritySprint />
       <HowIWork />

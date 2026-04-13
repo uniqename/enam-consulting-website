@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Letterhead Template — Doxa & Co</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: Georgia, serif; max-width: 860px; margin: 0 auto; padding: 20px; color: #111; line-height: 1.7; }
+  h1,h2,h3,h4 { font-family: 'Helvetica Neue', Arial, sans-serif; margin-top: 1.4em; }
+  p { margin: 0.6em 0; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  td, th { border: 1px solid #ccc; padding: 8px 12px; vertical-align: top; }
+  th { background: #f5f5f5; font-weight: bold; }
+  ul, ol { margin: 0.6em 0; padding-left: 1.6em; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; padding: 16px; background: #f8f8f8; border-radius: 10px; border: 1px solid #e0e0e0; }
+  .toolbar button { padding: 10px 20px; border: none; border-radius: 24px; cursor: pointer; font-size: 14px; font-weight: 600; }
+  .btn-print { background: #059669; color: #fff; }
+  .btn-print:hover { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .doc-body { outline: none; min-height: 500px; padding: 8px 0; }
+  @media print { .toolbar { display: none !important; } }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+</div>
+<div class="doc-body" contenteditable="true">
+<p><em>[DATE]</em></p><p><strong>[CLIENT NAME]</strong></p><p>[TITLE / COMPANY]</p><p>[EMAIL]</p><p>Dear [CLIENT NAME],</p><p>[Your message begins here. Replace this placeholder with your content. This template is formatted to Doxa &amp; Co brand standards — cream background option available for print, dark stone text on white for digital delivery.]</p><p>[Continue with additional paragraphs as needed. Keep tone direct, clear, and confident. Doxa &amp; Co communicates with precision — no fluff, no filler.]</p><p>Warm regards,</p><p><strong>Enam Egyir</strong></p><p>Founder &amp; Principal Consultant</p><p>Doxa &amp; Co  ·  Strategy · Product · Delivery</p><p>doxaandco.co  ·  hello@doxaandco.co</p>
+</div>
+</body>
+</html>
