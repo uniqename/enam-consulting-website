@@ -74,6 +74,8 @@
   <button class="btn-add"    onclick="addLineItem()">+ Add Line Item</button>
   <button class="btn-remove" onclick="removeLastItem()">− Remove Last Item</button>
   <button class="btn-calc"   onclick="recalcTotal()">⟳ Recalculate Total</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
   <span class="toolbar-note">Click any cell to edit · Add / remove rows · Recalculate auto-sums the total</span>
 </div>
 
@@ -224,5 +226,6 @@
     document.getElementById('total-cell').innerHTML = '<strong>' + formatCurrency(total) + '</strong>';
   }
 </script>
+<script src="docs-utils.js"></script>
 </body>
 </html>

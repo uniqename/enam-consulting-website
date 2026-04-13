@@ -85,7 +85,9 @@
 <div class="toolbar">
   <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
   <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
-  <span class="toolbar-note">Edit directly in browser · Print or Save as PDF when ready</span>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click to edit · Sign · Save as PDF or Word</span>
 </div>
 
 <div class="page">
@@ -110,5 +112,6 @@
   </div>
 </div>
 
+<script src="docs-utils.js"></script>
 </body>
 </html>
