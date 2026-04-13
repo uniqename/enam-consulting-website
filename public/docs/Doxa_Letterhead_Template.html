@@ -5,30 +5,110 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Letterhead Template — Doxa & Co</title>
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: Georgia, serif; max-width: 860px; margin: 0 auto; padding: 20px; color: #111; line-height: 1.7; }
-  h1,h2,h3,h4 { font-family: 'Helvetica Neue', Arial, sans-serif; margin-top: 1.4em; }
-  p { margin: 0.6em 0; }
-  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
-  td, th { border: 1px solid #ccc; padding: 8px 12px; vertical-align: top; }
-  th { background: #f5f5f5; font-weight: bold; }
-  ul, ol { margin: 0.6em 0; padding-left: 1.6em; }
-  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; padding: 16px; background: #f8f8f8; border-radius: 10px; border: 1px solid #e0e0e0; }
-  .toolbar button { padding: 10px 20px; border: none; border-radius: 24px; cursor: pointer; font-size: 14px; font-weight: 600; }
-  .btn-print { background: #059669; color: #fff; }
-  .btn-print:hover { background: #047857; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .toolbar button {
+    padding: 8px 20px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
   .btn-select { background: #1c1917; color: #fff; }
-  .doc-body { outline: none; min-height: 500px; padding: 8px 0; }
-  @media print { .toolbar { display: none !important; } }
+  .btn-select:hover { background: #0c0a09; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  /* ── Page wrapper ── */
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+           border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  /* ── Letterhead header ── */
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4;
+    border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .org-name {
+    font-size: 18px; font-weight: 800; color: #1c1917; letter-spacing: -0.4px;
+  }
+  .letterhead-text .tagline {
+    font-size: 12px; color: #78716c; margin-top: 2px;
+  }
+  .letterhead-contact {
+    margin-left: auto; text-align: right;
+    font-size: 11px; color: #78716c; line-height: 1.6;
+  }
+
+  /* ── Document body ── */
+  .doc-body {
+    outline: none; padding: 40px;
+    min-height: 600px; font-family: Georgia, serif; font-size: .96rem;
+  }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body h1 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.6rem; margin-top: 1.4em; margin-bottom: .4em; color: #1c1917; }
+  .doc-body h2 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.15rem; margin-top: 1.3em; margin-bottom: .35em; color: #1c1917; }
+  .doc-body h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1rem; margin-top: 1.1em; margin-bottom: .3em; color: #1c1917; }
+  .doc-body ul, .doc-body ol { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th {
+    border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top;
+  }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .doc-body img { max-width: 100%; }
+  strong { font-weight: 700; }
+
+  /* ── Footer ── */
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
 </style>
 </head>
 <body>
+
 <div class="toolbar">
   <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
   <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+  <span class="toolbar-note">Edit directly in browser · Print or Save as PDF when ready</span>
 </div>
-<div class="doc-body" contenteditable="true">
+
+<div class="page">
+  <div class="letterhead">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
+    </div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      hello@doxaandco.co
+    </div>
+  </div>
+
+  <div class="doc-body" contenteditable="true">
 <p><em>[DATE]</em></p><p><strong>[CLIENT NAME]</strong></p><p>[TITLE / COMPANY]</p><p>[EMAIL]</p><p>Dear [CLIENT NAME],</p><p>[Your message begins here. Replace this placeholder with your content. This template is formatted to Doxa &amp; Co brand standards — cream background option available for print, dark stone text on white for digital delivery.]</p><p>[Continue with additional paragraphs as needed. Keep tone direct, clear, and confident. Doxa &amp; Co communicates with precision — no fluff, no filler.]</p><p>Warm regards,</p><p><strong>Enam Egyir</strong></p><p>Founder &amp; Principal Consultant</p><p>Doxa &amp; Co  ·  Strategy · Product · Delivery</p><p>doxaandco.co  ·  hello@doxaandco.co</p>
+  </div>
+
+  <div class="letterfoot">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; hello@doxaandco.co</span>
+    <span>Confidential</span>
+  </div>
 </div>
+
 </body>
 </html>
