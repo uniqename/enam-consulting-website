@@ -110,8 +110,8 @@ const Footer = () => {
         <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
           <p>© {currentYear} Doxa and Co LLC. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link to="#" className="hover:text-gray-900">Privacy Policy</Link>
-            <Link to="#" className="hover:text-gray-900">Terms of Service</Link>
+            <Link to="/privacy" className="hover:text-gray-900">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-gray-900">Terms of Service</Link>
           </div>
         </div>
 

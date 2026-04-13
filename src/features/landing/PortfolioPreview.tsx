@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 const projects = [
   {
-    slug: "homelink-gh",
+    slug: "homelinkgh",
     badge: "Product & Engineering",
     badgeColor: "bg-emerald-600",
     image: "/assets/images/homelinkgh_logo.png",
@@ -33,7 +33,7 @@ const projects = [
     bg: "bg-stone-200",
   },
   {
-    slug: "beacon-app",
+    slug: "beacon",
     badge: "Product & Engineering",
     badgeColor: "bg-emerald-600",
     image: "/assets/images/beacon_logo.png",
