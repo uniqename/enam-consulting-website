@@ -32,7 +32,7 @@ const Footer = () => {
               We build production-ready software and optimize GRC platforms for growth.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="https://www.linkedin.com/in/enamegyir/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/doxaandco/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="LinkedIn">
                 <Linkedin size={18} />
               </a>
               <a href="https://github.com/uniqename" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="GitHub">
