@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { PDFDocument } from "pdf-lib";
 import mammoth from "mammoth";
-import { X, PenLine, Upload, Download, FileSignature, BookMarked, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import { X, PenLine, Upload, Download, FileSignature, BookMarked, ChevronLeft, ChevronRight, CheckCircle2, Printer, Send, Edit3 } from "lucide-react";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -20,6 +20,31 @@ const INK_OPTIONS = [
 
 const DEFAULT_SIG_W = 180;
 const DEFAULT_SIG_H = 60;
+
+const LETTERHEAD_CONFIGS = {
+  doxa: {
+    label: "Doxa & Co",
+    org: "DOXA & CO",
+    tagline: "Strategy · Product · Delivery",
+    contact: "ename@doxaandco.co  ·  doxaandco.co",
+    primaryColor: "#8B7030",
+    accentColor: "#059669",
+    bg: "#fafaf9",
+    lineColor: "#C9A44A",
+  },
+  beacon: {
+    label: "Beacon",
+    org: "BEACON OF NEW BEGINNINGS",
+    tagline: "Supporting Survivors in Ghana",
+    contact: "info@beaconnewbeginnings.org  ·  beaconnewbeginnings.org",
+    primaryColor: "#1e3a5f",
+    accentColor: "#f97316",
+    bg: "#fff7ed",
+    lineColor: "#f97316",
+  },
+} as const;
+
+type LetterheadType = "none" | keyof typeof LETTERHEAD_CONFIGS;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -124,6 +149,10 @@ export default function SignatureGenerator({ onClose }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const docInputRef = useRef<HTMLInputElement>(null);
   const docViewerRef = useRef<HTMLDivElement>(null);
+  const wordViewRef = useRef<HTMLDivElement>(null);
+
+  const [letterhead, setLetterhead] = useState<LetterheadType>("none");
+  const [editMode, setEditMode] = useState(false);
 
   // ─ Touch drawing ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -151,6 +180,13 @@ export default function SignatureGenerator({ onClose }: Props) {
     canvas.addEventListener("touchend",   te, { passive: false });
     return () => { canvas.removeEventListener("touchstart", ts); canvas.removeEventListener("touchmove", tm); canvas.removeEventListener("touchend", te); };
   }, [step, mode, strokeWidth]);
+
+  // Sync wordHtml state into the ref-controlled div (avoids dangerouslySetInnerHTML + contentEditable conflict)
+  useEffect(() => {
+    if (wordViewRef.current && wordHtml !== null) {
+      wordViewRef.current.innerHTML = wordHtml;
+    }
+  }, [wordHtml]);
 
   const showNotif = (msg: string, ok = true) => {
     setNotification({ msg, ok });
@@ -229,7 +265,7 @@ export default function SignatureGenerator({ onClose }: Props) {
   // ─ Document loading ───────────────────────────────────────────────────────
   const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f) return;
-    setDocFile(f); setDocLoading(true); setSigBounds(null); setPlacingMode(false);
+    setDocFile(f); setDocLoading(true); setSigBounds(null); setPlacingMode(false); setEditMode(false); setLetterhead("none");
     try {
       const ab = await f.arrayBuffer();
       setDocArrayBuffer(ab);
@@ -252,7 +288,7 @@ export default function SignatureGenerator({ onClose }: Props) {
       const vp1 = page.getViewport({ scale: 1 });
       const vp = page.getViewport({ scale: 2 });
       const c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height;
-      await page.render({ canvasContext: c.getContext("2d")!, viewport: vp }).promise;
+      await page.render({ canvas: c, viewport: vp }).promise;
       pages.push({ dataUrl: c.toDataURL("image/png"), pdfW: vp1.width, pdfH: vp1.height });
     }
     setDocPages(pages); setCurrentPage(0);
@@ -274,6 +310,83 @@ export default function SignatureGenerator({ onClose }: Props) {
     };
     reader.readAsDataURL(f);
   });
+
+  // ─ Letterhead & export helpers ───────────────────────────────────────────
+  const loadImgAsync = (src: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+
+  const composeWithLetterhead = async (
+    docDataUrl: string,
+    lhType: keyof typeof LETTERHEAD_CONFIGS
+  ): Promise<{ canvas: HTMLCanvasElement; headerH: number }> => {
+    const cfg = LETTERHEAD_CONFIGS[lhType];
+    const img = await loadImgAsync(docDataUrl);
+    const W = img.width;
+    const HEADER_H = Math.round(W * 0.12);
+    const FOOTER_H = Math.round(W * 0.04);
+    const PADDING = Math.round(W * 0.06);
+    const H = img.height + HEADER_H + FOOTER_H;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const ctx = c.getContext("2d")!;
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = cfg.bg; ctx.fillRect(0, 0, W, HEADER_H);
+    ctx.fillStyle = cfg.primaryColor;
+    ctx.font = `bold ${Math.round(W * 0.022)}px Georgia, serif`;
+    ctx.fillText(cfg.org, PADDING, Math.round(HEADER_H * 0.38));
+    ctx.fillStyle = cfg.accentColor;
+    ctx.font = `${Math.round(W * 0.013)}px "Helvetica Neue", Arial, sans-serif`;
+    ctx.fillText(cfg.tagline, PADDING, Math.round(HEADER_H * 0.60));
+    ctx.strokeStyle = cfg.lineColor; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(PADDING, Math.round(HEADER_H * 0.78));
+    ctx.lineTo(W - PADDING, Math.round(HEADER_H * 0.78));
+    ctx.stroke();
+    ctx.drawImage(img, 0, HEADER_H);
+    ctx.fillStyle = "#a8a29e";
+    ctx.font = `${Math.round(W * 0.011)}px "Helvetica Neue", Arial, sans-serif`;
+    ctx.fillText(cfg.contact, PADDING, H - Math.round(FOOTER_H * 0.35));
+    return { canvas: c, headerH: HEADER_H };
+  };
+
+  const printDoc = () => {
+    const lhCfg = letterhead !== "none" ? LETTERHEAD_CONFIGS[letterhead as keyof typeof LETTERHEAD_CONFIGS] : null;
+    const lhHtml = lhCfg
+      ? `<div style="background:${lhCfg.bg};border-bottom:2px solid ${lhCfg.lineColor};padding:18px 48px 14px;margin-bottom:24px;">
+           <div style="font-family:Georgia,serif;font-size:18px;color:${lhCfg.primaryColor};font-weight:700;letter-spacing:4px;">${lhCfg.org}</div>
+           <div style="font-size:10px;color:${lhCfg.accentColor};letter-spacing:3px;font-weight:700;margin-top:5px;">${lhCfg.tagline}</div>
+         </div>`
+      : "";
+    let bodyContent: string;
+    if (docType === "word") {
+      bodyContent = lhHtml + (wordViewRef.current?.innerHTML ?? wordHtml ?? "");
+    } else if (docPages[currentPage]) {
+      bodyContent = lhHtml + `<img src="${docPages[currentPage].dataUrl}" style="width:100%;display:block;" />`;
+    } else return;
+    const win = window.open("", "_blank");
+    if (!win) { showNotif("Allow pop-ups to print", false); return; }
+    win.document.write(`<!DOCTYPE html><html><head><title>Print</title><style>
+      body { margin: 0; padding: 40px; font-family: Georgia, serif; }
+      @media print { body { padding: 0; } @page { margin: 0.75in 1in; } }
+    </style></head><body>${bodyContent}</body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 400);
+  };
+
+  const sendDoc = () => {
+    const name = docFile?.name ?? "document";
+    const subject = encodeURIComponent(`Document: ${name}`);
+    const body = encodeURIComponent(
+      `Hi,\n\nPlease find the attached document: ${name}.\n\nTo attach it, first download it using the Save button in Doxa & Co Tools, then attach the file to this email.\n\nBest regards`
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
 
   // ─ Signature placement ────────────────────────────────────────────────────
   const handleDocClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -302,41 +415,85 @@ export default function SignatureGenerator({ onClose }: Props) {
 
   // ─ Export ─────────────────────────────────────────────────────────────────
   const exportSigned = async () => {
-    if (!sigBounds || !processedVariants || !docViewerRef.current) return;
-    const { width: displayW, height: displayH } = docViewerRef.current.getBoundingClientRect();
-    const sigDataUrl = processedVariants[selectedVariant];
+    if (!docFile || docPages.length === 0) return;
+    if (!sigBounds && letterhead === "none" && docType !== "word") {
+      showNotif("Select a letterhead or place a signature first", false);
+      return;
+    }
+    const displayRect = docViewerRef.current?.getBoundingClientRect();
+    const displayW = displayRect?.width ?? 600;
+    const displayH = displayRect?.height ?? 800;
+    const sigDataUrl = processedVariants ? processedVariants[selectedVariant] : null;
     showNotif("Preparing download…");
     try {
-      if (docType === "pdf" && docArrayBuffer) {
-        const pdfDoc = await PDFDocument.load(docArrayBuffer);
-        const page = pdfDoc.getPages()[currentPage];
-        const { width: pW, height: pH } = page.getSize();
-        const sx = pW / displayW, sy = pH / displayH;
-        const pngBytes = await (await fetch(sigDataUrl)).arrayBuffer();
-        page.drawImage(await pdfDoc.embedPng(pngBytes), { x: sigBounds.x * sx, y: pH - (sigBounds.y + sigBounds.h) * sy, width: sigBounds.w * sx, height: sigBounds.h * sy });
-        const a = document.createElement("a"); a.download = `signed_${docFile?.name}.pdf`;
-        a.href = URL.createObjectURL(new Blob([await pdfDoc.save()], { type: "application/pdf" }));
-        a.click(); showNotif("Signed PDF downloaded!");
-      } else if (docType === "image") {
-        const page = docPages[currentPage];
-        const imgEl = docViewerRef.current.querySelector("img");
-        const natW = imgEl?.naturalWidth || displayW, natH = imgEl?.naturalHeight || displayH;
-        const c = document.createElement("canvas"); c.width = natW; c.height = natH;
-        const ctx = c.getContext("2d")!;
-        await new Promise<void>((res) => { const di = new Image(); di.onload = () => { ctx.drawImage(di, 0, 0); res(); }; di.src = page.dataUrl; });
-        await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(natW/displayW), sigBounds.y*(natH/displayH), sigBounds.w*(natW/displayW), sigBounds.h*(natH/displayH)); res(); }; si.src = sigDataUrl; });
-        const a = document.createElement("a"); a.download = `signed_${docFile?.name}.png`; a.href = c.toDataURL("image/png"); a.click(); showNotif("Signed image downloaded!");
-      } else if (docType === "word" && wordHtml) {
-        const W = 794, H = 1123;
-        const wc = await renderHtmlToCanvas(wordHtml, W, H);
-        const ctx = wc.getContext("2d")!;
-        await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(W/displayW), sigBounds.y*(H/displayH), sigBounds.w*(W/displayW), sigBounds.h*(H/displayH)); res(); }; si.src = sigDataUrl; });
-        const pdfDoc = await PDFDocument.create();
-        const pp = pdfDoc.addPage([W, H]);
-        pp.drawImage(await pdfDoc.embedPng(await (await fetch(wc.toDataURL("image/png"))).arrayBuffer()), { x: 0, y: 0, width: W, height: H });
-        const a = document.createElement("a"); a.download = `signed_${docFile?.name}.pdf`;
-        a.href = URL.createObjectURL(new Blob([await pdfDoc.save()], { type: "application/pdf" })); a.click(); showNotif("Signed document downloaded as PDF!");
+      // ── No letterhead: original per-type behavior ──────────────────────
+      if (letterhead === "none") {
+        if (docType === "pdf" && docArrayBuffer && sigBounds && sigDataUrl) {
+          const pdfDoc = await PDFDocument.load(docArrayBuffer);
+          const page = pdfDoc.getPages()[currentPage];
+          const { width: pW, height: pH } = page.getSize();
+          const sx = pW / displayW, sy = pH / displayH;
+          const pngBytes = await (await fetch(sigDataUrl)).arrayBuffer();
+          page.drawImage(await pdfDoc.embedPng(pngBytes), { x: sigBounds.x * sx, y: pH - (sigBounds.y + sigBounds.h) * sy, width: sigBounds.w * sx, height: sigBounds.h * sy });
+          const a = document.createElement("a"); a.download = `signed_${docFile.name}.pdf`;
+          a.href = URL.createObjectURL(new Blob([new Uint8Array(await pdfDoc.save())], { type: "application/pdf" }));
+          a.click(); showNotif("Signed PDF downloaded!");
+        } else if (docType === "image" && docViewerRef.current && sigBounds && sigDataUrl) {
+          const page = docPages[currentPage];
+          const imgEl = docViewerRef.current.querySelector("img");
+          const natW = imgEl?.naturalWidth || displayW, natH = imgEl?.naturalHeight || displayH;
+          const c = document.createElement("canvas"); c.width = natW; c.height = natH;
+          const ctx = c.getContext("2d")!;
+          await new Promise<void>((res) => { const di = new Image(); di.onload = () => { ctx.drawImage(di, 0, 0); res(); }; di.src = page.dataUrl; });
+          await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(natW/displayW), sigBounds.y*(natH/displayH), sigBounds.w*(natW/displayW), sigBounds.h*(natH/displayH)); res(); }; si.src = sigDataUrl; });
+          const a = document.createElement("a"); a.download = `signed_${docFile.name}.png`; a.href = c.toDataURL("image/png"); a.click(); showNotif("Signed image downloaded!");
+        } else if (docType === "word") {
+          const currentHtml = wordViewRef.current?.innerHTML ?? wordHtml ?? "";
+          const W = 794, H = 1123;
+          const wc = await renderHtmlToCanvas(currentHtml, W, H);
+          if (sigBounds && sigDataUrl) {
+            const ctx = wc.getContext("2d")!;
+            await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(W/displayW), sigBounds.y*(H/displayH), sigBounds.w*(W/displayW), sigBounds.h*(H/displayH)); res(); }; si.src = sigDataUrl; });
+          }
+          const pdfDoc = await PDFDocument.create();
+          const pp = pdfDoc.addPage([W, H]);
+          pp.drawImage(await pdfDoc.embedPng(await (await fetch(wc.toDataURL("image/png"))).arrayBuffer()), { x: 0, y: 0, width: W, height: H });
+          const a = document.createElement("a"); a.download = `${docFile.name.replace(/\.[^.]+$/, "")}.pdf`;
+          a.href = URL.createObjectURL(new Blob([new Uint8Array(await pdfDoc.save())], { type: "application/pdf" })); a.click(); showNotif("Document downloaded as PDF!");
+        }
+        return;
       }
+
+      // ── With letterhead: composite everything to canvas → PDF ──────────
+      let pageDataUrl: string;
+      if (docType === "word") {
+        const currentHtml = wordViewRef.current?.innerHTML ?? wordHtml ?? "";
+        const W = 794, H = 1123;
+        pageDataUrl = (await renderHtmlToCanvas(currentHtml, W, H)).toDataURL("image/png");
+      } else {
+        pageDataUrl = docPages[currentPage]?.dataUrl ?? "";
+      }
+      const { canvas: composed, headerH } = await composeWithLetterhead(pageDataUrl, letterhead as keyof typeof LETTERHEAD_CONFIGS);
+      if (sigBounds && sigDataUrl) {
+        const ctx = composed.getContext("2d")!;
+        const cW = composed.width;
+        const docAreaH = composed.height - headerH;
+        const si = await loadImgAsync(sigDataUrl);
+        ctx.drawImage(si,
+          sigBounds.x * (cW / displayW),
+          headerH + sigBounds.y * (docAreaH / displayH),
+          sigBounds.w * (cW / displayW),
+          sigBounds.h * (docAreaH / displayH)
+        );
+      }
+      const pdfDoc = await PDFDocument.create();
+      const pW = composed.width, pH = composed.height;
+      const pp = pdfDoc.addPage([pW, pH]);
+      pp.drawImage(await pdfDoc.embedPng(await (await fetch(composed.toDataURL("image/png"))).arrayBuffer()), { x: 0, y: 0, width: pW, height: pH });
+      const a = document.createElement("a");
+      a.download = `letterhead_${docFile.name.replace(/\.[^.]+$/, "")}.pdf`;
+      a.href = URL.createObjectURL(new Blob([new Uint8Array(await pdfDoc.save())], { type: "application/pdf" }));
+      a.click(); showNotif("Document with letterhead downloaded!");
     } catch (err) { showNotif("Export failed", false); console.error(err); }
   };
 
@@ -601,7 +758,7 @@ export default function SignatureGenerator({ onClose }: Props) {
                   ) : (
                     <div>
                       {/* Toolbar */}
-                      <div className="flex items-center gap-3 mb-3 flex-wrap">
+                      <div className="flex items-center gap-2 mb-3 flex-wrap">
                         <span className="text-sm text-stone-500 truncate flex-1 min-w-0">{docFile.name}</span>
                         {totalPages > 1 && (
                           <div className="flex items-center gap-2 text-sm text-stone-600">
@@ -616,24 +773,71 @@ export default function SignatureGenerator({ onClose }: Props) {
                             </button>
                           </div>
                         )}
-                        <button type="button" onClick={() => { setDocFile(null); setDocPages([]); setSigBounds(null); setWordHtml(null); setDocArrayBuffer(null); }}
+                        <button type="button" onClick={() => { setDocFile(null); setDocPages([]); setSigBounds(null); setWordHtml(null); setDocArrayBuffer(null); setEditMode(false); setLetterhead("none"); }}
                           className="px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs font-medium hover:bg-stone-50 transition-colors">
                           Change
                         </button>
-                        {!sigBounds ? (
-                          <button type="button" onClick={() => setPlacingMode(!placingMode)}
-                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
-                              placingMode ? "bg-emerald-600 text-white" : "bg-stone-900 text-white hover:bg-emerald-600"
-                            }`}>
-                            {placingMode ? "✦ Click to place" : "✍ Place Signature"}
-                          </button>
-                        ) : (
-                          <button type="button" onClick={exportSigned}
-                            className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm">
-                            <Download size={15} />
-                            Download Signed {docType === "image" ? "Image" : "PDF"}
+                      </div>
+
+                      {/* Letterhead picker */}
+                      <div className="mb-3">
+                        <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Letterhead</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {(["none", "doxa"] as LetterheadType[]).map((id) => {
+                            const label = id === "none" ? "None" : LETTERHEAD_CONFIGS[id as keyof typeof LETTERHEAD_CONFIGS].label;
+                            const color = id !== "none" ? LETTERHEAD_CONFIGS[id as keyof typeof LETTERHEAD_CONFIGS].lineColor : undefined;
+                            return (
+                              <button key={id} type="button" onClick={() => setLetterhead(id)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                                  letterhead === id
+                                    ? "border-stone-900 bg-stone-900 text-white shadow-sm"
+                                    : "border-stone-200 text-stone-600 hover:border-stone-400 bg-white"
+                                }`}>
+                                {color && <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />}
+                                {label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Action bar */}
+                      <div className="flex items-center gap-2 mb-3 flex-wrap">
+                        <button type="button" onClick={() => setPlacingMode(!placingMode)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                            placingMode ? "bg-emerald-600 text-white" : "bg-stone-900 text-white hover:bg-emerald-600"
+                          }`}>
+                          ✍ {placingMode ? "Click to place…" : sigBounds ? "Move Signature" : "Place Signature"}
+                        </button>
+                        {sigBounds && (
+                          <button type="button" onClick={() => setSigBounds(null)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors">
+                            ✕ Remove Sig
                           </button>
                         )}
+                        {docType === "word" && (
+                          <button type="button" onClick={() => setEditMode((e) => !e)}
+                            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                              editMode
+                                ? "border-amber-400 bg-amber-50 text-amber-700"
+                                : "border-stone-200 text-stone-600 hover:bg-stone-50"
+                            }`}>
+                            <Edit3 size={12} /> {editMode ? "Editing" : "Edit Text"}
+                          </button>
+                        )}
+                        <div className="flex-1" />
+                        <button type="button" onClick={exportSigned}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-semibold hover:bg-emerald-600 transition-colors shadow-sm">
+                          <Download size={13} /> Save
+                        </button>
+                        <button type="button" onClick={printDoc}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs font-semibold hover:bg-stone-50 transition-colors">
+                          <Printer size={13} /> Print
+                        </button>
+                        <button type="button" onClick={sendDoc}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs font-semibold hover:bg-stone-50 transition-colors">
+                          <Send size={13} /> Send
+                        </button>
                       </div>
 
                       {placingMode && (
@@ -642,6 +846,18 @@ export default function SignatureGenerator({ onClose }: Props) {
                         </div>
                       )}
 
+                      {/* Letterhead preview header (shown above the document viewer) */}
+                      {letterhead !== "none" && (() => {
+                        const cfg = LETTERHEAD_CONFIGS[letterhead as keyof typeof LETTERHEAD_CONFIGS];
+                        return (
+                          <div className="rounded-t-xl border-x-2 border-t-2 border-stone-200 px-5 py-3"
+                            style={{ background: cfg.bg, borderBottom: `2px solid ${cfg.lineColor}` }}>
+                            <div style={{ fontFamily: "Georgia, serif", fontWeight: 700, letterSpacing: "3px", color: cfg.primaryColor, fontSize: 13 }}>{cfg.org}</div>
+                            <div style={{ fontSize: 9, color: cfg.accentColor, letterSpacing: "2px", fontWeight: 700, marginTop: 3 }}>{cfg.tagline}</div>
+                          </div>
+                        );
+                      })()}
+
                       {/* Document viewer */}
                       <div
                         ref={docViewerRef}
@@ -649,15 +865,23 @@ export default function SignatureGenerator({ onClose }: Props) {
                         onMouseMove={handleViewerMouseMove}
                         onMouseUp={handleViewerMouseUp}
                         onMouseLeave={handleViewerMouseUp}
-                        className={`relative bg-white rounded-xl overflow-auto max-h-96 shadow-inner border-2 select-none transition-colors ${
+                        className={`relative bg-white overflow-auto max-h-96 shadow-inner border-2 select-none transition-colors ${
+                          letterhead !== "none" ? "rounded-b-xl border-t-0" : "rounded-xl"
+                        } ${
                           placingMode ? "border-emerald-400 cursor-crosshair" :
                           dragging || resizing ? "border-stone-300 cursor-grabbing" :
                           "border-stone-200"
                         }`}
                       >
                         {docType === "word" && wordHtml ? (
-                          <div className="p-10 font-serif text-sm leading-relaxed text-stone-900 min-h-96"
-                            dangerouslySetInnerHTML={{ __html: wordHtml }} />
+                          <div
+                            ref={wordViewRef}
+                            contentEditable={editMode}
+                            suppressContentEditableWarning
+                            className={`p-10 font-serif text-sm leading-relaxed text-stone-900 min-h-96 focus:outline-none ${
+                              editMode ? "ring-2 ring-inset ring-amber-300" : ""
+                            }`}
+                          />
                         ) : docPages[currentPage] ? (
                           <img src={docPages[currentPage].dataUrl} alt="Document page"
                             className="w-full block align-top" />
@@ -689,8 +913,15 @@ export default function SignatureGenerator({ onClose }: Props) {
                           Drag to move · Corner handle to resize · ✕ to remove
                         </p>
                       )}
-                      {docType === "word" && (
-                        <p className="text-xs text-stone-400 text-center mt-1">Word documents export as PDF with your signature embedded.</p>
+                      {editMode && (
+                        <p className="text-xs text-amber-500 text-center mt-1">
+                          Editing — click any text to edit directly. Changes carry through to Save and Print.
+                        </p>
+                      )}
+                      {letterhead !== "none" && (
+                        <p className="text-xs text-stone-400 text-center mt-1">
+                          Letterhead will appear on Save and Print output.
+                        </p>
                       )}
                     </div>
                   )}
