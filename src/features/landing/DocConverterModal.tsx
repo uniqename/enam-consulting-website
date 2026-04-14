@@ -3,7 +3,7 @@ import * as pdfjsLib from "pdfjs-dist";
 import { PDFDocument } from "pdf-lib";
 import mammoth from "mammoth";
 import {
-  X, Upload, Download, Printer, Send, Edit3, PenLine,
+  X, Upload, Download, Printer, Send, PenLine,
   ChevronLeft, ChevronRight, Trash2, Check,
 } from "lucide-react";
 
@@ -98,7 +98,7 @@ export default function DocConverterModal({ onClose }: Props) {
 
   // ── UI state ──────────────────────────────────────────────────────────────
   const [letterhead, setLetterhead]   = useState(false);
-  const [editMode, setEditMode]       = useState(false);
+  const [_editMode] = useState(false); // Word docs are always editable
   const [showSigPad, setShowSigPad]   = useState(false);
   const [inkColor, setInkColor]       = useState(INK[0].color);
   const [isDrawing, setIsDrawing]     = useState(false);
@@ -117,6 +117,12 @@ export default function DocConverterModal({ onClose }: Props) {
   const docViewerRef  = useRef<HTMLDivElement>(null);
   const wordViewRef   = useRef<HTMLDivElement>(null);
   const sigCanvasRef  = useRef<HTMLCanvasElement>(null);
+
+  // ── Rich text formatting ──────────────────────────────────────────────────
+  const execCmd = (cmd: string, val?: string) => {
+    wordViewRef.current?.focus();
+    document.execCommand(cmd, false, val ?? "");
+  };
 
   // ── Notification ──────────────────────────────────────────────────────────
   const [notif, setNotif] = useState<{ msg: string; ok: boolean } | null>(null);
@@ -156,7 +162,7 @@ export default function DocConverterModal({ onClose }: Props) {
     const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
     setDocFile(file);
     setDocPages([]); setWordHtml(null); setDocArrayBuffer(null);
-    setSigBounds(null); setPlacingMode(false); setEditMode(false);
+    setSigBounds(null); setPlacingMode(false);
     setLetterhead(false);
 
     if (ext === "pdf") {
@@ -570,12 +576,9 @@ export default function DocConverterModal({ onClose }: Props) {
                   </button>
                 )}
                 {docType === "word" && (
-                  <button onClick={() => setEditMode(v => !v)}
-                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                      editMode ? "border-amber-400 bg-amber-50 text-amber-700" : "border-stone-200 text-stone-600 hover:bg-stone-50"
-                    }`}>
-                    <Edit3 size={12} /> {editMode ? "Editing…" : "Edit Text"}
-                  </button>
+                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
+                    ✏ Editing
+                  </span>
                 )}
                 <div className="flex-1" />
                 {totalPages > 1 && (
@@ -604,6 +607,89 @@ export default function DocConverterModal({ onClose }: Props) {
                   <Send size={13} /> Send
                 </button>
               </div>
+
+              {/* ── Rich text formatting toolbar (Word docs only) ── */}
+              {docType === "word" && (
+                <div className="flex items-center gap-1 flex-wrap px-3 py-2 bg-stone-50 rounded-xl border border-stone-100">
+                  {/* Bold / Italic / Underline */}
+                  {[
+                    { cmd: "bold",      label: "B", title: "Bold",      cls: "font-black" },
+                    { cmd: "italic",    label: "I", title: "Italic",    cls: "italic" },
+                    { cmd: "underline", label: "U", title: "Underline", cls: "underline" },
+                  ].map(({ cmd, label, title, cls }) => (
+                    <button key={cmd} type="button" title={title}
+                      onMouseDown={e => { e.preventDefault(); execCmd(cmd); }}
+                      className={`w-7 h-7 rounded text-sm text-stone-700 hover:bg-stone-200 transition-colors ${cls}`}>
+                      {label}
+                    </button>
+                  ))}
+                  <span className="w-px h-5 bg-stone-200 mx-1" />
+                  {/* Alignment */}
+                  {[
+                    { cmd: "justifyLeft",   icon: "≡", title: "Align left",  style: "text-left" },
+                    { cmd: "justifyCenter", icon: "≡", title: "Center",      style: "text-center" },
+                    { cmd: "justifyRight",  icon: "≡", title: "Align right", style: "text-right" },
+                    { cmd: "justifyFull",   icon: "≡", title: "Justify",     style: "" },
+                  ].map(({ cmd, icon, title }, i) => (
+                    <button key={cmd} type="button" title={title}
+                      onMouseDown={e => { e.preventDefault(); execCmd(cmd); }}
+                      className="w-7 h-7 rounded text-sm text-stone-700 hover:bg-stone-200 transition-colors flex items-center justify-center"
+                      style={{ letterSpacing: i === 1 ? "1px" : i === 2 ? "2px" : "" }}>
+                      {icon}
+                    </button>
+                  ))}
+                  <span className="w-px h-5 bg-stone-200 mx-1" />
+                  {/* Font size */}
+                  <select
+                    title="Font size"
+                    className="h-7 rounded border border-stone-200 text-xs text-stone-700 px-1 bg-white hover:bg-stone-50 transition-colors"
+                    defaultValue=""
+                    onChange={e => { execCmd("fontSize", e.target.value); e.target.value = ""; }}
+                  >
+                    <option value="" disabled>Size</option>
+                    <option value="1">Tiny (8pt)</option>
+                    <option value="2">Small (10pt)</option>
+                    <option value="3">Normal (12pt)</option>
+                    <option value="4">Medium (14pt)</option>
+                    <option value="5">Large (18pt)</option>
+                    <option value="6">XL (24pt)</option>
+                    <option value="7">XXL (36pt)</option>
+                  </select>
+                  <span className="w-px h-5 bg-stone-200 mx-1" />
+                  {/* Headings */}
+                  <select
+                    title="Paragraph style"
+                    className="h-7 rounded border border-stone-200 text-xs text-stone-700 px-1 bg-white hover:bg-stone-50 transition-colors"
+                    defaultValue=""
+                    onChange={e => { execCmd("formatBlock", e.target.value); e.target.value = ""; }}
+                  >
+                    <option value="" disabled>Style</option>
+                    <option value="p">Normal</option>
+                    <option value="h1">Heading 1</option>
+                    <option value="h2">Heading 2</option>
+                    <option value="h3">Heading 3</option>
+                  </select>
+                  <span className="w-px h-5 bg-stone-200 mx-1" />
+                  {/* Lists */}
+                  {[
+                    { cmd: "insertUnorderedList", label: "• List", title: "Bullet list" },
+                    { cmd: "insertOrderedList",   label: "1. List", title: "Numbered list" },
+                  ].map(({ cmd, label, title }) => (
+                    <button key={cmd} type="button" title={title}
+                      onMouseDown={e => { e.preventDefault(); execCmd(cmd); }}
+                      className="px-2 h-7 rounded text-xs text-stone-700 hover:bg-stone-200 transition-colors">
+                      {label}
+                    </button>
+                  ))}
+                  <span className="w-px h-5 bg-stone-200 mx-1" />
+                  {/* Remove formatting */}
+                  <button type="button" title="Remove formatting"
+                    onMouseDown={e => { e.preventDefault(); execCmd("removeFormat"); }}
+                    className="px-2 h-7 rounded text-xs text-stone-400 hover:bg-stone-200 hover:text-stone-700 transition-colors">
+                    Tx
+                  </button>
+                </div>
+              )}
 
               {/* Placing mode banner */}
               {placingMode && (
@@ -643,11 +729,9 @@ export default function DocConverterModal({ onClose }: Props) {
                 {docType === "word" && wordHtml !== null ? (
                   <div
                     ref={wordViewRef}
-                    contentEditable={editMode}
+                    contentEditable
                     suppressContentEditableWarning
-                    className={`p-10 font-serif text-sm leading-relaxed text-stone-900 min-h-64 focus:outline-none ${
-                      editMode ? "ring-2 ring-inset ring-amber-300" : ""
-                    }`}
+                    className="p-10 font-serif text-sm leading-relaxed text-stone-900 min-h-64 focus:outline-none"
                   />
                 ) : docPages[currentPage] ? (
                   <img src={docPages[currentPage].dataUrl} alt="Document page" className="w-full block" />
