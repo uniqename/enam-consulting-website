@@ -1,4 +1,4 @@
-import { Linkedin, Github, Instagram, Mail, MapPin } from 'lucide-react';
+import { Linkedin, Github, Instagram, Mail, MapPin, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 
 const Footer = () => {
@@ -32,7 +32,7 @@ const Footer = () => {
               We build production-ready software and optimize GRC platforms for growth.
             </p>
             <div className="flex gap-4 pt-2">
-              <a href="https://www.linkedin.com/in/enamegyir/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/doxaandco/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="LinkedIn">
                 <Linkedin size={18} />
               </a>
               <a href="https://github.com/uniqename" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="GitHub">
@@ -87,6 +87,12 @@ const Footer = () => {
                 <Mail size={18} className="shrink-0 text-emerald-600" />
                 <a href="mailto:ename@doxaandco.co" className="hover:text-gray-900 transition-colors">
                   ename@doxaandco.co
+                </a>
+              </li>
+              <li className="flex items-start gap-3 text-gray-500">
+                <Phone size={18} className="shrink-0 text-emerald-600" />
+                <a href="tel:+16143776633" className="hover:text-gray-900 transition-colors">
+                  +1 614 377 6633
                 </a>
               </li>
               <li className="flex items-start gap-3 text-gray-500">

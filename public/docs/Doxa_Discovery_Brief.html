@@ -2,133 +2,116 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Discovery Call Brief — Doxa &amp; Co</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Discovery Brief — Doxa & Co</title>
 <style>
-  :root {
-    --gold:#C9A44A;--gold-dark:#8B7030;--emerald:#059669;
-    --stone-900:#1c1917;--stone-700:#292524;--stone-600:#57534e;
-    --stone-500:#78716c;--stone-400:#a8a29e;--stone-200:#e7e5e0;
-    --stone-100:#f5f5f4;--stone-50:#fafaf9;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
   }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Helvetica Neue',Arial,sans-serif;color:var(--stone-900);background:white;line-height:1.6;}
-  .document{max-width:760px;margin:0 auto;padding:60px 70px;}
-  .doc-header{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:24px;margin-bottom:8px;border-bottom:1px solid var(--stone-200);}
-  .logo-name{font-family:Georgia,serif;font-size:18px;font-weight:400;color:var(--gold-dark);letter-spacing:4px;display:block;}
-  .logo-tag{font-size:8px;font-weight:700;letter-spacing:3px;color:var(--emerald);text-transform:uppercase;display:block;margin-top:2px;}
-  .doc-meta{text-align:right;font-size:11px;color:var(--stone-400);line-height:1.9;}
-  .gold-line{height:2px;background:linear-gradient(to right,var(--gold-dark),var(--gold),var(--gold-dark));margin:8px 0 40px;}
-  h1{font-family:Georgia,serif;font-size:22px;color:var(--stone-900);margin-bottom:6px;}
-  .subtitle{font-size:12px;color:var(--stone-400);margin-bottom:32px;}
-  h2{font-family:Georgia,serif;font-size:14px;font-weight:700;color:var(--stone-900);margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--stone-200);}
-  h3{font-size:12px;font-weight:700;color:var(--stone-500);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;}
-  p{font-size:13px;color:var(--stone-600);margin-bottom:12px;line-height:1.8;}
-  ol,ul{padding-left:20px;margin-bottom:14px;}
-  li{font-size:13px;color:var(--stone-600);margin-bottom:5px;line-height:1.7;}
-  strong{color:var(--stone-900);}
-  .fill-table{width:100%;border-collapse:collapse;margin:14px 0 24px;}
-  .fill-table td{padding:10px 14px;border:1px solid var(--stone-200);font-size:13px;color:var(--stone-600);}
-  .fill-table td:first-child{background:var(--stone-50);font-weight:600;font-size:11px;letter-spacing:.3px;color:var(--stone-700);white-space:nowrap;width:38%;}
-  .data-table{width:100%;border-collapse:collapse;margin:14px 0 24px;}
-  .data-table th{background:var(--stone-900);color:white;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:left;}
-  .data-table td{padding:10px 14px;border:1px solid var(--stone-200);font-size:12px;color:var(--stone-600);}
-  .data-table tr:nth-child(even) td{background:var(--stone-50);}
-  .writein{width:100%;border:1px dashed var(--stone-300);border-radius:6px;min-height:60px;background:white;padding:8px 12px;font-size:13px;color:var(--stone-600);}
-  .callout-gold{background:#fef9ec;border-left:3px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:0 8px 8px 0;}
-  .callout-gold p{margin:0;color:var(--stone-700);font-size:13px;}
-  .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:32px;}
-  .sig-block .pre-sign{height:44px;}
-  .sig-line{border-top:1px solid var(--stone-900);padding-top:8px;font-size:11px;color:var(--stone-500);line-height:2;}
-  .doc-footer{margin-top:50px;padding-top:14px;border-top:1px solid var(--stone-200);display:flex;justify-content:space-between;font-size:10px;color:var(--stone-400);}
-  .section-note{background:var(--stone-50);border:1px solid var(--stone-200);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--stone-500);font-style:italic;}
-  .highlight{background:#fef9ec;border-radius:4px;padding:2px 6px;}
-  @media print{.document{padding:0;}@page{margin:.75in 1in;}}
+  .toolbar button {
+    padding: 8px 20px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  /* ── Page wrapper ── */
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+           border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  /* ── Letterhead header ── */
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4;
+    border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .org-name {
+    font-size: 18px; font-weight: 800; color: #1c1917; letter-spacing: -0.4px;
+  }
+  .letterhead-text .tagline {
+    font-size: 12px; color: #78716c; margin-top: 2px;
+  }
+  .letterhead-contact {
+    margin-left: auto; text-align: right;
+    font-size: 11px; color: #78716c; line-height: 1.6;
+  }
+
+  /* ── Document body ── */
+  .doc-body {
+    outline: none; padding: 40px;
+    min-height: 600px; font-family: Georgia, serif; font-size: .96rem;
+  }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body h1 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.6rem; margin-top: 1.4em; margin-bottom: .4em; color: #1c1917; }
+  .doc-body h2 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.15rem; margin-top: 1.3em; margin-bottom: .35em; color: #1c1917; }
+  .doc-body h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1rem; margin-top: 1.1em; margin-bottom: .3em; color: #1c1917; }
+  .doc-body ul, .doc-body ol { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th {
+    border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top;
+  }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .doc-body img { max-width: 100%; }
+  strong { font-weight: 700; }
+
+  /* ── Footer ── */
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
 </style>
 </head>
 <body>
-<div class="document">
-  <div class="doc-header">
-    <div>
-      <span class="logo-name">DOXA &amp; CO</span>
-      <span class="logo-tag">Strategy · Product · Delivery</span>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click to edit · Sign · Save as PDF or Word</span>
+</div>
+
+<div class="page">
+  <div class="letterhead">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
     </div>
-    <div class="doc-meta">Enam Egyir<br/>ename@doxaandco.co<br/>doxaandco.co</div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
+    </div>
   </div>
-  <div class="gold-line"></div>
-  <h1>Discovery Call Brief</h1>
-  <p class="subtitle">Pre-call preparation guide for Doxa &amp; Co intake conversations</p>
 
-  <p>Pre-call preparation guide for Doxa &amp; Co intake conversations. Complete before the call begins.</p>
+  <div class="doc-body" contenteditable="true">
+<p><strong>DISCOVERY CALL BRIEF</strong></p><p><em>Pre-call preparation guide for Doxa &amp; Co intake conversations</em></p><p><strong>Client Information</strong></p><table><tr><td><p><strong>Date</strong></p></td><td></td></tr><tr><td><p><strong>Client Name</strong></p></td><td></td></tr><tr><td><p><strong>Company / Org</strong></p></td><td></td></tr><tr><td><p><strong>Industry</strong></p></td><td></td></tr><tr><td><p><strong>Email</strong></p></td><td></td></tr><tr><td><p><strong>Referred By / Source</strong></p></td><td></td></tr><tr><td><p><strong>Session Type</strong></p></td><td><p><em>General Inquiry / Fractional PO / Strategy / AI Advisory / MVP</em></p></td></tr></table><p><strong>Pre-Call Research (complete before the call)</strong></p><ul><li>Review their LinkedIn / website — understand their current role and context</li><li>Note company size and stage (startup / scaling / enterprise)</li><li>Identify what session type they booked and their stated goal</li><li>Pull any prior notes if they have engaged with Doxa &amp; Co before</li></ul><p><strong>Discovery Questions (use as a guide, not a script)</strong></p><p><strong>Situation</strong></p><ol><li>What does your product/team look like right now — what are you working with?</li><li>What is working well, and where does it feel stuck or unclear?</li></ol><p><strong>Pain</strong></p><ol><li>What made you reach out now — what triggered this?</li><li>What have you tried already? What happened?</li><li>What does this problem cost you if it is not resolved in the next 90 days?</li></ol><p><strong>Implication</strong></p><ol><li>Who else is impacted by this — investors, team, customers?</li><li>What happens to the roadmap / launch timeline if this is not fixed?</li></ol><p><strong>Need</strong></p><ol><li>Ideally, what would &quot;solved&quot; look like for you?</li><li>What would make this engagement a clear win three months from now?</li></ol><p><strong>Fit Assessment</strong></p><table><thead><tr><th><p><strong>FIT CRITERIA</strong></p></th><th><p><strong>SCORE (1–5)</strong></p></th><th><p><strong>NOTES</strong></p></th></tr></thead><tbody><tr><td><p>Clear problem or opportunity defined</p></td><td><p> </p></td><td><p> </p></td></tr><tr><td><p>Decision-making authority in the room</p></td><td><p> </p></td><td><p> </p></td></tr><tr><td><p>Budget aligned with scope</p></td><td><p> </p></td><td><p> </p></td></tr><tr><td><p>Timeline is realistic</p></td><td><p> </p></td><td><p> </p></td></tr><tr><td><p>Values and communication style aligned</p></td><td><p> </p></td><td><p> </p></td></tr><tr><td><p>Interest in long-term relationship</p></td><td><p> </p></td><td><p> </p></td></tr></tbody></table><p><strong>Post-Call Notes &amp; Recommended Next Step</strong></p><p><strong>Summary of conversation:</strong></p><p>______________________________________________________________________________________</p><p>______________________________________________________________________________________</p><p>______________________________________________________________________________________</p><p><strong>Recommended next step:</strong></p><ul><li>Send proposal / SOW</li><li>Send consulting agreement</li><li>Schedule follow-up call</li><li>Not a fit — send kind decline</li></ul><p><strong>Notes / action items:</strong></p><p>______________________________________________________________________________________</p><p>______________________________________________________________________________________</p>
+  </div>
 
-  <h2>Client Information</h2>
-  <table class="fill-table">
-    <tr><td>Date</td><td></td></tr>
-    <tr><td>Client Name</td><td></td></tr>
-    <tr><td>Company / Org</td><td></td></tr>
-    <tr><td>Industry</td><td></td></tr>
-    <tr><td>Email</td><td></td></tr>
-    <tr><td>Referred By / Source</td><td></td></tr>
-    <tr><td>Session Type</td><td>☐ General Inquiry &nbsp; ☐ Fractional PO &nbsp; ☐ Strategy &nbsp; ☐ AI Advisory &nbsp; ☐ MVP</td></tr>
-  </table>
-
-  <h2>Pre-Call Research</h2>
-  <ul>
-    <li>Review their LinkedIn / website — understand their current role and context</li>
-    <li>Note company size and stage (startup / scaling / enterprise)</li>
-    <li>Identify what session type they booked and their stated goal</li>
-    <li>Pull any prior notes if they have engaged with Doxa &amp; Co before</li>
-  </ul>
-
-  <h2>Discovery Questions</h2>
-  <h3>Situation</h3>
-  <ul>
-    <li>What does your product/team look like right now — what are you working with?</li>
-    <li>What is working well, and where does it feel stuck or unclear?</li>
-  </ul>
-  <h3>Pain</h3>
-  <ul>
-    <li>What made you reach out now — what triggered this?</li>
-    <li>What have you tried already? What happened?</li>
-    <li>What does this problem cost you if it is not resolved in the next 90 days?</li>
-  </ul>
-  <h3>Implication</h3>
-  <ul>
-    <li>Who else is impacted by this — investors, team, customers?</li>
-    <li>What happens to the roadmap / launch timeline if this is not fixed?</li>
-  </ul>
-  <h3>Need</h3>
-  <ul>
-    <li>Ideally, what would "solved" look like for you?</li>
-    <li>What would make this engagement a clear win three months from now?</li>
-  </ul>
-
-  <h2>Fit Assessment</h2>
-  <table class="data-table">
-    <thead><tr><th>Fit Criteria</th><th>Score (1–5)</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td>Clear problem or opportunity defined</td><td></td><td></td></tr>
-      <tr><td>Decision-making authority in the room</td><td></td><td></td></tr>
-      <tr><td>Budget aligned with scope</td><td></td><td></td></tr>
-      <tr><td>Timeline is realistic</td><td></td><td></td></tr>
-      <tr><td>Values and communication style aligned</td><td></td><td></td></tr>
-      <tr><td>Interest in long-term relationship</td><td></td><td></td></tr>
-    </tbody>
-  </table>
-
-  <h2>Post-Call Notes &amp; Recommended Next Step</h2>
-  <p>Summary of conversation:</p>
-  <div class="writein"></div>
-  <p style="margin-top:14px;">Recommended next step:</p>
-  <p>☐ Send proposal / SOW &nbsp;&nbsp; ☐ Send consulting agreement &nbsp;&nbsp; ☐ Schedule follow-up call &nbsp;&nbsp; ☐ Not a fit — send kind decline</p>
-  <p style="margin-top:14px;">Notes / action items:</p>
-  <div class="writein"></div>
-
-  <div class="doc-footer">
-    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
-    <span>Discovery Call Brief · Rev. April 2026</span>
+  <div class="letterfoot">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential</span>
   </div>
 </div>
-  <script src="/docs/doc-editor.js"></script>
+
+<script src="docs-utils.js"></script>
 </body>
 </html>

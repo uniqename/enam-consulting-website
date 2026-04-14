@@ -2,120 +2,230 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Invoice — Doxa &amp; Co</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Invoice Template — Doxa & Co</title>
 <style>
-  :root {
-    --gold:#C9A44A;--gold-dark:#8B7030;--emerald:#059669;
-    --stone-900:#1c1917;--stone-700:#292524;--stone-600:#57534e;
-    --stone-500:#78716c;--stone-400:#a8a29e;--stone-200:#e7e5e0;
-    --stone-100:#f5f5f4;--stone-50:#fafaf9;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
   }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Helvetica Neue',Arial,sans-serif;color:var(--stone-900);background:white;line-height:1.6;}
-  .document{max-width:760px;margin:0 auto;padding:60px 70px;}
-  .doc-header{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:24px;margin-bottom:8px;border-bottom:1px solid var(--stone-200);}
-  .logo-name{font-family:Georgia,serif;font-size:18px;font-weight:400;color:var(--gold-dark);letter-spacing:4px;display:block;}
-  .logo-tag{font-size:8px;font-weight:700;letter-spacing:3px;color:var(--emerald);text-transform:uppercase;display:block;margin-top:2px;}
-  .doc-meta{text-align:right;font-size:11px;color:var(--stone-400);line-height:1.9;}
-  .gold-line{height:2px;background:linear-gradient(to right,var(--gold-dark),var(--gold),var(--gold-dark));margin:8px 0 40px;}
-  h1{font-family:Georgia,serif;font-size:22px;color:var(--stone-900);margin-bottom:6px;}
-  .subtitle{font-size:12px;color:var(--stone-400);margin-bottom:32px;}
-  h2{font-family:Georgia,serif;font-size:14px;font-weight:700;color:var(--stone-900);margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--stone-200);}
-  h3{font-size:12px;font-weight:700;color:var(--stone-500);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;}
-  p{font-size:13px;color:var(--stone-600);margin-bottom:12px;line-height:1.8;}
-  ol,ul{padding-left:20px;margin-bottom:14px;}
-  li{font-size:13px;color:var(--stone-600);margin-bottom:5px;line-height:1.7;}
-  strong{color:var(--stone-900);}
-  .fill-table{width:100%;border-collapse:collapse;margin:14px 0 24px;}
-  .fill-table td{padding:10px 14px;border:1px solid var(--stone-200);font-size:13px;color:var(--stone-600);}
-  .fill-table td:first-child{background:var(--stone-50);font-weight:600;font-size:11px;letter-spacing:.3px;color:var(--stone-700);white-space:nowrap;width:38%;}
-  .data-table{width:100%;border-collapse:collapse;margin:14px 0 24px;}
-  .data-table th{background:var(--stone-900);color:white;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:left;}
-  .data-table td{padding:10px 14px;border:1px solid var(--stone-200);font-size:12px;color:var(--stone-600);}
-  .data-table tr:nth-child(even) td{background:var(--stone-50);}
-  .writein{width:100%;border:1px dashed var(--stone-300);border-radius:6px;min-height:60px;background:white;padding:8px 12px;font-size:13px;color:var(--stone-600);}
-  .callout-gold{background:#fef9ec;border-left:3px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:0 8px 8px 0;}
-  .callout-gold p{margin:0;color:var(--stone-700);font-size:13px;}
-  .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:32px;}
-  .sig-block .pre-sign{height:44px;}
-  .sig-line{border-top:1px solid var(--stone-900);padding-top:8px;font-size:11px;color:var(--stone-500);line-height:2;}
-  .doc-footer{margin-top:50px;padding-top:14px;border-top:1px solid var(--stone-200);display:flex;justify-content:space-between;font-size:10px;color:var(--stone-400);}
-  .section-note{background:var(--stone-50);border:1px solid var(--stone-200);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--stone-500);font-style:italic;}
-  .highlight{background:#fef9ec;border-radius:4px;padding:2px 6px;}
-  @media print{.document{padding:0;}@page{margin:.75in 1in;}}
+  .toolbar button {
+    padding: 8px 18px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .btn-add    { background: #2563eb; color: #fff; }
+  .btn-add:hover    { background: #1d4ed8; }
+  .btn-remove { background: #dc2626; color: #fff; }
+  .btn-remove:hover { background: #b91c1c; }
+  .btn-calc   { background: #7c3aed; color: #fff; }
+  .btn-calc:hover   { background: #6d28d9; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+          border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+          box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4; border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .tagline { font-size: 12px; color: #78716c; margin-top: 2px; }
+  .letterhead-contact { margin-left: auto; text-align: right; font-size: 11px; color: #78716c; line-height: 1.6; }
+
+  .doc-body { outline: none; padding: 40px; min-height: 600px; font-family: Georgia, serif; font-size: .96rem; }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body ul { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th { border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top; }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  strong { font-weight: 700; }
+
+  #line-items-table tr.line-item:hover td { background: #f9fafb; }
+  .total-row td { background: #f0fdf4 !important; font-weight: 700; }
+
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
 </style>
 </head>
 <body>
-<div class="document">
-  <div class="doc-header">
-    <div>
-      <span class="logo-name">DOXA &amp; CO</span>
-      <span class="logo-tag">Strategy · Product · Delivery</span>
-    </div>
-    <div class="doc-meta">Enam Egyir<br/>ename@doxaandco.co<br/>doxaandco.co</div>
-  </div>
-  <div class="gold-line"></div>
-  <h1>Invoice</h1>
-  <p class="subtitle">Doxa &amp; Co · Strategy · Product · Delivery</p>
 
-  <table class="fill-table" style="margin-bottom:24px;">
-    <tr><td>Invoice #</td><td>DOX-</td></tr>
-    <tr><td>Date</td><td></td></tr>
-    <tr><td>Due Date</td><td></td></tr>
-    <tr><td>Status</td><td>☐ UNPAID &nbsp; ☐ PAID &nbsp; ☐ PARTIAL</td></tr>
-  </table>
+<div class="toolbar">
+  <button class="btn-print"  onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+  <button class="btn-add"    onclick="addLineItem()">+ Add Line Item</button>
+  <button class="btn-remove" onclick="removeLastItem()">− Remove Last Item</button>
+  <button class="btn-calc"   onclick="recalcTotal()">⟳ Recalculate Total</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click any cell to edit · Add / remove rows · Recalculate auto-sums the total</span>
+</div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
-    <div>
-      <h3>Bill To</h3>
-      <table class="fill-table">
-        <tr><td>Client Name</td><td></td></tr>
-        <tr><td>Company</td><td></td></tr>
-        <tr><td>Address</td><td></td></tr>
-        <tr><td>Email</td><td></td></tr>
-      </table>
+<div class="page">
+  <div class="letterhead">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
     </div>
-    <div>
-      <h3>For</h3>
-      <table class="fill-table">
-        <tr><td>Engagement</td><td></td></tr>
-        <tr><td>SOW Reference</td><td>DOX-</td></tr>
-        <tr><td>Period</td><td></td></tr>
-      </table>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
     </div>
   </div>
 
-  <h2>Line Items</h2>
-  <table class="data-table">
-    <thead><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead>
-    <tbody>
-      <tr><td></td><td></td><td></td><td></td></tr>
-      <tr><td></td><td></td><td></td><td></td></tr>
-      <tr><td></td><td></td><td></td><td></td></tr>
-      <tr><td style="font-weight:700;text-align:right;" colspan="3">TOTAL DUE</td><td style="font-weight:700;"></td></tr>
-    </tbody>
-  </table>
+  <div class="doc-body" contenteditable="true">
 
-  <h2>Payment Instructions</h2>
-  <ul>
-    <li><strong>Zelle:</strong> ename@doxaandco.co</li>
-    <li><strong>ACH / Wire:</strong> Contact ename@doxaandco.co to request banking details</li>
-    <li><strong>PayPal:</strong> Contact to request PayPal link</li>
-    <li><strong>Check payable to:</strong> Enam Egyir / Doxa &amp; Co</li>
-  </ul>
+    <table>
+      <tr>
+        <td>
+          <p><strong>INVOICE</strong></p>
+          <p>Doxa &amp; Co &nbsp;·&nbsp; Strategy · Product · Delivery</p>
+          <p>doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</p>
+        </td>
+        <td>
+          <p>Invoice #: DOX-[YEAR]-[###]</p>
+          <p>Date: [DATE]</p>
+          <p>Due Date: [DATE + 7 days]</p>
+          <p><strong>Status: UNPAID</strong></p>
+        </td>
+      </tr>
+    </table>
 
-  <div class="callout-gold">
-    <p>Payment is due within <strong>7 days</strong> of invoice date. Accounts unpaid after 15 days accrue a <strong>1.5% monthly late fee</strong>.</p>
+    <table>
+      <tr>
+        <td>
+          <p><strong>BILL TO</strong></p>
+          <p><strong>[CLIENT NAME]</strong></p>
+          <p>[Company]</p>
+          <p>[Address]</p>
+          <p>[Email]</p>
+        </td>
+        <td></td>
+        <td>
+          <p><strong>FOR</strong></p>
+          <p><strong><em>[Engagement Name / Type]</em></strong></p>
+          <p>SOW Reference: DOX-[YEAR]-[###]</p>
+          <p>Period: [Start Date] – [End Date]</p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Line items — use toolbar buttons to add/remove rows -->
+    <table id="line-items-table" contenteditable="false">
+      <thead>
+        <tr>
+          <th style="width:50%">DESCRIPTION</th>
+          <th style="width:12%">QTY</th>
+          <th style="width:19%">RATE</th>
+          <th style="width:19%">AMOUNT</th>
+        </tr>
+      </thead>
+      <tbody id="line-items-body">
+        <tr class="line-item">
+          <td contenteditable="true">Clarity Sprint (5-day engagement)</td>
+          <td contenteditable="true">1</td>
+          <td contenteditable="true">$4,500.00</td>
+          <td contenteditable="true">$4,500.00</td>
+        </tr>
+        <tr class="line-item">
+          <td contenteditable="true">Strategy session credit applied</td>
+          <td contenteditable="true">1</td>
+          <td contenteditable="true">-$250.00</td>
+          <td contenteditable="true">-$250.00</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="2"></td>
+          <td><strong>TOTAL DUE</strong></td>
+          <td id="total-cell" contenteditable="true"><strong>$4,250.00</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <p><strong>Payment Instructions</strong></p>
+    <ul>
+      <li>Zelle: [your Zelle email or phone]</li>
+      <li>ACH / Wire: contact ename@doxaandco.co to request bank details</li>
+      <li>PayPal: [PayPal.me link]</li>
+      <li>Check payable to: Enam Egyir / Doxa &amp; Co</li>
+    </ul>
+    <p><em>Payment is due within 7 days of invoice date. Accounts unpaid after 15 days accrue a 1.5% monthly late fee.</em></p>
+    <p>Thank you for the opportunity to work together.</p>
+
   </div>
 
-  <p style="margin-top:24px;font-size:13px;color:var(--stone-500);font-style:italic;">Thank you for the opportunity to work together.</p>
-
-  <div class="doc-footer">
-    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
-    <span>Invoice Template · Rev. April 2026</span>
+  <div class="letterfoot">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential</span>
   </div>
 </div>
-  <script src="/docs/doc-editor.js"></script>
+
+<script>
+  function addLineItem() {
+    const tbody = document.getElementById('line-items-body');
+    const tr = document.createElement('tr');
+    tr.className = 'line-item';
+    tr.innerHTML =
+      '<td contenteditable="true">[Description]</td>' +
+      '<td contenteditable="true">1</td>' +
+      '<td contenteditable="true">$0.00</td>' +
+      '<td contenteditable="true">$0.00</td>';
+    tbody.appendChild(tr);
+    tr.querySelector('td').focus();
+  }
+
+  function removeLastItem() {
+    const tbody = document.getElementById('line-items-body');
+    const rows = tbody.querySelectorAll('tr.line-item');
+    if (rows.length > 1) {
+      rows[rows.length - 1].remove();
+    } else {
+      alert('Keep at least one line item.');
+    }
+  }
+
+  function parseAmount(text) {
+    return parseFloat(text.replace(/[^0-9.\-]/g, '')) || 0;
+  }
+
+  function formatCurrency(n) {
+    const abs = Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (n < 0 ? '-$' : '$') + abs;
+  }
+
+  function recalcTotal() {
+    const rows = document.querySelectorAll('#line-items-body tr.line-item');
+    let total = 0;
+    rows.forEach(function(row) {
+      const cells = row.querySelectorAll('td');
+      const qty  = parseAmount(cells[1].innerText);
+      const rate = parseAmount(cells[2].innerText);
+      const amt  = qty * rate;
+      cells[3].innerText = formatCurrency(amt);
+      total += amt;
+    });
+    document.getElementById('total-cell').innerHTML = '<strong>' + formatCurrency(total) + '</strong>';
+  }
+</script>
+<script src="docs-utils.js"></script>
 </body>
 </html>

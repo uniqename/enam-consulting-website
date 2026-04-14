@@ -17,6 +17,7 @@ const Landing = () => {
       <Hero />
       <TrustedBy />
       <About />
+      <WhoIWorkWith />
       <Services />
       <WhoIWorkWith />
       <ClaritySprint />

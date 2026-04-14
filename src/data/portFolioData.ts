@@ -38,7 +38,7 @@ export const allProjects: Project[] = [
     techStack: ["Flutter", "Firebase", "Google Maps API", "Stripe"],
     image: "/assets/images/homelinkgh_logo.png",
     coverImage: "/assets/images/homelinkgh_logo.png",
-    slug: "homelink-gh",
+    slug: "homelinkgh",
 
     // STAR narrative
     situation: "Ghana's home services market was entirely unstructured. Homeowners had no reliable way to find verified providers — they relied on word-of-mouth, WhatsApp referrals, and guesswork. There was no price transparency, no safety guarantee, and no accountability when work went wrong. The market existed, but no product had solved the trust problem.",
@@ -97,7 +97,7 @@ export const allProjects: Project[] = [
     techStack: ["Flutter", "SQLite", "Encryption", "Accessibility"],
     image: "/assets/images/beacon_logo.png",
     coverImage: "/assets/images/beacon_logo.png",
-    slug: "beacon-app",
+    slug: "beacon",
 
     situation: "A non-profit serving domestic abuse survivors had no digital resource. Survivors needed quick access to hotlines, safe houses, and legal aid — but every app in this space required a cloud login, which left a digital trace that could be discovered by an abuser and put the survivor in danger. The non-profit had a mission but no product, no tech team, and an 8-week window before their grant cycle ended.",
     task: "I was brought in as Product Owner and sole developer. My primary responsibility was to define what a safe, effective product actually looked like for this user — not a generic app repurposed for a sensitive context, but a product built from the ground up around the safety constraints of survivors in active danger.",
@@ -152,7 +152,7 @@ export const allProjects: Project[] = [
     techStack: ["React", "Node.js", "AWS", "Live Streaming SDK"],
     image: "/assets/images/faithklinik-icon.png",
     coverImage: "/assets/images/faithklinik-icon.png",
-    slug: "faith-klinik",
+    slug: "faithklinik",
 
     situation: "Faith Klinik Ministries was managing its entire operation across four disconnected tools: a spreadsheet for members, WhatsApp for communication, manual bank transfers for donations, and no solution at all for remote attendees who couldn't physically reach the venue. Leadership had no visibility into finances or attendance. Staff spent hours each week on manual admin tasks that could be automated.",
     task: "I was engaged as Product Owner and developer to define, build, and ship a unified platform. The challenge wasn't just building software — it was deciding what to build first, what to defer, and what to cut entirely so that the ministry got a working product quickly without months of scope creep.",

@@ -2,141 +2,116 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Consulting Services Agreement — Doxa &amp; Co</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Consulting Agreement — Doxa & Co</title>
 <style>
-  :root {
-    --gold:#C9A44A;--gold-dark:#8B7030;--emerald:#059669;
-    --stone-900:#1c1917;--stone-700:#292524;--stone-600:#57534e;
-    --stone-500:#78716c;--stone-400:#a8a29e;--stone-200:#e7e5e0;
-    --stone-100:#f5f5f4;--stone-50:#fafaf9;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
   }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Helvetica Neue',Arial,sans-serif;color:var(--stone-900);background:white;line-height:1.6;}
-  .document{max-width:760px;margin:0 auto;padding:60px 70px;}
-  .doc-header{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:24px;margin-bottom:8px;border-bottom:1px solid var(--stone-200);}
-  .logo-name{font-family:Georgia,serif;font-size:18px;font-weight:400;color:var(--gold-dark);letter-spacing:4px;display:block;}
-  .logo-tag{font-size:8px;font-weight:700;letter-spacing:3px;color:var(--emerald);text-transform:uppercase;display:block;margin-top:2px;}
-  .doc-meta{text-align:right;font-size:11px;color:var(--stone-400);line-height:1.9;}
-  .gold-line{height:2px;background:linear-gradient(to right,var(--gold-dark),var(--gold),var(--gold-dark));margin:8px 0 40px;}
-  h1{font-family:Georgia,serif;font-size:22px;color:var(--stone-900);margin-bottom:6px;}
-  .subtitle{font-size:12px;color:var(--stone-400);margin-bottom:32px;}
-  h2{font-family:Georgia,serif;font-size:14px;font-weight:700;color:var(--stone-900);margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--stone-200);}
-  h3{font-size:12px;font-weight:700;color:var(--stone-500);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;}
-  p{font-size:13px;color:var(--stone-600);margin-bottom:12px;line-height:1.8;}
-  ol,ul{padding-left:20px;margin-bottom:14px;}
-  li{font-size:13px;color:var(--stone-600);margin-bottom:5px;line-height:1.7;}
-  strong{color:var(--stone-900);}
-  .fill-table{width:100%;border-collapse:collapse;margin:14px 0 24px;}
-  .fill-table td{padding:10px 14px;border:1px solid var(--stone-200);font-size:13px;color:var(--stone-600);}
-  .fill-table td:first-child{background:var(--stone-50);font-weight:600;font-size:11px;letter-spacing:.3px;color:var(--stone-700);white-space:nowrap;width:38%;}
-  .data-table{width:100%;border-collapse:collapse;margin:14px 0 24px;}
-  .data-table th{background:var(--stone-900);color:white;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:left;}
-  .data-table td{padding:10px 14px;border:1px solid var(--stone-200);font-size:12px;color:var(--stone-600);}
-  .data-table tr:nth-child(even) td{background:var(--stone-50);}
-  .writein{width:100%;border:1px dashed var(--stone-300);border-radius:6px;min-height:60px;background:white;padding:8px 12px;font-size:13px;color:var(--stone-600);}
-  .callout-gold{background:#fef9ec;border-left:3px solid var(--gold);padding:14px 18px;margin:16px 0;border-radius:0 8px 8px 0;}
-  .callout-gold p{margin:0;color:var(--stone-700);font-size:13px;}
-  .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:32px;}
-  .sig-block .pre-sign{height:44px;}
-  .sig-line{border-top:1px solid var(--stone-900);padding-top:8px;font-size:11px;color:var(--stone-500);line-height:2;}
-  .doc-footer{margin-top:50px;padding-top:14px;border-top:1px solid var(--stone-200);display:flex;justify-content:space-between;font-size:10px;color:var(--stone-400);}
-  .section-note{background:var(--stone-50);border:1px solid var(--stone-200);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--stone-500);font-style:italic;}
-  .highlight{background:#fef9ec;border-radius:4px;padding:2px 6px;}
-  @media print{.document{padding:0;}@page{margin:.75in 1in;}}
+  .toolbar button {
+    padding: 8px 20px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  /* ── Page wrapper ── */
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+           border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  /* ── Letterhead header ── */
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4;
+    border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .org-name {
+    font-size: 18px; font-weight: 800; color: #1c1917; letter-spacing: -0.4px;
+  }
+  .letterhead-text .tagline {
+    font-size: 12px; color: #78716c; margin-top: 2px;
+  }
+  .letterhead-contact {
+    margin-left: auto; text-align: right;
+    font-size: 11px; color: #78716c; line-height: 1.6;
+  }
+
+  /* ── Document body ── */
+  .doc-body {
+    outline: none; padding: 40px;
+    min-height: 600px; font-family: Georgia, serif; font-size: .96rem;
+  }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body h1 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.6rem; margin-top: 1.4em; margin-bottom: .4em; color: #1c1917; }
+  .doc-body h2 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.15rem; margin-top: 1.3em; margin-bottom: .35em; color: #1c1917; }
+  .doc-body h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1rem; margin-top: 1.1em; margin-bottom: .3em; color: #1c1917; }
+  .doc-body ul, .doc-body ol { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th {
+    border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top;
+  }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .doc-body img { max-width: 100%; }
+  strong { font-weight: 700; }
+
+  /* ── Footer ── */
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
 </style>
 </head>
 <body>
-<div class="document">
-  <div class="doc-header">
-    <div>
-      <span class="logo-name">DOXA &amp; CO</span>
-      <span class="logo-tag">Strategy · Product · Delivery</span>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click to edit · Sign · Save as PDF or Word</span>
+</div>
+
+<div class="page">
+  <div class="letterhead">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
     </div>
-    <div class="doc-meta">Enam Egyir<br/>ename@doxaandco.co<br/>doxaandco.co</div>
-  </div>
-  <div class="gold-line"></div>
-  <h1>Consulting Services Agreement</h1>
-  <p class="subtitle">Master agreement for all Doxa &amp; Co engagements</p>
-
-  <h2>Parties</h2>
-  <p>This Consulting Services Agreement ("Agreement") is entered into as of the Effective Date below, by and between:</p>
-  <table class="fill-table">
-    <tr><td>Consultant</td><td>Enam Egyir / Doxa &amp; Co · ename@doxaandco.co</td></tr>
-    <tr><td>Client Legal Name</td><td></td></tr>
-    <tr><td>Client Address</td><td></td></tr>
-    <tr><td>Client Email</td><td></td></tr>
-    <tr><td>Effective Date</td><td></td></tr>
-  </table>
-
-  <h2>1. Scope of Services</h2>
-  <p>Consultant agrees to provide the following services as described in the attached Statement of Work (Exhibit A) or as mutually agreed in writing:</p>
-  <div class="writein"></div>
-  <p style="margin-top:10px;">Any changes to the scope of Services must be agreed upon in writing by both parties prior to implementation.</p>
-
-  <h2>2. Term</h2>
-  <p>This Agreement begins on the Effective Date and continues until the Services are completed or either party terminates as described in Section 7, unless otherwise specified in the Statement of Work.</p>
-
-  <h2>3. Compensation &amp; Payment</h2>
-  <ul>
-    <li>The Client agrees to pay Consultant the fees outlined in the Statement of Work or invoice.</li>
-    <li><strong>Project-based work:</strong> 50% due upon signing; 50% due upon delivery or the agreed milestone date.</li>
-    <li><strong>Retainer engagements:</strong> Invoiced on the 1st of each month. Payment due within 7 days.</li>
-    <li>Strategy session fees are non-refundable but credited toward any paid project initiated within 60 days.</li>
-    <li>Invoices unpaid after 15 days incur a <strong>1.5% monthly late fee</strong>.</li>
-    <li>Accepted payment methods: ACH transfer, Zelle, PayPal, or check. Wire available upon request.</li>
-  </ul>
-
-  <h2>4. Independent Contractor</h2>
-  <p>Consultant is an independent contractor and not an employee, partner, or agent of Client. Consultant is solely responsible for all taxes, insurance, and benefits related to compensation received under this Agreement.</p>
-
-  <h2>5. Confidentiality</h2>
-  <p>Each party agrees to keep the other's Confidential Information strictly confidential and not to disclose it to any third party without prior written consent. "Confidential Information" includes business plans, product data, client lists, financial information, and any materials marked confidential. This obligation survives termination for <strong>two (2) years</strong>.</p>
-
-  <h2>6. Intellectual Property</h2>
-  <p>All work product created by Consultant specifically for Client under this Agreement shall, upon full payment, become the property of Client, except that:</p>
-  <ul>
-    <li>Consultant retains rights to all pre-existing tools, frameworks, templates, and methodologies used to create the Work Product.</li>
-    <li>Consultant may reference the engagement in general terms in a portfolio or case study without disclosing confidential Client information, unless Client requests otherwise in writing.</li>
-  </ul>
-
-  <h2>7. Termination</h2>
-  <ul>
-    <li>Either party may terminate this Agreement with <strong>14 days written notice</strong>.</li>
-    <li>Client is responsible for fees for all work completed or in-progress as of the termination date.</li>
-    <li>Retainer engagements: the current month's retainer is non-refundable upon termination.</li>
-    <li>Consultant reserves the right to terminate immediately for non-payment or conduct that violates this Agreement.</li>
-  </ul>
-
-  <h2>8. Limitation of Liability</h2>
-  <p>Consultant's total liability under this Agreement shall not exceed the total fees paid by Client in the three (3) months preceding the claim. Consultant is not liable for indirect, incidental, or consequential damages.</p>
-
-  <h2>9. Dispute Resolution</h2>
-  <p>The parties agree to attempt to resolve any dispute through good-faith negotiation before pursuing legal action. If unresolved, disputes shall be submitted to binding arbitration under the rules of the American Arbitration Association. This Agreement is governed by the laws of the State of Ohio.</p>
-
-  <h2>10. Entire Agreement</h2>
-  <p>This Agreement, together with any Statements of Work or Exhibits, constitutes the entire agreement between the parties and supersedes all prior discussions or agreements relating to the subject matter herein.</p>
-
-  <h2>Signatures</h2>
-  <p>Both parties agree to the terms of this Consulting Services Agreement as of the Effective Date.</p>
-  <div class="sig-grid">
-    <div class="sig-block">
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--stone-500);margin-bottom:4px;">Doxa &amp; Co</p>
-      <div class="pre-sign"></div>
-      <div class="sig-line">Enam Egyir, Principal Consultant<br/>Signature: ___________________________<br/>Date: ___________________________</div>
-    </div>
-    <div class="sig-block">
-      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--stone-500);margin-bottom:4px;">Client</p>
-      <div class="pre-sign"></div>
-      <div class="sig-line">Signature<br/>Printed Name: ___________________________<br/>Title: ___________________________<br/>Date: ___________________________</div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
     </div>
   </div>
 
-  <div class="doc-footer">
-    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
-    <span>Consulting Agreement · Rev. April 2026</span>
+  <div class="doc-body" contenteditable="true">
+<p><strong>CONSULTING SERVICES AGREEMENT</strong></p><p><strong>Parties</strong></p><p>This Consulting Services Agreement (&quot;Agreement&quot;) is entered into as of [DATE] (&quot;Effective Date&quot;) by and between:</p><p><strong>Doxa &amp; Co (&quot;Consultant&quot;)</strong></p><p>Enam Egyir, Founder &amp; Principal Consultant</p><p>doxaandco.co  ·  ename@doxaandco.co</p><p><strong>AND</strong></p><p><strong>[CLIENT LEGAL NAME] (&quot;Client&quot;)</strong></p><p>[Client Address]</p><p>[Client Email]  ·  [Client Phone]</p><p><strong>1. Scope of Services</strong></p><p>Consultant agrees to provide the following services (&quot;Services&quot;) as described in the attached Statement of Work (Exhibit A) or as mutually agreed in writing:</p><p><em>[Describe services here — e.g., Fractional Product Owner, AI Advisory, Clarity Sprint, etc.]</em></p><p>Any changes to the scope of Services must be agreed upon in writing by both parties prior to implementation.</p><p><strong>2. Term</strong></p><p>This Agreement begins on the Effective Date and continues until the Services are completed or either party terminates as described in Section 7, unless otherwise specified in the Statement of Work.</p><p><strong>3. Compensation &amp; Payment</strong></p><ul><li>The Client agrees to pay Consultant the fees outlined in the Statement of Work or invoice.</li><li>Project-based work: 50% due upon signing; 50% due upon delivery or the agreed milestone date.</li><li>Retainer engagements: Invoiced on the 1st of each month. Payment due within 7 days.</li><li>Strategy session fees are non-refundable but credited toward any paid project initiated within 60 days.</li><li>Invoices unpaid after 15 days incur a 1.5% monthly late fee.</li><li>Accepted payment methods: ACH transfer, Zelle, PayPal, or check. Wire available upon request.</li></ul><p><strong>4. Independent Contractor</strong></p><p>Consultant is an independent contractor and not an employee, partner, or agent of Client. Consultant is solely responsible for all taxes, insurance, and benefits related to compensation received under this Agreement.</p><p><strong>5. Confidentiality</strong></p><p>Each party agrees to keep the other's Confidential Information strictly confidential and not to disclose it to any third party without prior written consent. &quot;Confidential Information&quot; includes business plans, product data, client lists, financial information, and any materials marked confidential.</p><p>This obligation survives termination of this Agreement for a period of two (2) years.</p><p><strong>6. Intellectual Property</strong></p><p>All work product, deliverables, documents, and materials created by Consultant specifically for Client under this Agreement (&quot;Work Product&quot;) shall, upon full payment, become the property of Client, except that:</p><ul><li>Consultant retains rights to all pre-existing tools, frameworks, templates, and methodologies used to create the Work Product.</li><li>Consultant may reference the engagement in general terms (e.g., in a portfolio or case study) without disclosing confidential Client information, unless Client requests otherwise in writing.</li></ul><p><strong>7. Termination</strong></p><ul><li>Either party may terminate this Agreement with 14 days written notice.</li><li>Client is responsible for fees for all work completed or in-progress as of the termination date.</li><li>Retainer engagements: The current month's retainer is non-refundable upon termination.</li><li>Consultant reserves the right to terminate immediately for non-payment or conduct that violates this Agreement.</li></ul><p><strong>8. Limitation of Liability</strong></p><p>Consultant's total liability under this Agreement shall not exceed the total fees paid by Client in the three (3) months preceding the claim. Consultant is not liable for indirect, incidental, or consequential damages.</p><p><strong>9. Dispute Resolution</strong></p><p>The parties agree to attempt to resolve any dispute through good-faith negotiation before pursuing legal action. If unresolved, disputes shall be submitted to binding arbitration in [STATE] under the rules of the American Arbitration Association. This Agreement is governed by the laws of the State of [STATE].</p><p><strong>10. Entire Agreement</strong></p><p>This Agreement, together with any Statements of Work or Exhibits, constitutes the entire agreement between the parties and supersedes all prior discussions or agreements relating to the subject matter herein.</p><p><strong>Signatures</strong></p><table><tr><td><p><strong>CONSULTANT</strong></p><p> </p><p><strong>Enam Egyir</strong></p><p>Founder, Doxa &amp; Co</p><p>Date: _______________</p></td><td></td><td><p><strong>CLIENT</strong></p><p> </p><p><strong>[Client Name]</strong></p><p>[Title, Company]</p><p>Date: _______________</p></td></tr></table>
+  </div>
+
+  <div class="letterfoot">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential</span>
   </div>
 </div>
-  <script src="/docs/doc-editor.js"></script>
+
+<script src="docs-utils.js"></script>
 </body>
 </html>
