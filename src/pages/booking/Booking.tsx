@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { sendBookingEmails, emailConfigured } from '../../utils/emailService';
 import { useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -262,14 +263,17 @@ const Booking = () => {
     return Object.keys(e).length === 0;
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!validate() || !selectedDate || !selectedSlot) return;
     const validGuests = guests.filter(g => g.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g.trim()));
     const title = meetingTitle;
     const endSlot = addOneHour(selectedSlot);
+    const dateStr = `${DAY_SHORT[selectedDate.getDay()]} ${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()}`;
+
+    // ── .ics calendar invite download ──────────────────────────────────
     const desc = [
       `Meeting: ${selectedType.title}`,
-      `Date: ${DAY_SHORT[selectedDate.getDay()]} ${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()}`,
+      `Date: ${dateStr}`,
       `Time: ${selectedSlot} – ${endSlot} EDT`,
       ``, `Agenda:`, form.message, ``,
       `Attendee: ${form.name} <${form.email}>`,
@@ -277,18 +281,40 @@ const Booking = () => {
       validGuests.length ? `Additional guests: ${validGuests.join(', ')}` : '',
       ``, `A Google Meet link will be shared before the call.`,
     ].filter(Boolean).join('\n');
-
     const ics = generateICS({ date: selectedDate, slot: selectedSlot, title, name: form.name, email: form.email, guests: validGuests, description: desc });
     downloadICS(ics, 'meeting-enam-egyir.ics');
 
+    // ── Send emails via EmailJS (if configured) ─────────────────────────
+    if (emailConfigured()) {
+      try {
+        await sendBookingEmails({
+          name:        form.name,
+          email:       form.email,
+          company:     form.company,
+          meetingType: selectedType.title,
+          meetingDate: dateStr,
+          meetingTime: `${selectedSlot} – ${endSlot} EDT`,
+          agenda:      form.message,
+          fee:         selectedType.fee,
+          feeNote:     selectedType.feeNote,
+          guests:      validGuests,
+        });
+      } catch (err) {
+        // EmailJS failed — fall through to mailto fallback below
+        console.error('[booking] EmailJS send failed:', err);
+      }
+    }
+
+    // ── mailto fallback (always opens mail client as a backup) ──────────
     const allRecipients = ['ename@doxaandco.co', ...validGuests];
     const [to, ...cc] = allRecipients;
     const ccParam = cc.length ? `&cc=${encodeURIComponent(cc.join(','))}` : '';
     const feeSection = selectedType.fee
       ? `\n\nSession Fee: ${selectedType.fee}\n${selectedType.feeNote}\nPayment details will be confirmed by Enam before the call.`
       : '';
-    const body = `Hi Enam,\n\nI'm reaching out regarding: ${selectedType.title}\n\nDate/Time: ${DAY_SHORT[selectedDate.getDay()]} ${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()} at ${selectedSlot} EDT\n\nAgenda:\n${form.message}${feeSection}\n\n---\nName: ${form.name}${form.company ? `\nCompany: ${form.company}` : ''}\nEmail: ${form.email}${validGuests.length ? `\nAdditional guests: ${validGuests.join(', ')}` : ''}\n\n(Calendar invite attached)`;
-    window.location.href = `mailto:${to}?subject=${encodeURIComponent(title)}${ccParam}&body=${encodeURIComponent(body)}`;
+    const body = `Hi Enam,\n\nI'm reaching out regarding: ${selectedType.title}\n\nDate/Time: ${dateStr} at ${selectedSlot} EDT\n\nAgenda:\n${form.message}${feeSection}\n\n---\nName: ${form.name}${form.company ? `\nCompany: ${form.company}` : ''}\nEmail: ${form.email}${validGuests.length ? `\nAdditional guests: ${validGuests.join(', ')}` : ''}\n\n(Calendar invite attached)`;
+    window.open(`mailto:${to}?subject=${encodeURIComponent(title)}${ccParam}&body=${encodeURIComponent(body)}`, '_blank');
+
     setStep('confirmed');
   };
 
