@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { PenLine, Lock, FileText, ExternalLink } from 'lucide-react';
+import { PenLine, Lock, FileText, ExternalLink, FileScan } from 'lucide-react';
 import SignatureGenerator from '../../features/landing/SignatureGenerator';
+import DocConverterModal from '../../features/landing/DocConverterModal';
 
 const DOC_CATEGORIES = [
   {
@@ -46,6 +47,7 @@ const DOC_CATEGORIES = [
 
 const Tools = () => {
   const [showSig, setShowSig] = useState(false);
+  const [showConverter, setShowConverter] = useState(false);
 
   return (
     <div className="min-h-screen bg-stone-50 pt-28 pb-24">
@@ -61,6 +63,27 @@ const Tools = () => {
 
         {/* Utilities */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-14">
+
+          {/* Document Converter */}
+          <div className="bg-white rounded-2xl p-7 border border-stone-100 shadow-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-emerald-700 flex items-center justify-center text-white">
+                <FileScan size={20} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-stone-900">Document Converter</h2>
+                <p className="text-stone-400 text-xs mt-0.5">Upload PDF or Word, add letterhead, sign, edit, save or print.</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowConverter(true)}
+              className="inline-flex items-center gap-2 bg-emerald-700 hover:bg-stone-900 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all"
+            >
+              <FileScan size={14} /> Open Converter
+            </button>
+          </div>
+
           <div className="bg-white rounded-2xl p-7 border border-stone-100 shadow-sm">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-11 h-11 rounded-xl bg-stone-900 flex items-center justify-center text-white">
@@ -125,6 +148,7 @@ const Tools = () => {
       </div>
 
       {showSig && <SignatureGenerator onClose={() => setShowSig(false)} />}
+      {showConverter && <DocConverterModal onClose={() => setShowConverter(false)} />}
     </div>
   );
 };
