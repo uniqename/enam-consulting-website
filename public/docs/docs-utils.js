@@ -21,12 +21,16 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
       <!-- Tabs -->
       <div style="display:flex;border-bottom:2px solid #e7e5e4;">
         <button id="tab-saved" onclick="switchTab('saved')"
-          style="flex:1;padding:12px;border:none;background:#f0fdf4;font-weight:700;font-size:13px;cursor:pointer;color:${DOXA_ACCENT};">
-          Use Saved Signature
+          style="flex:1;padding:12px;border:none;background:#f0fdf4;font-weight:700;font-size:12px;cursor:pointer;color:${DOXA_ACCENT};">
+          Saved
         </button>
         <button id="tab-draw" onclick="switchTab('draw')"
-          style="flex:1;padding:12px;border:none;background:#fafaf9;font-weight:700;font-size:13px;cursor:pointer;color:#78716c;">
-          Draw Signature
+          style="flex:1;padding:12px;border:none;background:#fafaf9;font-weight:700;font-size:12px;cursor:pointer;color:#78716c;">
+          Draw
+        </button>
+        <button id="tab-upload" onclick="switchTab('upload')"
+          style="flex:1;padding:12px;border:none;background:#fafaf9;font-weight:700;font-size:12px;cursor:pointer;color:#78716c;">
+          Upload
         </button>
       </div>
 
@@ -61,6 +65,26 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
         </div>
       </div>
 
+      <!-- Upload signature panel -->
+      <div id="panel-upload" style="display:none;padding:24px;text-align:center;">
+        <p style="font-size:12px;color:#78716c;margin-bottom:12px;">Upload a PNG or JPG of your signature</p>
+        <label style="display:inline-block;padding:10px 24px;border:2px dashed #d6d3d1;border-radius:12px;cursor:pointer;background:#fafaf9;font-size:13px;font-weight:700;color:#78716c;margin-bottom:12px;">
+          Choose image
+          <input id="sig-upload-input" type="file" accept="image/*" onchange="handleSigUpload(event)" style="display:none;" />
+        </label>
+        <div id="sig-upload-preview" style="display:none;margin-bottom:16px;">
+          <img id="sig-upload-img" style="max-height:100px;max-width:100%;object-fit:contain;border:1px solid #e7e5e4;border-radius:8px;padding:8px;" />
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:8px;">
+          <button onclick="setSigSize('small')"  id="sz-small-u"  style="padding:6px 14px;border:2px solid ${DOXA_ACCENT};border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:#f0fdf4;color:${DOXA_ACCENT};">Small</button>
+          <button onclick="setSigSize('medium')" id="sz-medium-u" style="padding:6px 14px;border:2px solid #d6d3d1;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#78716c;">Medium</button>
+          <button onclick="setSigSize('large')"  id="sz-large-u"  style="padding:6px 14px;border:2px solid #d6d3d1;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#78716c;">Large</button>
+        </div>
+        <button id="sig-upload-btn" onclick="insertUploadedSig()" style="display:none;background:${DOXA_ACCENT};color:#fff;border:none;padding:10px 28px;border-radius:50px;font-weight:700;font-size:14px;cursor:pointer;">
+          Insert Signature
+        </button>
+      </div>
+
     </div>
   </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
@@ -68,9 +92,10 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
 })();
 
 /* ── State ──────────────────────────────────────────────────────────────── */
-let _savedRange  = null;   // cursor position before modal opened
-let _sigSize     = 'small';
-const SIG_SIZES  = { small: 80, medium: 130, large: 200 };
+let _savedRange   = null;   // cursor position before modal opened
+let _sigSize      = 'small';
+let _uploadedSrc  = null;   // data URL of uploaded signature image
+const SIG_SIZES   = { small: 80, medium: 130, large: 200 };
 
 /* ── Signature modal open/close ─────────────────────────────────────────── */
 function openSignatureModal() {
@@ -87,13 +112,16 @@ function closeSigModal() {
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 function switchTab(tab) {
-  const isSaved = tab === 'saved';
-  document.getElementById('panel-saved').style.display = isSaved ? 'block' : 'none';
-  document.getElementById('panel-draw').style.display  = isSaved ? 'none'  : 'block';
-  document.getElementById('tab-saved').style.background = isSaved ? '#f0fdf4' : '#fafaf9';
-  document.getElementById('tab-saved').style.color      = isSaved ? DOXA_ACCENT : '#78716c';
-  document.getElementById('tab-draw').style.background  = isSaved ? '#fafaf9' : '#f0fdf4';
-  document.getElementById('tab-draw').style.color       = isSaved ? '#78716c' : DOXA_ACCENT;
+  ['saved', 'draw', 'upload'].forEach(function(t) {
+    var panel = document.getElementById('panel-' + t);
+    var btn   = document.getElementById('tab-' + t);
+    var active = t === tab;
+    if (panel) panel.style.display = active ? 'block' : 'none';
+    if (btn) {
+      btn.style.background = active ? '#f0fdf4' : '#fafaf9';
+      btn.style.color      = active ? DOXA_ACCENT : '#78716c';
+    }
+  });
 }
 
 /* ── Size selector ───────────────────────────────────────────────────────── */
@@ -179,6 +207,69 @@ function saveAsWord() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+/* ── Upload signature image ──────────────────────────────────────────────── */
+function handleSigUpload(e) {
+  var file = e.target.files && e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    _uploadedSrc = ev.target.result;
+    var preview = document.getElementById('sig-upload-preview');
+    var img     = document.getElementById('sig-upload-img');
+    var btn     = document.getElementById('sig-upload-btn');
+    if (img) img.src = _uploadedSrc;
+    if (preview) preview.style.display = 'block';
+    if (btn) btn.style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function insertUploadedSig() {
+  if (!_uploadedSrc) return;
+  var h = SIG_SIZES[_sigSize];
+  var imgHtml = '<img src="' + _uploadedSrc + '" style="height:' + h + 'px;vertical-align:middle;display:inline-block;" />';
+  insertAtCursor(imgHtml);
+  closeSigModal();
+}
+
+/* ── Edit / Preview toggle ───────────────────────────────────────────────── */
+(function injectEditToggle() {
+  document.addEventListener('DOMContentLoaded', function() {
+    /* Make images inside contenteditable non-blocking so text is clickable */
+    var style = document.createElement('style');
+    style.textContent = [
+      '[contenteditable] img { pointer-events: none; user-select: none; }',
+      '[contenteditable]:hover:not(:focus-within) { outline: 1px dashed rgba(0,0,0,.12); outline-offset: 2px; }',
+      '[contenteditable]:focus-within { outline: 2px solid ' + DOXA_ACCENT + '; outline-offset: 2px; }',
+      '[contenteditable] { cursor: text; }',
+    ].join('\n');
+    document.head.appendChild(style);
+
+    var toolbar = document.querySelector('.toolbar');
+    if (!toolbar) return;
+
+    var btn = document.createElement('button');
+    var inPreview = false;
+
+    function update() {
+      var editables = document.querySelectorAll('[contenteditable]');
+      editables.forEach(function(el) { el.contentEditable = inPreview ? 'false' : 'true'; });
+      btn.textContent = inPreview ? '✏️ Edit' : '👁 Preview';
+      btn.style.background   = inPreview ? '#374151' : '#fff';
+      btn.style.color        = inPreview ? '#fff'    : '#374151';
+      btn.style.borderColor  = inPreview ? '#374151' : '#d6d3d1';
+    }
+
+    btn.style.cssText = 'padding:8px 18px;border:2px solid #d6d3d1;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;transition:all .15s;';
+    btn.onclick = function() { inPreview = !inPreview; update(); };
+    update();
+
+    var note = toolbar.querySelector('.toolbar-note');
+    if (note) toolbar.insertBefore(btn, note);
+    else toolbar.appendChild(btn);
+  });
+})();
 
 /* ── Close modal on overlay click ────────────────────────────────────────── */
 document.addEventListener('click', function(e) {
