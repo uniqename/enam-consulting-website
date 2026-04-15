@@ -28,6 +28,8 @@ const DOC_CATEGORIES = [
     docs: [
       { name: 'Project Proposal', file: 'Doxa_Project_Proposal.html' },
       { name: 'Services & Pricing', file: 'Doxa_Services_Pricing.html' },
+      { name: 'Website Packages', file: 'Doxa_Website_Packages.html' },
+      { name: 'Website Scope Explainer', file: 'Doxa_Website_Scope_Explainer.html' },
     ],
   },
   {
