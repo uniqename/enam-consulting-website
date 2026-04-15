@@ -35,8 +35,10 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
       </div>
 
       <!-- Insert confirmation bar -->
-      <div id="sig-confirm" style="display:none;background:#f0fdf4;border-bottom:1px solid #d1fae5;padding:10px 20px;font-size:12px;color:#059669;font-weight:600;text-align:center;">
-        ✓ Signature placed! Click in the document where you want another, then insert again. <button onclick="closeSigModal()" style="margin-left:12px;padding:3px 12px;border:1px solid #059669;border-radius:20px;background:#fff;color:#059669;font-size:11px;font-weight:700;cursor:pointer;">Done</button>
+      <div id="sig-confirm" style="display:none;background:#f0fdf4;border-bottom:1px solid #d1fae5;padding:10px 20px;font-size:12px;color:#059669;font-weight:600;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;">
+        <span>✓ Signature placed!</span>
+        <button onclick="startNewSigner()" style="padding:3px 12px;border:1px solid #059669;border-radius:20px;background:#fff;color:#059669;font-size:11px;font-weight:700;cursor:pointer;">+ New signer</button>
+        <button onclick="closeSigModal()" style="padding:3px 12px;border:1px solid #059669;border-radius:20px;background:#059669;color:#fff;font-size:11px;font-weight:700;cursor:pointer;">Done</button>
       </div>
 
       <!-- Saved signature panel -->
@@ -113,6 +115,23 @@ function openSignatureModal() {
 
 function closeSigModal() {
   document.getElementById('sig-overlay').style.display = 'none';
+  var bar = document.getElementById('sig-confirm');
+  if (bar) bar.style.display = 'none';
+}
+
+/* ── Start a fresh signature for a new signer ────────────────────────────── */
+function startNewSigner() {
+  clearCanvas();
+  _uploadedSrc = null;
+  var preview = document.getElementById('sig-upload-preview');
+  var btn     = document.getElementById('sig-upload-btn');
+  var inp     = document.getElementById('sig-upload-input');
+  if (preview) preview.style.display = 'none';
+  if (btn)     btn.style.display     = 'none';
+  if (inp)     inp.value             = '';
+  var bar = document.getElementById('sig-confirm');
+  if (bar) bar.style.display = 'none';
+  switchTab('draw');
 }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
@@ -191,11 +210,7 @@ function insertSigAtCursor(src, h) {
 
   // Show confirmation bar; don't close the modal
   var bar = document.getElementById('sig-confirm');
-  if (bar) {
-    bar.style.display = 'block';
-    clearTimeout(bar._t);
-    bar._t = setTimeout(function() { bar.style.display = 'none'; }, 6000);
-  }
+  if (bar) bar.style.display = 'flex';
 }
 
 /* ── Insert saved signature ──────────────────────────────────────────────── */
