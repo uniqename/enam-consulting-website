@@ -44,8 +44,9 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
       <!-- Saved signature panel -->
       <div id="panel-saved" style="padding:24px;text-align:center;">
         <p style="font-size:12px;color:#78716c;margin-bottom:12px;">Your saved signature — select a size then click Insert. Drag the green handle to resize after placing.</p>
-        <div style="border:2px dashed #d6d3d1;border-radius:8px;padding:20px;background:#fafaf9;margin-bottom:16px;">
-          <img id="sig-preview" src="${SIG_IMAGE_URL}" style="max-height:80px;object-fit:contain;" />
+        <div style="border:2px dashed #d6d3d1;border-radius:8px;padding:20px;background:#fafaf9;margin-bottom:16px;min-height:60px;display:flex;align-items:center;justify-content:center;">
+          <p id="no-saved-sig-msg" style="font-size:12px;color:#a8a29e;margin:0;">No saved signature yet — Draw or Upload one, then click "Save as default".</p>
+          <img id="sig-preview" src="" style="max-height:80px;object-fit:contain;display:none;" />
         </div>
         <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
           <button onclick="setSigSize('small')"  id="sz-small"  class="sz-btn" style="padding:6px 14px;border:2px solid ${DOXA_ACCENT};border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:#f0fdf4;color:${DOXA_ACCENT};">Small</button>
@@ -63,13 +64,16 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
         <p style="font-size:12px;color:#78716c;margin-bottom:10px;">Draw your signature below using mouse or finger</p>
         <canvas id="sig-canvas" width="420" height="130"
           style="border:2px solid #d6d3d1;border-radius:8px;background:#fff;cursor:crosshair;touch-action:none;max-width:100%;"></canvas>
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;margin-bottom:16px;">
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;margin-bottom:8px;">
           <button onclick="clearCanvas()" style="padding:7px 18px;border:2px solid #d6d3d1;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#78716c;">Clear</button>
           <button onclick="insertDrawnSig()"
             style="background:${DOXA_ACCENT};color:#fff;border:none;padding:8px 22px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;">
             Insert Drawn Signature
           </button>
         </div>
+        <button id="save-drawn-btn" onclick="saveDrawnAsDefault()" style="display:none;padding:6px 18px;border:2px dashed #d6d3d1;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:#78716c;margin-bottom:8px;">
+          ⭐ Save as my default signature
+        </button>
       </div>
 
       <!-- Upload signature panel -->
@@ -87,9 +91,14 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
           <button onclick="setSigSize('medium')" id="sz-medium-u" style="padding:6px 14px;border:2px solid #d6d3d1;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#78716c;">Medium</button>
           <button onclick="setSigSize('large')"  id="sz-large-u"  style="padding:6px 14px;border:2px solid #d6d3d1;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:#78716c;">Large</button>
         </div>
-        <button id="sig-upload-btn" onclick="insertUploadedSig()" style="display:none;background:${DOXA_ACCENT};color:#fff;border:none;padding:10px 28px;border-radius:50px;font-weight:700;font-size:14px;cursor:pointer;">
-          Insert Signature
-        </button>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <button id="sig-upload-btn" onclick="insertUploadedSig()" style="display:none;background:${DOXA_ACCENT};color:#fff;border:none;padding:10px 28px;border-radius:50px;font-weight:700;font-size:14px;cursor:pointer;">
+            Insert Signature
+          </button>
+          <button id="save-upload-btn" onclick="saveUploadedAsDefault()" style="display:none;padding:6px 18px;border:2px dashed #d6d3d1;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:#78716c;">
+            ⭐ Save as my default
+          </button>
+        </div>
       </div>
 
     </div>
@@ -106,9 +115,21 @@ const SIG_SIZES   = { small: 40, medium: 65, large: 100 };
 
 /* ── Signature modal open/close ─────────────────────────────────────────── */
 function openSignatureModal() {
-  // Save cursor position
-  const sel = window.getSelection();
+  var sel = window.getSelection();
   if (sel && sel.rangeCount) _savedRange = sel.getRangeAt(0).cloneRange();
+
+  // Refresh saved-sig preview from localStorage
+  var localSig  = localStorage.getItem('doxa_saved_signature');
+  var preview   = document.getElementById('sig-preview');
+  var noSigMsg  = document.getElementById('no-saved-sig-msg');
+  if (localSig) {
+    if (preview)  { preview.src = localSig; preview.style.display = 'block'; }
+    if (noSigMsg) noSigMsg.style.display = 'none';
+  } else {
+    if (preview)  preview.style.display = 'none';
+    if (noSigMsg) noSigMsg.style.display = 'block';
+  }
+
   document.getElementById('sig-overlay').style.display = 'flex';
   switchTab('saved');
 }
@@ -158,7 +179,8 @@ function setSigSize(size) {
     btn.style.background  = active ? '#f0fdf4'   : '#fff';
     btn.style.color       = active ? DOXA_ACCENT : '#78716c';
   });
-  document.getElementById('sig-preview').style.maxHeight = SIG_SIZES[size] + 'px';
+  var pr = document.getElementById('sig-preview');
+  if (pr) pr.style.maxHeight = SIG_SIZES[size] + 'px';
 }
 
 /* ── Core: insert a resizable signature at cursor ────────────────────────── */
@@ -215,7 +237,9 @@ function insertSigAtCursor(src, h) {
 
 /* ── Insert saved signature ──────────────────────────────────────────────── */
 function insertSavedSig() {
-  insertSigAtCursor(SIG_IMAGE_URL, SIG_SIZES[_sigSize]);
+  var src = localStorage.getItem('doxa_saved_signature');
+  if (!src) { switchTab('draw'); return; } // no saved sig — go draw one
+  insertSigAtCursor(src, SIG_SIZES[_sigSize]);
 }
 
 /* ── Canvas drawing ──────────────────────────────────────────────────────── */
@@ -230,18 +254,24 @@ function initCanvas() {
     return { x: (t.clientX - r.left) * (canvas.width / r.width), y: (t.clientY - r.top) * (canvas.height / r.height) };
   }
 
+  function showSaveBtn() {
+    var btn = document.getElementById('save-drawn-btn');
+    if (btn) { btn.style.display = 'inline-block'; btn.textContent = '⭐ Save as my default signature'; }
+  }
   canvas.addEventListener('mousedown',  function(e) { drawing = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); });
   canvas.addEventListener('mousemove',  function(e) { if (!drawing) return; ctx.lineWidth = 2; ctx.strokeStyle = '#1c1917'; ctx.lineCap = 'round'; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
-  canvas.addEventListener('mouseup',    function() { drawing = false; });
+  canvas.addEventListener('mouseup',    function() { if (drawing) showSaveBtn(); drawing = false; });
   canvas.addEventListener('mouseleave', function() { drawing = false; });
   canvas.addEventListener('touchstart', function(e) { e.preventDefault(); drawing = true; ctx.beginPath(); const p = pos(e); ctx.moveTo(p.x, p.y); }, { passive: false });
   canvas.addEventListener('touchmove',  function(e) { e.preventDefault(); if (!drawing) return; ctx.lineWidth = 2; ctx.strokeStyle = '#1c1917'; ctx.lineCap = 'round'; const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); }, { passive: false });
-  canvas.addEventListener('touchend',   function() { drawing = false; });
+  canvas.addEventListener('touchend',   function() { if (drawing) showSaveBtn(); drawing = false; });
 }
 
 function clearCanvas() {
   const canvas = document.getElementById('sig-canvas');
   canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  var btn = document.getElementById('save-drawn-btn');
+  if (btn) btn.style.display = 'none';
 }
 
 function insertDrawnSig() {
@@ -277,6 +307,22 @@ function saveAsWord() {
   URL.revokeObjectURL(url);
 }
 
+/* ── Save drawn / uploaded sig as default ────────────────────────────────── */
+function saveDrawnAsDefault() {
+  var canvas = document.getElementById('sig-canvas');
+  if (!canvas) return;
+  localStorage.setItem('doxa_saved_signature', canvas.toDataURL('image/png'));
+  var btn = document.getElementById('save-drawn-btn');
+  if (btn) btn.textContent = '✓ Saved as default!';
+}
+
+function saveUploadedAsDefault() {
+  if (!_uploadedSrc) return;
+  localStorage.setItem('doxa_saved_signature', _uploadedSrc);
+  var btn = document.getElementById('save-upload-btn');
+  if (btn) btn.textContent = '✓ Saved as default!';
+}
+
 /* ── Upload signature image ──────────────────────────────────────────────── */
 function handleSigUpload(e) {
   var file = e.target.files && e.target.files[0];
@@ -284,12 +330,14 @@ function handleSigUpload(e) {
   var reader = new FileReader();
   reader.onload = function(ev) {
     _uploadedSrc = ev.target.result;
-    var preview = document.getElementById('sig-upload-preview');
-    var img     = document.getElementById('sig-upload-img');
-    var btn     = document.getElementById('sig-upload-btn');
-    if (img) img.src = _uploadedSrc;
+    var preview  = document.getElementById('sig-upload-preview');
+    var img      = document.getElementById('sig-upload-img');
+    var btn      = document.getElementById('sig-upload-btn');
+    var saveBtn  = document.getElementById('save-upload-btn');
+    if (img)     img.src = _uploadedSrc;
     if (preview) preview.style.display = 'block';
-    if (btn) btn.style.display = 'inline-block';
+    if (btn)     btn.style.display = 'inline-block';
+    if (saveBtn) { saveBtn.style.display = 'inline-block'; saveBtn.textContent = '⭐ Save as my default'; }
   };
   reader.readAsDataURL(file);
 }
