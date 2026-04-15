@@ -1,760 +1,457 @@
-import { useState, useRef, useEffect } from "react";
+/**
+ * DocConverterModal.tsx
+ * Upload a PDF, Word, or image → converts it → opens as a full editable HTML
+ * document in a new browser tab with a rich formatting toolbar, Doxa letterhead
+ * (optional), editable header/body/footer, Print, Save as Word, and Sign.
+ */
+
+import { useState, useRef } from "react";
 import * as pdfjsLib from "pdfjs-dist";
-import { PDFDocument } from "pdf-lib";
 import mammoth from "mammoth";
-import {
-  X, Upload, Download, Printer, Send, PenLine,
-  ChevronLeft, ChevronRight, Trash2, Check,
-} from "lucide-react";
+import { X, Upload, FileText } from "lucide-react";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
 ).href;
 
-// ── Doxa letterhead config ────────────────────────────────────────────────────
-const LH = {
-  org: "DOXA & CO",
-  tagline: "Strategy · Product · Delivery",
-  contact: "ename@doxaandco.co  ·  doxaandco.co",
-  primaryColor: "#8B7030",
-  accentColor: "#059669",
-  bg: "#fafaf9",
-  lineColor: "#C9A44A",
+// ─── Doxa brand ──────────────────────────────────────────────────────────────
+const BRAND = {
+  primary:  "#8B7030",
+  accent:   "#059669",
+  line:     "#C9A44A",
+  bg:       "#fafaf9",
+  footerBg: "#f0fdf4",
+  footerBorder: "#bbf7d0",
+  org:      "DOXA &amp; CO",
+  orgPlain: "DOXA & CO",
+  tagline:  "Strategy · Product · Delivery",
+  contact:  "ename@doxaandco.co &nbsp;·&nbsp; doxaandco.co",
+  footer:   "Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co",
+  footerRight: "Confidential — Internal Use",
+  printBtn: "#059669",
+  wordBtn:  "#2563eb",
+  signBtn:  "#1c1917",
 };
 
-const INK = [
-  { id: "black", label: "Black", color: "#1a1a1a" },
-  { id: "blue",  label: "Blue",  color: "#1a3a8f" },
-  { id: "green", label: "Dark",  color: "#064e3b" },
-];
+// ─── Build the full standalone HTML editor page ───────────────────────────────
+function buildEditorPage(bodyHtml: string, withLetterhead: boolean, title: string): string {
+  const letterheadHtml = withLetterhead
+    ? `
+  <div class="letterhead" contenteditable="true">
+    <div class="letterhead-text">
+      <div class="org-name">${BRAND.org}</div>
+      <div class="tagline">${BRAND.tagline}</div>
+    </div>
+    <div class="letterhead-contact">${BRAND.contact}</div>
+  </div>`
+    : "";
 
-const LH_HEADER_H = 72; // px height of letterhead header on canvas
+  const footerHtml = withLetterhead
+    ? `
+  <div class="letterfoot" contenteditable="true">
+    <span>${BRAND.footer}</span>
+    <span>${BRAND.footerRight}</span>
+  </div>`
+    : "";
 
-type DocType = "pdf" | "word" | "image";
-interface PageData { dataUrl: string; width: number; height: number }
-interface Bounds   { x: number; y: number; w: number; h: number }
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>${title}</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, serif; background: #fafafa; color: #111; line-height: 1.75; }
 
-// ── Load image helper ─────────────────────────────────────────────────────────
-function loadImg(src: string): Promise<HTMLImageElement> {
-  return new Promise((res, rej) => {
-    const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src;
-  });
-}
-
-// ── Compose page with letterhead into one canvas ──────────────────────────────
-async function composeCanvas(
-  pageDataUrl: string,
-  withLetterhead: boolean,
-): Promise<HTMLCanvasElement> {
-  const page = await loadImg(pageDataUrl);
-  const W = page.naturalWidth || 794;
-  const H = page.naturalHeight || 1123;
-  const totalH = withLetterhead ? H + LH_HEADER_H : H;
-  const c = document.createElement("canvas");
-  c.width = W; c.height = totalH;
-  const ctx = c.getContext("2d")!;
-
-  if (withLetterhead) {
-    // Background
-    ctx.fillStyle = LH.bg;
-    ctx.fillRect(0, 0, W, LH_HEADER_H);
-    // Gold line at bottom of header
-    ctx.fillStyle = LH.lineColor;
-    ctx.fillRect(0, LH_HEADER_H - 2, W, 2);
-    // Org name
-    ctx.font = `bold 14px Georgia, serif`;
-    ctx.fillStyle = LH.primaryColor;
-    ctx.letterSpacing = "3px";
-    ctx.fillText(LH.org, 28, 26);
-    ctx.letterSpacing = "0px";
-    // Tagline
-    ctx.font = `bold 9px sans-serif`;
-    ctx.fillStyle = LH.accentColor;
-    ctx.fillText(LH.tagline.toUpperCase(), 28, 42);
-    // Contact
-    ctx.font = `9px sans-serif`;
-    ctx.fillStyle = "#78716c";
-    ctx.fillText(LH.contact, 28, 58);
-    // Page content below header
-    ctx.drawImage(page, 0, LH_HEADER_H);
-  } else {
-    ctx.drawImage(page, 0, 0);
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+    padding: 10px 20px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
   }
-  return c;
+  .toolbar button {
+    padding: 5px 11px; border: 1px solid #e7e5e4; border-radius: 6px;
+    cursor: pointer; font-size: 13px; font-weight: 700; background: #fff;
+    color: #374151; transition: background .12s, border-color .12s;
+  }
+  .toolbar button:hover { background: #f3f4f6; border-color: #d1d5db; }
+  .toolbar select {
+    padding: 5px 6px; border: 1px solid #e7e5e4; border-radius: 6px;
+    font-size: 12px; color: #374151; background: #fff; cursor: pointer;
+  }
+  .toolbar .sep { width: 1px; height: 22px; background: #e7e5e4; margin: 0 2px; flex-shrink: 0; }
+  .toolbar .action { padding: 6px 14px; border-radius: 50px; border: none; color: #fff; cursor: pointer; font-size: 13px; font-weight: 700; }
+  .toolbar-note { margin-left: auto; font-size: 11px; color: #9ca3af; font-family: Arial, sans-serif; white-space: nowrap; }
+
+  /* ── Page ── */
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+          border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+          box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  /* ── Letterhead ── */
+  .letterhead {
+    display: flex; align-items: flex-start; gap: 20px;
+    padding: 28px 40px; border-bottom: 4px solid ${BRAND.line};
+    outline: none; cursor: text;
+  }
+  .letterhead { background: ${BRAND.bg}; }
+  .letterhead:focus-within { background: #fffbeb; }
+  .org-name { font-family: Georgia, serif; font-size: 20px; font-weight: 700; color: ${BRAND.primary}; letter-spacing: 1px; }
+  .tagline  { font-family: Arial, sans-serif; font-size: 12px; color: #6b7280; margin-top: 3px; }
+  .letterhead-contact { margin-left: auto; text-align: right; font-family: Arial, sans-serif; font-size: 11px; color: #6b7280; line-height: 1.7; white-space: nowrap; }
+
+  /* ── Doc body ── */
+  .doc-body {
+    outline: none; padding: 40px; min-height: 600px; cursor: text;
+  }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body h1 { font-size: 1.6rem; margin-top: 1.4em; margin-bottom: .4em; color: #1c1917; }
+  .doc-body h2 { font-size: 1.2rem; margin-top: 1.3em; margin-bottom: .35em; color: #1c1917; }
+  .doc-body h3 { font-size: 1rem;   margin-top: 1.1em; margin-bottom: .3em;  color: #1c1917; }
+  .doc-body ul, .doc-body ol { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th { border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top; }
+  .doc-body th { background: ${BRAND.footerBg}; font-weight: 700; }
+  .doc-body img { max-width: 100%; display: block; margin: 8px 0; }
+  strong { font-weight: 700; }
+
+  /* ── Footer ── */
+  .letterfoot {
+    padding: 18px 40px; border-top: 1px solid ${BRAND.footerBorder};
+    font-family: Arial, sans-serif; font-size: 11px; color: #9ca3af;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    background: ${BRAND.footerBg}; outline: none; cursor: text;
+  }
+
+  /* ── Signature modal ── */
+  .sig-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:999; align-items:center; justify-content:center; }
+  .sig-overlay.open { display:flex; }
+  .sig-box { background:#fff; border-radius:16px; padding:28px; width:480px; max-width:95vw; }
+  .sig-box h3 { font-size:16px; font-weight:700; margin-bottom:16px; }
+  #sigCanvas { border: 2px dashed #d1d5db; border-radius:10px; cursor:crosshair; display:block; width:100%; }
+  .sig-btns { display:flex; gap:10px; margin-top:14px; }
+  .sig-btns button { flex:1; padding:10px; border-radius:8px; border:none; cursor:pointer; font-weight:700; font-size:13px; }
+  .sig-insert { background:${BRAND.primary}; color:#fff; }
+  .sig-clear  { background:#f3f4f6; color:#374151; }
+  .sig-cancel { background:#f3f4f6; color:#374151; }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .sig-overlay { display: none !important; }
+    .page { margin:0; border:none; border-radius:0; box-shadow:none; }
+    body { background:#fff; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <!-- Text formatting -->
+  <button onclick="fmt('bold')"      title="Bold"><b>B</b></button>
+  <button onclick="fmt('italic')"    title="Italic"><i>I</i></button>
+  <button onclick="fmt('underline')" title="Underline"><u>U</u></button>
+  <span class="sep"></span>
+  <!-- Alignment -->
+  <button onclick="fmt('justifyLeft')"   title="Align left"  >⬅</button>
+  <button onclick="fmt('justifyCenter')" title="Center"      >↔</button>
+  <button onclick="fmt('justifyRight')"  title="Align right" >➡</button>
+  <button onclick="fmt('justifyFull')"   title="Justify"     style="letter-spacing:1px;">≡</button>
+  <span class="sep"></span>
+  <!-- Font size -->
+  <select title="Font size" onchange="fmt('fontSize', this.value); this.value=''">
+    <option value="">Size</option>
+    <option value="1">Tiny (8pt)</option>
+    <option value="2">Small (10pt)</option>
+    <option value="3">Normal (12pt)</option>
+    <option value="4">Medium (14pt)</option>
+    <option value="5">Large (18pt)</option>
+    <option value="6">XL (24pt)</option>
+    <option value="7">XXL (36pt)</option>
+  </select>
+  <!-- Paragraph style -->
+  <select title="Paragraph style" onchange="fmt('formatBlock', this.value); this.value=''">
+    <option value="">Style</option>
+    <option value="p">Normal</option>
+    <option value="h1">Heading 1</option>
+    <option value="h2">Heading 2</option>
+    <option value="h3">Heading 3</option>
+  </select>
+  <!-- Font color -->
+  <input type="color" title="Text colour" value="#111111"
+    onchange="fmt('foreColor', this.value)" style="width:28px;height:28px;border:1px solid #e7e5e4;border-radius:6px;cursor:pointer;padding:1px;">
+  <span class="sep"></span>
+  <!-- Lists -->
+  <button onclick="fmt('insertUnorderedList')" title="Bullet list">• List</button>
+  <button onclick="fmt('insertOrderedList')"   title="Numbered list">1. List</button>
+  <span class="sep"></span>
+  <!-- Clear -->
+  <button onclick="fmt('removeFormat')" title="Remove formatting" style="color:#9ca3af;">Tx</button>
+  <span class="sep"></span>
+  <!-- Actions -->
+  <button class="action" style="background:${BRAND.printBtn};" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="action" style="background:${BRAND.wordBtn};"  onclick="saveAsWord()">💾 Save as Word</button>
+  <button class="action" style="background:${BRAND.signBtn};"  onclick="openSigModal()">✍️ Sign</button>
+  <span class="toolbar-note">Click to edit · everything is editable</span>
+</div>
+
+<!-- Document page -->
+<div class="page">
+  ${letterheadHtml}
+  <div class="doc-body" contenteditable="true">${bodyHtml}</div>
+  ${footerHtml}
+</div>
+
+<!-- Signature modal -->
+<div class="sig-overlay" id="sigOverlay">
+  <div class="sig-box">
+    <h3>✍️ Draw your signature</h3>
+    <canvas id="sigCanvas" width="420" height="140"></canvas>
+    <div class="sig-btns">
+      <button class="sig-insert" onclick="insertSig()">Insert Signature</button>
+      <button class="sig-clear"  onclick="clearSig()">Clear</button>
+      <button class="sig-cancel" onclick="closeSigModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Rich text formatting ──────────────────────────────────────────────────
+  function fmt(cmd, val) {
+    document.execCommand(cmd, false, val || null);
+  }
+
+  // ── Save as Word ──────────────────────────────────────────────────────────
+  function saveAsWord() {
+    const page = document.querySelector('.page');
+    const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>' + page.innerHTML + '</body></html>';
+    const blob = new Blob([html], { type: 'application/msword' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '${title.replace(/\.[^.]+$/, "")}.doc';
+    a.click();
+  }
+
+  // ── Signature modal ───────────────────────────────────────────────────────
+  let sigDrawing = false;
+  const overlay  = document.getElementById('sigOverlay');
+  const canvas   = document.getElementById('sigCanvas');
+  const ctx      = canvas.getContext('2d');
+
+  function initCanvas() {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }
+
+  function openSigModal()  { overlay.classList.add('open');    initCanvas(); }
+  function closeSigModal() { overlay.classList.remove('open'); }
+  function clearSig()      { initCanvas(); }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return {
+      x: (t.clientX - rect.left) * (canvas.width  / rect.width),
+      y: (t.clientY - rect.top)  * (canvas.height / rect.height),
+    };
+  }
+
+  canvas.addEventListener('mousedown',  e => { const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); sigDrawing=true; });
+  canvas.addEventListener('mousemove',  e => { if(!sigDrawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); });
+  canvas.addEventListener('mouseup',    () => sigDrawing = false);
+  canvas.addEventListener('mouseleave', () => sigDrawing = false);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); sigDrawing=true; });
+  canvas.addEventListener('touchmove',  e => { e.preventDefault(); if(!sigDrawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); });
+  canvas.addEventListener('touchend',   () => sigDrawing = false);
+
+  function insertSig() {
+    const dataUrl = canvas.toDataURL('image/png');
+    const img = '<img src="' + dataUrl + '" style="max-width:220px;max-height:70px;display:inline-block;vertical-align:middle;" alt="Signature"/>';
+    document.execCommand('insertHTML', false, img);
+    closeSigModal();
+  }
+
+  // Close overlay on backdrop click
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeSigModal(); });
+</script>
+</body>
+</html>`;
 }
 
+// ─── Component ────────────────────────────────────────────────────────────────
 interface Props { onClose: () => void }
 
 export default function DocConverterModal({ onClose }: Props) {
-  // ── Doc state ─────────────────────────────────────────────────────────────
-  const [docFile, setDocFile]             = useState<File | null>(null);
-  const [docType, setDocType]             = useState<DocType | null>(null);
-  const [docPages, setDocPages]           = useState<PageData[]>([]);
-  const [currentPage, setCurrentPage]     = useState(0);
-  const [docLoading, setDocLoading]       = useState(false);
-  const [wordHtml, setWordHtml]           = useState<string | null>(null);
-  const [_docArrayBuffer, setDocArrayBuffer] = useState<ArrayBuffer | null>(null);
+  const [docFile, setDocFile]   = useState<File | null>(null);
+  const [docType, setDocType]   = useState<string | null>(null);
+  const [letterhead, setLetterhead] = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [notif, setNotif]       = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ── UI state ──────────────────────────────────────────────────────────────
-  const [letterhead, setLetterhead]   = useState(false);
-  const [_editMode] = useState(false); // Word docs are always editable
-  const [showSigPad, setShowSigPad]   = useState(false);
-  const [inkColor, setInkColor]       = useState(INK[0].color);
-  const [isDrawing, setIsDrawing]     = useState(false);
-  const [sigDataUrl, setSigDataUrl]   = useState<string | null>(null);
+  const showNotif = (msg: string) => { setNotif(msg); setTimeout(() => setNotif(null), 3000); };
 
-  // ── Signature placement ───────────────────────────────────────────────────
-  const [sigBounds, setSigBounds]     = useState<Bounds | null>(null);
-  const [placingMode, setPlacingMode] = useState(false);
-  const [dragging, setDragging]       = useState(false);
-  const [resizing, setResizing]       = useState(false);
-  const dragOffset   = useRef({ x: 0, y: 0 });
-  const resizeStart  = useRef({ x: 0, y: 0, w: 0, h: 0 });
-
-  // ── Refs ──────────────────────────────────────────────────────────────────
-  const fileInputRef  = useRef<HTMLInputElement>(null);
-  const docViewerRef  = useRef<HTMLDivElement>(null);
-  const wordViewRef   = useRef<HTMLDivElement>(null);
-  const sigCanvasRef  = useRef<HTMLCanvasElement>(null);
-
-  // ── Rich text formatting ──────────────────────────────────────────────────
-  const execCmd = (cmd: string, val?: string) => {
-    wordViewRef.current?.focus();
-    document.execCommand(cmd, false, val ?? "");
-  };
-
-  // ── Notification ──────────────────────────────────────────────────────────
-  const [notif, setNotif] = useState<{ msg: string; ok: boolean } | null>(null);
-  const showNotif = (msg: string, ok = true) => {
-    setNotif({ msg, ok });
-    setTimeout(() => setNotif(null), 3000);
-  };
-
-  // ── Word HTML sync ────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (wordViewRef.current && wordHtml !== null) {
-      wordViewRef.current.innerHTML = wordHtml;
-    }
-  }, [wordHtml]);
-
-  // ── Sig canvas init ───────────────────────────────────────────────────────
-  useEffect(() => {
-    if (showSigPad && sigCanvasRef.current) {
-      const ctx = sigCanvasRef.current.getContext("2d")!;
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, sigCanvasRef.current.width, sigCanvasRef.current.height);
-      ctx.strokeStyle = inkColor;
-      ctx.lineWidth = 2;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-    }
-  }, [showSigPad]);
-
-  useEffect(() => {
-    if (sigCanvasRef.current) {
-      sigCanvasRef.current.getContext("2d")!.strokeStyle = inkColor;
-    }
-  }, [inkColor]);
-
-  // ── File handling ─────────────────────────────────────────────────────────
-  const handleFileUpload = async (file: File) => {
+  const handleFile = (file: File) => {
     const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-    setDocFile(file);
-    setDocPages([]); setWordHtml(null); setDocArrayBuffer(null);
-    setSigBounds(null); setPlacingMode(false);
-    setLetterhead(false);
+    if (ext === "pdf")                            { setDocFile(file); setDocType("pdf"); }
+    else if (ext === "docx" || ext === "doc")     { setDocFile(file); setDocType("word"); }
+    else if (/^(png|jpe?g|webp|gif)$/.test(ext)) { setDocFile(file); setDocType("image"); }
+    else { showNotif("Unsupported format. Use PDF, DOCX, or image."); }
+  };
 
-    if (ext === "pdf") {
-      setDocType("pdf"); setDocLoading(true);
-      try {
-        const ab = await file.arrayBuffer();
-        setDocArrayBuffer(ab);
+  const onDrop = (e: React.DragEvent) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f); };
+
+  const openEditor = async () => {
+    if (!docFile) return;
+    setLoading(true);
+    try {
+      let bodyHtml = "";
+
+      if (docType === "word") {
+        const ab = await docFile.arrayBuffer();
+        const { value } = await mammoth.convertToHtml({ arrayBuffer: ab });
+        bodyHtml = value || "<p>Your document content appears here. Click to edit.</p>";
+
+      } else if (docType === "pdf") {
+        const ab = await docFile.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
-        const pages: PageData[] = [];
+        const imgs: string[] = [];
         for (let i = 1; i <= pdf.numPages; i++) {
           const pg = await pdf.getPage(i);
-          const vp = pg.getViewport({ scale: 1.5 });
+          const vp = pg.getViewport({ scale: 2 });
           const c = document.createElement("canvas");
           c.width = vp.width; c.height = vp.height;
           await pg.render({ canvas: c, viewport: vp }).promise;
-          pages.push({ dataUrl: c.toDataURL(), width: vp.width, height: vp.height });
+          imgs.push(`<img src="${c.toDataURL()}" style="width:100%;display:block;margin-bottom:8px;" alt="Page ${i}"/>`);
         }
-        setDocPages(pages); setCurrentPage(0);
-      } catch { showNotif("Could not load PDF", false); }
-      setDocLoading(false);
-    } else if (ext === "docx" || ext === "doc") {
-      setDocType("word"); setDocLoading(true);
-      try {
-        const ab = await file.arrayBuffer();
-        setDocArrayBuffer(ab);
-        const { value } = await mammoth.convertToHtml({ arrayBuffer: ab });
-        setWordHtml(value);
-      } catch { showNotif("Could not load Word document", false); }
-      setDocLoading(false);
-    } else if (/^(png|jpe?g|webp|gif)$/.test(ext)) {
-      setDocType("image"); setDocLoading(true);
-      try {
-        const ab = await file.arrayBuffer();
-        setDocArrayBuffer(ab);
+        bodyHtml = imgs.join("\n");
+
+      } else if (docType === "image") {
         const dataUrl = await new Promise<string>((res) => {
           const reader = new FileReader();
           reader.onload = (e) => res(e.target!.result as string);
-          reader.readAsDataURL(file);
+          reader.readAsDataURL(docFile);
         });
-        setDocPages([{ dataUrl, width: 0, height: 0 }]);
-      } catch { showNotif("Could not load image", false); }
-      setDocLoading(false);
-    } else {
-      showNotif("Unsupported file type. Use PDF, DOCX, or image.", false);
-      setDocFile(null);
-    }
-  };
-
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) handleFileUpload(file);
-  };
-
-  // ── Signature canvas drawing ──────────────────────────────────────────────
-  const getCanvasPos = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement) => {
-    const rect = canvas.getBoundingClientRect();
-    const touch = (e as React.TouchEvent).touches?.[0];
-    return {
-      x: ((touch ? touch.clientX : (e as React.MouseEvent).clientX) - rect.left) * (canvas.width / rect.width),
-      y: ((touch ? touch.clientY : (e as React.MouseEvent).clientY) - rect.top) * (canvas.height / rect.height),
-    };
-  };
-
-  const startSigDraw = (e: React.MouseEvent | React.TouchEvent) => {
-    const canvas = sigCanvasRef.current; if (!canvas) return;
-    const ctx = canvas.getContext("2d")!;
-    const pos = getCanvasPos(e, canvas);
-    ctx.strokeStyle = inkColor; ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.lineJoin = "round";
-    ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
-    setIsDrawing(true);
-  };
-
-  const drawSig = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing || !sigCanvasRef.current) return;
-    e.preventDefault();
-    const ctx = sigCanvasRef.current.getContext("2d")!;
-    const pos = getCanvasPos(e, sigCanvasRef.current);
-    ctx.lineTo(pos.x, pos.y); ctx.stroke();
-  };
-
-  const endSigDraw = () => {
-    if (!isDrawing || !sigCanvasRef.current) return;
-    setIsDrawing(false);
-    setSigDataUrl(sigCanvasRef.current.toDataURL());
-  };
-
-  const clearSig = () => {
-    if (!sigCanvasRef.current) return;
-    const ctx = sigCanvasRef.current.getContext("2d")!;
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, sigCanvasRef.current.width, sigCanvasRef.current.height);
-    setSigDataUrl(null);
-  };
-
-  // ── Signature placement ───────────────────────────────────────────────────
-  const getViewerPos = (e: React.MouseEvent) => {
-    const rect = docViewerRef.current!.getBoundingClientRect();
-    return { x: e.clientX - rect.left + docViewerRef.current!.scrollLeft,
-             y: e.clientY - rect.top  + docViewerRef.current!.scrollTop };
-  };
-
-  const handleDocClick = (e: React.MouseEvent) => {
-    if (!placingMode || !sigDataUrl) return;
-    const pos = getViewerPos(e);
-    setSigBounds({ x: pos.x - 90, y: pos.y - 30, w: 180, h: 60 });
-    setPlacingMode(false);
-  };
-
-  const handleSigMouseDown = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!sigBounds) return;
-    dragOffset.current = { x: e.clientX - sigBounds.x, y: e.clientY - sigBounds.y };
-    setDragging(true);
-  };
-
-  const handleResizeMouseDown = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!sigBounds) return;
-    resizeStart.current = { x: e.clientX, y: e.clientY, w: sigBounds.w, h: sigBounds.h };
-    setResizing(true);
-  };
-
-  const handleViewerMouseMove = (e: React.MouseEvent) => {
-    if (dragging && sigBounds) {
-      setSigBounds(b => b ? { ...b, x: e.clientX - dragOffset.current.x, y: e.clientY - dragOffset.current.y } : b);
-    }
-    if (resizing && sigBounds) {
-      const dx = e.clientX - resizeStart.current.x;
-      const dy = e.clientY - resizeStart.current.y;
-      setSigBounds(b => b ? { ...b,
-        w: Math.max(60, resizeStart.current.w + dx),
-        h: Math.max(20, resizeStart.current.h + dy),
-      } : b);
-    }
-  };
-
-  const handleViewerMouseUp = () => { setDragging(false); setResizing(false); };
-
-  // ── Export / Print / Send ─────────────────────────────────────────────────
-  const exportSigned = async () => {
-    if (!docFile) return;
-    try {
-      const getPageDataUrl = (): string | null => {
-        if (docType === "word") {
-          // Render word content to canvas via html2canvas-style approach
-          return null; // handled below
-        }
-        return docPages[currentPage]?.dataUrl ?? null;
-      };
-
-      if (docType === "word") {
-        // Serialize edited HTML content
-        const content = wordViewRef.current?.innerHTML ?? wordHtml ?? "";
-        const lhHeader = letterhead
-          ? `<div style="background:${LH.bg};border-bottom:2px solid ${LH.lineColor};padding:12px 28px 10px;margin-bottom:0;">
-               <div style="font-family:Georgia,serif;font-weight:700;font-size:14px;color:${LH.primaryColor};letter-spacing:3px;">${LH.org}</div>
-               <div style="font-size:9px;color:${LH.accentColor};font-weight:700;letter-spacing:2px;margin-top:3px;">${LH.tagline.toUpperCase()}</div>
-             </div>`
-          : "";
-        const sigBlock = sigBounds && sigDataUrl
-          ? `<div style="position:relative;"><img src="${sigDataUrl}" style="position:absolute;left:${sigBounds.x}px;top:${sigBounds.y}px;width:${sigBounds.w}px;height:${sigBounds.h}px;"/></div>`
-          : "";
-        const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-          body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.6;}
-          @media print{.no-print{display:none}}
-        </style></head><body>${lhHeader}<div contenteditable="true" style="outline:none;">${content}</div>${sigBlock}
-        <div class="no-print" style="margin-top:24px;">
-          <button onclick="window.print()" style="padding:10px 24px;background:#059669;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">Print / Save PDF</button>
-        </div></body></html>`;
-        const blob = new Blob([fullHtml], { type: "text/html" });
-        const a = document.createElement("a");
-        a.download = `${docFile.name.replace(/\.[^.]+$/, "")}_edited.html`;
-        a.href = URL.createObjectURL(blob);
-        a.click();
-        showNotif("Downloaded — open in browser then print/save as PDF");
-        return;
+        bodyHtml = `<img src="${dataUrl}" style="max-width:100%;" alt="${docFile.name}"/>`;
       }
 
-      const pageDataUrl = getPageDataUrl();
-      if (!pageDataUrl) return;
-
-      const composed = await composeCanvas(pageDataUrl, letterhead);
-
-      // Draw signature onto composed canvas if placed
-      if (sigBounds && sigDataUrl) {
-        const ctx = composed.getContext("2d")!;
-        const sig = await loadImg(sigDataUrl);
-        ctx.drawImage(sig, sigBounds.x, sigBounds.y, sigBounds.w, sigBounds.h);
-      }
-
-      // Embed into PDF
-      const pdfDoc = await PDFDocument.create();
-      const imgBytes = await fetch(composed.toDataURL("image/png")).then(r => r.arrayBuffer());
-      const pngImg = await pdfDoc.embedPng(imgBytes);
-      const { width: iw, height: ih } = pngImg.scale(1);
-      const page = pdfDoc.addPage([iw, ih]);
-      page.drawImage(pngImg, { x: 0, y: 0, width: iw, height: ih });
-      const pdfBytes = await pdfDoc.save();
-      const a = document.createElement("a");
-      a.download = `${docFile.name.replace(/\.[^.]+$/, "")}_signed.pdf`;
-      a.href = URL.createObjectURL(new Blob([new Uint8Array(pdfBytes)]));
-      a.click();
-      showNotif("Saved as PDF!");
+      const title = docFile.name.replace(/\.[^.]+$/, "");
+      const html  = buildEditorPage(bodyHtml, letterhead, title);
+      const blob  = new Blob([html], { type: "text/html" });
+      window.open(URL.createObjectURL(blob), "_blank");
     } catch (err) {
       console.error(err);
-      showNotif("Export failed", false);
+      showNotif("Could not convert document. Try a different file.");
     }
+    setLoading(false);
   };
-
-  const printDoc = async () => {
-    if (!docFile) return;
-    if (docType === "word") {
-      const content = wordViewRef.current?.innerHTML ?? wordHtml ?? "";
-      const lhHeader = letterhead
-        ? `<div style="background:${LH.bg};border-bottom:2px solid ${LH.lineColor};padding:12px 28px;">
-             <div style="font-family:Georgia,serif;font-weight:700;font-size:14px;color:${LH.primaryColor};letter-spacing:3px;">${LH.org}</div>
-             <div style="font-size:9px;color:${LH.accentColor};font-weight:700;letter-spacing:2px;margin-top:3px;">${LH.tagline.toUpperCase()}</div>
-           </div>`
-        : "";
-      const win = window.open("", "_blank");
-      win?.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-        body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.6;}
-        @media print{body{margin:0;max-width:none;padding:12px;}}
-      </style></head><body>${lhHeader}<div>${content}</div></body></html>`);
-      win?.document.close();
-      setTimeout(() => win?.print(), 400);
-      return;
-    }
-
-    const pageDataUrl = docPages[currentPage]?.dataUrl;
-    if (!pageDataUrl) return;
-    const composed = await composeCanvas(pageDataUrl, letterhead);
-    if (sigBounds && sigDataUrl) {
-      const ctx = composed.getContext("2d")!;
-      const sig = await loadImg(sigDataUrl);
-      ctx.drawImage(sig, sigBounds.x, sigBounds.y, sigBounds.w, sigBounds.h);
-    }
-    const win = window.open("", "_blank");
-    win?.document.write(`<!DOCTYPE html><html><head><style>body{margin:0;}img{max-width:100%;}</style></head>
-      <body><img src="${composed.toDataURL("image/png")}"/></body></html>`);
-    win?.document.close();
-    setTimeout(() => win?.print(), 400);
-  };
-
-  const sendDoc = () => {
-    const name = docFile?.name ?? "document";
-    const to   = "ename@doxaandco.co";
-    const sub  = encodeURIComponent(`Document: ${name}`);
-    const body = encodeURIComponent(
-      `Hi,\n\nPlease find my document attached: ${name}.\n\n(Save it first using the Save button, then attach the file to this email.)`
-    );
-    window.open(`mailto:${to}?subject=${sub}&body=${body}`, "_blank");
-  };
-
-  const totalPages = docPages.length;
-  const hasDoc     = !!docFile && !docLoading && (docPages.length > 0 || wordHtml !== null);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 px-0 sm:px-4">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-2xl max-h-[94vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-lg flex flex-col overflow-hidden">
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100 shrink-0">
           <div>
             <h2 className="text-lg font-bold text-stone-900">Document Converter</h2>
-            <p className="text-xs text-stone-400 mt-0.5">Upload · Add letterhead · Sign · Edit · Save or Print</p>
+            <p className="text-xs text-stone-400 mt-0.5">Opens as a full editable page in a new tab</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-700">
+          <button type="button" onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors">
             <X size={18} />
           </button>
         </div>
 
-        {/* Notification */}
         {notif && (
-          <div className={`mx-6 mt-3 px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2 shrink-0 ${
-            notif.ok ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
-          }`}>
-            {notif.ok ? <Check size={14} /> : "✕"} {notif.msg}
-          </div>
+          <div className="mx-6 mt-3 px-4 py-2.5 rounded-xl text-sm font-medium bg-red-50 text-red-700 shrink-0">{notif}</div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        <div className="px-6 py-5 space-y-5">
 
-          {/* ── Upload zone ── */}
-          {!docFile && (
-            <div
-              onDrop={onDrop}
-              onDragOver={e => e.preventDefault()}
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-stone-200 hover:border-emerald-400 rounded-2xl py-14 px-8 cursor-pointer hover:bg-emerald-50/40 transition-all text-center"
-            >
-              <Upload size={36} className="text-stone-300 mx-auto mb-4" />
-              <p className="text-stone-700 font-semibold mb-3">Drop your document here or click to browse</p>
-              <div className="flex gap-2 justify-center flex-wrap">
-                {["PDF", "Word (.docx)", "PNG / JPG"].map(l => (
-                  <span key={l} className="px-3 py-1 rounded-full bg-stone-100 text-stone-500 text-xs font-medium">{l}</span>
-                ))}
+          {/* Upload zone */}
+          <div
+            onDrop={onDrop}
+            onDragOver={e => e.preventDefault()}
+            onClick={() => fileInputRef.current?.click()}
+            className={`border-2 border-dashed rounded-2xl py-10 px-8 cursor-pointer transition-all text-center ${
+              docFile ? "border-emerald-400 bg-emerald-50/40" : "border-stone-200 hover:border-emerald-400 hover:bg-emerald-50/30"
+            }`}
+          >
+            {docFile ? (
+              <div className="flex items-center justify-center gap-3">
+                <FileText size={24} className="text-emerald-600 shrink-0" />
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-stone-800 truncate max-w-xs">{docFile.name}</p>
+                  <p className="text-xs text-stone-400 mt-0.5 capitalize">{docType} file — ready to convert</p>
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <>
+                <Upload size={32} className="text-stone-300 mx-auto mb-3" />
+                <p className="text-stone-700 font-semibold mb-2">Drop your document here or click to browse</p>
+                <div className="flex gap-2 justify-center flex-wrap">
+                  {["PDF", "Word (.docx)", "PNG / JPG"].map(l => (
+                    <span key={l} className="px-3 py-1 rounded-full bg-stone-100 text-stone-500 text-xs font-medium">{l}</span>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
           <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,image/*" className="hidden"
-            onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f); }} />
+            onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
 
-          {/* ── Loading ── */}
-          {docLoading && (
-            <div className="text-center py-10 text-stone-400">
-              <div className="animate-spin w-8 h-8 border-2 border-stone-200 border-t-emerald-600 rounded-full mx-auto mb-3" />
-              Loading document…
+          {/* Letterhead toggle */}
+          <div>
+            <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Letterhead</p>
+            <div className="flex gap-2">
+              {[
+                { id: false, label: "None" },
+                { id: true,  label: "Doxa & Co", dot: "#C9A44A" },
+              ].map(({ id, label, dot }) => (
+                <button key={String(id)} type="button" onClick={() => setLetterhead(id as boolean)}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
+                    letterhead === id ? "border-stone-900 bg-stone-900 text-white" : "border-stone-200 text-stone-600 hover:border-stone-400"
+                  }`}>
+                  {dot && <span className="w-2 h-2 rounded-full shrink-0" style={{ background: dot }} />}
+                  {label}
+                </button>
+              ))}
             </div>
-          )}
+            {letterhead && (
+              <p className="text-xs text-stone-400 mt-2">
+                Header and footer are editable in the opened page — you can change any text directly.
+              </p>
+            )}
+          </div>
 
-          {/* ── Controls (shown when doc is loaded) ── */}
-          {hasDoc && (
-            <>
-              {/* Top row: filename + change */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-stone-500 truncate flex-1">{docFile!.name}</span>
-                <button onClick={() => { setDocFile(null); setDocPages([]); setWordHtml(null); setSigBounds(null); setSigDataUrl(null); }}
-                  className="px-3 py-1.5 rounded-lg border border-stone-200 text-stone-500 text-xs font-medium hover:bg-stone-50 transition-colors">
-                  Change file
-                </button>
-              </div>
+          {/* Open button */}
+          <button
+            type="button"
+            onClick={openEditor}
+            disabled={!docFile || loading}
+            className="w-full flex items-center justify-center gap-2 bg-emerald-700 hover:bg-stone-900 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-2xl text-sm transition-all"
+          >
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Converting…
+              </>
+            ) : (
+              "Open in Editor →"
+            )}
+          </button>
 
-              {/* Letterhead toggle */}
-              <div>
-                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">Letterhead</p>
-                <div className="flex gap-2">
-                  {[
-                    { id: false, label: "None" },
-                    { id: true,  label: "Doxa & Co", color: LH.lineColor },
-                  ].map(({ id, label, color }) => (
-                    <button key={String(id)} onClick={() => setLetterhead(id as boolean)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                        letterhead === id
-                          ? "border-stone-900 bg-stone-900 text-white"
-                          : "border-stone-200 text-stone-600 hover:border-stone-400 bg-white"
-                      }`}>
-                      {color && <span className="w-2 h-2 rounded-full" style={{ background: color }} />}
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Signature section */}
-              <div className="border border-stone-100 rounded-2xl overflow-hidden">
-                <button
-                  onClick={() => setShowSigPad(v => !v)}
-                  className="w-full flex items-center gap-3 px-4 py-3 bg-stone-50 hover:bg-stone-100 transition-colors text-left"
-                >
-                  <PenLine size={14} className="text-stone-400 shrink-0" />
-                  <span className="text-sm font-semibold text-stone-700 flex-1">
-                    {sigDataUrl ? "Signature ready" : "Add Signature"}
-                  </span>
-                  {sigDataUrl && (
-                    <img src={sigDataUrl} alt="sig preview" className="h-6 object-contain" />
-                  )}
-                  <span className="text-xs text-stone-400">{showSigPad ? "▲" : "▼"}</span>
-                </button>
-
-                {showSigPad && (
-                  <div className="px-4 py-3 space-y-3">
-                    {/* Ink selector */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Ink</span>
-                      {INK.map(ink => (
-                        <button key={ink.id} onClick={() => setInkColor(ink.color)}
-                          className={`w-6 h-6 rounded-full border-2 transition-all ${inkColor === ink.color ? "border-stone-700 scale-110" : "border-stone-200"}`}
-                          style={{ background: ink.color }}
-                          title={ink.label}
-                        />
-                      ))}
-                      <button onClick={clearSig} className="ml-auto flex items-center gap-1 text-xs text-stone-400 hover:text-red-400 transition-colors">
-                        <Trash2 size={11} /> Clear
-                      </button>
-                    </div>
-
-                    {/* Drawing canvas */}
-                    <canvas
-                      ref={sigCanvasRef}
-                      width={520} height={110}
-                      className="w-full border-2 border-dashed border-stone-200 rounded-xl cursor-crosshair bg-white touch-none"
-                      onMouseDown={startSigDraw}
-                      onMouseMove={drawSig}
-                      onMouseUp={endSigDraw}
-                      onMouseLeave={endSigDraw}
-                      onTouchStart={startSigDraw}
-                      onTouchMove={drawSig}
-                      onTouchEnd={endSigDraw}
-                    />
-                    <p className="text-xs text-stone-400">Draw your signature above, then place it on the document.</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Action bar */}
-              <div className="flex items-center gap-2 flex-wrap">
-                {sigDataUrl && (
-                  <button onClick={() => { setPlacingMode(p => !p); }}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                      placingMode ? "bg-emerald-600 text-white" : "bg-stone-900 text-white hover:bg-emerald-600"
-                    }`}>
-                    ✍ {placingMode ? "Click to place…" : sigBounds ? "Move Signature" : "Place Signature"}
-                  </button>
-                )}
-                {sigBounds && (
-                  <button onClick={() => setSigBounds(null)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors">
-                    ✕ Remove Sig
-                  </button>
-                )}
-                {docType === "word" && (
-                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
-                    ✏ Editing
-                  </span>
-                )}
-                <div className="flex-1" />
-                {totalPages > 1 && (
-                  <div className="flex items-center gap-1 text-sm text-stone-600">
-                    <button onClick={() => setCurrentPage(p => Math.max(0, p - 1))} disabled={currentPage === 0}
-                      className="p-1 rounded-lg hover:bg-stone-100 disabled:opacity-30">
-                      <ChevronLeft size={15} />
-                    </button>
-                    <span className="text-xs font-medium">{currentPage + 1}/{totalPages}</span>
-                    <button onClick={() => setCurrentPage(p => Math.min(totalPages - 1, p + 1))} disabled={currentPage === totalPages - 1}
-                      className="p-1 rounded-lg hover:bg-stone-100 disabled:opacity-30">
-                      <ChevronRight size={15} />
-                    </button>
-                  </div>
-                )}
-                <button onClick={exportSigned}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-900 text-white text-xs font-semibold hover:bg-emerald-600 transition-colors">
-                  <Download size={13} /> Save
-                </button>
-                <button onClick={printDoc}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs font-semibold hover:bg-stone-50 transition-colors">
-                  <Printer size={13} /> Print
-                </button>
-                <button onClick={sendDoc}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 text-xs font-semibold hover:bg-stone-50 transition-colors">
-                  <Send size={13} /> Send
-                </button>
-              </div>
-
-              {/* ── Rich text formatting toolbar (Word docs only) ── */}
-              {docType === "word" && (
-                <div className="flex items-center gap-1 flex-wrap px-3 py-2 bg-stone-50 rounded-xl border border-stone-100">
-                  {/* Bold / Italic / Underline */}
-                  {[
-                    { cmd: "bold",      label: "B", title: "Bold",      cls: "font-black" },
-                    { cmd: "italic",    label: "I", title: "Italic",    cls: "italic" },
-                    { cmd: "underline", label: "U", title: "Underline", cls: "underline" },
-                  ].map(({ cmd, label, title, cls }) => (
-                    <button key={cmd} type="button" title={title}
-                      onMouseDown={e => { e.preventDefault(); execCmd(cmd); }}
-                      className={`w-7 h-7 rounded text-sm text-stone-700 hover:bg-stone-200 transition-colors ${cls}`}>
-                      {label}
-                    </button>
-                  ))}
-                  <span className="w-px h-5 bg-stone-200 mx-1" />
-                  {/* Alignment */}
-                  {[
-                    { cmd: "justifyLeft",   icon: "≡", title: "Align left",  style: "text-left" },
-                    { cmd: "justifyCenter", icon: "≡", title: "Center",      style: "text-center" },
-                    { cmd: "justifyRight",  icon: "≡", title: "Align right", style: "text-right" },
-                    { cmd: "justifyFull",   icon: "≡", title: "Justify",     style: "" },
-                  ].map(({ cmd, icon, title }, i) => (
-                    <button key={cmd} type="button" title={title}
-                      onMouseDown={e => { e.preventDefault(); execCmd(cmd); }}
-                      className="w-7 h-7 rounded text-sm text-stone-700 hover:bg-stone-200 transition-colors flex items-center justify-center"
-                      style={{ letterSpacing: i === 1 ? "1px" : i === 2 ? "2px" : "" }}>
-                      {icon}
-                    </button>
-                  ))}
-                  <span className="w-px h-5 bg-stone-200 mx-1" />
-                  {/* Font size */}
-                  <select
-                    title="Font size"
-                    className="h-7 rounded border border-stone-200 text-xs text-stone-700 px-1 bg-white hover:bg-stone-50 transition-colors"
-                    defaultValue=""
-                    onChange={e => { execCmd("fontSize", e.target.value); e.target.value = ""; }}
-                  >
-                    <option value="" disabled>Size</option>
-                    <option value="1">Tiny (8pt)</option>
-                    <option value="2">Small (10pt)</option>
-                    <option value="3">Normal (12pt)</option>
-                    <option value="4">Medium (14pt)</option>
-                    <option value="5">Large (18pt)</option>
-                    <option value="6">XL (24pt)</option>
-                    <option value="7">XXL (36pt)</option>
-                  </select>
-                  <span className="w-px h-5 bg-stone-200 mx-1" />
-                  {/* Headings */}
-                  <select
-                    title="Paragraph style"
-                    className="h-7 rounded border border-stone-200 text-xs text-stone-700 px-1 bg-white hover:bg-stone-50 transition-colors"
-                    defaultValue=""
-                    onChange={e => { execCmd("formatBlock", e.target.value); e.target.value = ""; }}
-                  >
-                    <option value="" disabled>Style</option>
-                    <option value="p">Normal</option>
-                    <option value="h1">Heading 1</option>
-                    <option value="h2">Heading 2</option>
-                    <option value="h3">Heading 3</option>
-                  </select>
-                  <span className="w-px h-5 bg-stone-200 mx-1" />
-                  {/* Lists */}
-                  {[
-                    { cmd: "insertUnorderedList", label: "• List", title: "Bullet list" },
-                    { cmd: "insertOrderedList",   label: "1. List", title: "Numbered list" },
-                  ].map(({ cmd, label, title }) => (
-                    <button key={cmd} type="button" title={title}
-                      onMouseDown={e => { e.preventDefault(); execCmd(cmd); }}
-                      className="px-2 h-7 rounded text-xs text-stone-700 hover:bg-stone-200 transition-colors">
-                      {label}
-                    </button>
-                  ))}
-                  <span className="w-px h-5 bg-stone-200 mx-1" />
-                  {/* Remove formatting */}
-                  <button type="button" title="Remove formatting"
-                    onMouseDown={e => { e.preventDefault(); execCmd("removeFormat"); }}
-                    className="px-2 h-7 rounded text-xs text-stone-400 hover:bg-stone-200 hover:text-stone-700 transition-colors">
-                    Tx
-                  </button>
-                </div>
-              )}
-
-              {/* Placing mode banner */}
-              {placingMode && (
-                <div className="px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-700 font-medium text-center">
-                  ✦ Click anywhere on the document below to place your signature
-                </div>
-              )}
-
-              {/* Letterhead preview header */}
-              {letterhead && (
-                <div className="rounded-t-xl border-x-2 border-t-2 border-stone-200 px-5 py-3"
-                  style={{ background: LH.bg, borderBottom: `2px solid ${LH.lineColor}` }}>
-                  <div style={{ fontFamily: "Georgia, serif", fontWeight: 700, letterSpacing: "3px", color: LH.primaryColor, fontSize: 13 }}>
-                    {LH.org}
-                  </div>
-                  <div style={{ fontSize: 9, color: LH.accentColor, letterSpacing: "2px", fontWeight: 700, marginTop: 3 }}>
-                    {LH.tagline.toUpperCase()}
-                  </div>
-                </div>
-              )}
-
-              {/* Document viewer */}
-              <div
-                ref={docViewerRef}
-                onClick={handleDocClick}
-                onMouseMove={handleViewerMouseMove}
-                onMouseUp={handleViewerMouseUp}
-                onMouseLeave={handleViewerMouseUp}
-                className={`relative bg-white overflow-auto max-h-[55vh] shadow-inner border-2 select-none transition-colors ${
-                  letterhead ? "rounded-b-xl border-t-0" : "rounded-xl"
-                } ${
-                  placingMode ? "border-emerald-400 cursor-crosshair" :
-                  dragging || resizing ? "border-stone-300 cursor-grabbing" :
-                  "border-stone-200"
-                }`}
-              >
-                {docType === "word" && wordHtml !== null ? (
-                  <div
-                    ref={wordViewRef}
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="p-10 font-serif text-sm leading-relaxed text-stone-900 min-h-64 focus:outline-none"
-                  />
-                ) : docPages[currentPage] ? (
-                  <img src={docPages[currentPage].dataUrl} alt="Document page" className="w-full block" />
-                ) : null}
-
-                {/* Draggable/resizable signature */}
-                {sigBounds && sigDataUrl && (
-                  <div
-                    onMouseDown={handleSigMouseDown}
-                    className="absolute border-2 border-emerald-500 rounded"
-                    style={{ left: sigBounds.x, top: sigBounds.y, width: sigBounds.w, height: sigBounds.h,
-                             cursor: dragging ? "grabbing" : "grab", boxSizing: "border-box" }}
-                  >
-                    <img src={sigDataUrl} alt="Signature" className="w-full h-full object-contain block pointer-events-none" />
-                    {/* Resize handle */}
-                    <div
-                      onMouseDown={handleResizeMouseDown}
-                      className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 rounded-tl cursor-se-resize"
-                    />
-                  </div>
-                )}
-              </div>
-            </>
+          {docFile && (
+            <button type="button" onClick={() => { setDocFile(null); setDocType(null); }}
+              className="w-full text-center text-xs text-stone-400 hover:text-stone-600 transition-colors py-1">
+              Choose a different file
+            </button>
           )}
         </div>
       </div>
