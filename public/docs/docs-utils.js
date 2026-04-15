@@ -34,9 +34,14 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
         </button>
       </div>
 
+      <!-- Insert confirmation bar -->
+      <div id="sig-confirm" style="display:none;background:#f0fdf4;border-bottom:1px solid #d1fae5;padding:10px 20px;font-size:12px;color:#059669;font-weight:600;text-align:center;">
+        ✓ Signature placed! Click in the document where you want another, then insert again. <button onclick="closeSigModal()" style="margin-left:12px;padding:3px 12px;border:1px solid #059669;border-radius:20px;background:#fff;color:#059669;font-size:11px;font-weight:700;cursor:pointer;">Done</button>
+      </div>
+
       <!-- Saved signature panel -->
       <div id="panel-saved" style="padding:24px;text-align:center;">
-        <p style="font-size:12px;color:#78716c;margin-bottom:12px;">Your saved signature — select a size then click Insert</p>
+        <p style="font-size:12px;color:#78716c;margin-bottom:12px;">Your saved signature — select a size then click Insert. Drag the green handle to resize after placing.</p>
         <div style="border:2px dashed #d6d3d1;border-radius:8px;padding:20px;background:#fafaf9;margin-bottom:16px;">
           <img id="sig-preview" src="${SIG_IMAGE_URL}" style="max-height:80px;object-fit:contain;" />
         </div>
@@ -95,7 +100,7 @@ const SIG_IMAGE_URL = '../assets/images/enam-signature.png';
 let _savedRange   = null;   // cursor position before modal opened
 let _sigSize      = 'small';
 let _uploadedSrc  = null;   // data URL of uploaded signature image
-const SIG_SIZES   = { small: 80, medium: 130, large: 200 };
+const SIG_SIZES   = { small: 40, medium: 65, large: 100 };
 
 /* ── Signature modal open/close ─────────────────────────────────────────── */
 function openSignatureModal() {
@@ -137,12 +142,65 @@ function setSigSize(size) {
   document.getElementById('sig-preview').style.maxHeight = SIG_SIZES[size] + 'px';
 }
 
+/* ── Core: insert a resizable signature at cursor ────────────────────────── */
+function insertSigAtCursor(src, h) {
+  var id = 'sig_' + Date.now();
+  var html = [
+    '<span id="', id, '" contenteditable="false" class="sig-node" ',
+    'style="display:inline-block;position:relative;vertical-align:middle;',
+    'user-select:none;-webkit-user-select:none;line-height:0;margin:0 2px;">',
+    '<img src="', src, '" style="height:', h, 'px;width:auto;display:block;" draggable="false" />',
+    // resize handle
+    '<span class="sig-resize" ',
+    'style="position:absolute;bottom:-5px;right:-5px;width:12px;height:12px;',
+    'background:', DOXA_ACCENT, ';border-radius:50%;cursor:se-resize;',
+    'display:block;z-index:10;box-shadow:0 1px 3px rgba(0,0,0,.3);" title="Drag to resize"></span>',
+    // delete button
+    '<span onclick="this.parentNode.remove()" ',
+    'style="position:absolute;top:-7px;right:-7px;width:16px;height:16px;',
+    'background:#ef4444;border-radius:50%;cursor:pointer;color:#fff;',
+    'font-size:10px;line-height:16px;text-align:center;',
+    'z-index:10;display:block;box-shadow:0 1px 3px rgba(0,0,0,.3);" ',
+    'title="Remove signature">×</span>',
+    '</span>',
+  ].join('');
+
+  insertAtCursor(html);
+
+  // Attach resize drag handler after DOM insertion
+  setTimeout(function() {
+    var wrapper = document.getElementById(id);
+    if (!wrapper) return;
+    var handle = wrapper.querySelector('.sig-resize');
+    var img    = wrapper.querySelector('img');
+    if (!handle || !img) return;
+    handle.addEventListener('mousedown', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      var startY = e.clientY, startH = img.offsetHeight;
+      function onMove(e) {
+        img.style.height = Math.max(15, startH + (e.clientY - startY)) + 'px';
+      }
+      function onUp() {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  }, 60);
+
+  // Show confirmation bar; don't close the modal
+  var bar = document.getElementById('sig-confirm');
+  if (bar) {
+    bar.style.display = 'block';
+    clearTimeout(bar._t);
+    bar._t = setTimeout(function() { bar.style.display = 'none'; }, 6000);
+  }
+}
+
 /* ── Insert saved signature ──────────────────────────────────────────────── */
 function insertSavedSig() {
-  const h = SIG_SIZES[_sigSize];
-  const imgHtml = '<img src="' + SIG_IMAGE_URL + '" style="height:' + h + 'px;vertical-align:middle;display:inline-block;" />';
-  insertAtCursor(imgHtml);
-  closeSigModal();
+  insertSigAtCursor(SIG_IMAGE_URL, SIG_SIZES[_sigSize]);
 }
 
 /* ── Canvas drawing ──────────────────────────────────────────────────────── */
@@ -172,12 +230,8 @@ function clearCanvas() {
 }
 
 function insertDrawnSig() {
-  const canvas = document.getElementById('sig-canvas');
-  const dataUrl = canvas.toDataURL('image/png');
-  const h = SIG_SIZES[_sigSize];
-  const imgHtml = '<img src="' + dataUrl + '" style="height:' + h + 'px;vertical-align:middle;display:inline-block;" />';
-  insertAtCursor(imgHtml);
-  closeSigModal();
+  var canvas = document.getElementById('sig-canvas');
+  insertSigAtCursor(canvas.toDataURL('image/png'), SIG_SIZES[_sigSize]);
 }
 
 /* ── Insert HTML at saved cursor position ────────────────────────────────── */
@@ -227,10 +281,7 @@ function handleSigUpload(e) {
 
 function insertUploadedSig() {
   if (!_uploadedSrc) return;
-  var h = SIG_SIZES[_sigSize];
-  var imgHtml = '<img src="' + _uploadedSrc + '" style="height:' + h + 'px;vertical-align:middle;display:inline-block;" />';
-  insertAtCursor(imgHtml);
-  closeSigModal();
+  insertSigAtCursor(_uploadedSrc, SIG_SIZES[_sigSize]);
 }
 
 /* ── Edit / Preview toggle ───────────────────────────────────────────────── */
