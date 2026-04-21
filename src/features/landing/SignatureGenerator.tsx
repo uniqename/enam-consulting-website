@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { PDFDocument } from "pdf-lib";
 import mammoth from "mammoth";
-import { X, PenLine, Upload, Download, FileSignature, BookMarked, ChevronLeft, ChevronRight, CheckCircle2, Printer, Send, Edit3 } from "lucide-react";
+import { X, PenLine, Upload, Download, FileSignature, BookMarked, ChevronLeft, ChevronRight, CheckCircle2, Printer, Send, Edit3, Calendar } from "lucide-react";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -20,6 +20,21 @@ const INK_OPTIONS = [
 
 const DEFAULT_SIG_W = 180;
 const DEFAULT_SIG_H = 60;
+const DEFAULT_DATE_W = 220;
+const DEFAULT_DATE_H = 36;
+
+function renderDateStamp(text: string): string {
+  const W = 260, H = 44, scale = 3;
+  const c = document.createElement("canvas");
+  c.width = W * scale; c.height = H * scale;
+  const ctx = c.getContext("2d")!;
+  ctx.scale(scale, scale);
+  ctx.font = `14px "Helvetica Neue", Arial, sans-serif`;
+  ctx.fillStyle = "#1a1a1a";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, 8, H / 2);
+  return c.toDataURL("image/png");
+}
 
 const LETTERHEAD_CONFIGS = {
   doxa: {
@@ -154,6 +169,17 @@ export default function SignatureGenerator({ onClose }: Props) {
   const [letterhead, setLetterhead] = useState<LetterheadType>("none");
   const [editMode, setEditMode] = useState(false);
 
+  // ─ Date stamp state ──────────────────────────────────────────────────────
+  const todayFormatted = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const [dateText, setDateText] = useState(todayFormatted);
+  const [dateDataUrl, setDateDataUrl] = useState<string | null>(null);
+  const [dateBounds, setDateBounds] = useState<SigBounds | null>(null);
+  const [placingDateMode, setPlacingDateMode] = useState(false);
+  const [dateDragging, setDateDragging] = useState(false);
+  const [dateResizing, setDateResizing] = useState(false);
+  const dateDragStart = useRef({ x: 0, y: 0 });
+  const dateResizeStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
+
   // ─ Touch drawing ──────────────────────────────────────────────────────────
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -251,10 +277,22 @@ export default function SignatureGenerator({ onClose }: Props) {
   const copyToClipboard = async () => {
     if (!processedVariants) return;
     try {
-      const blob = await (await fetch(processedVariants[selectedVariant])).blob();
+      const dataUrl = processedVariants[selectedVariant];
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const i = new Image(); i.onload = () => resolve(i); i.onerror = reject; i.src = dataUrl;
+      });
+      const c = document.createElement("canvas");
+      c.width = img.width; c.height = img.height;
+      c.getContext("2d")!.drawImage(img, 0, 0);
+      const blob = await new Promise<Blob>((resolve, reject) =>
+        c.toBlob((b) => b ? resolve(b) : reject(new Error("toBlob failed")), "image/png")
+      );
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
       showNotif("Copied to clipboard!");
-    } catch { showNotif("Copy failed — use Download instead", false); }
+    } catch (err) {
+      console.error("Clipboard write failed:", err);
+      showNotif("Copy failed — try Chrome/Edge on HTTPS, or use Download", false);
+    }
   };
   const saveSignature = () => {
     if (!processedVariants) return;
@@ -390,10 +428,16 @@ export default function SignatureGenerator({ onClose }: Props) {
 
   // ─ Signature placement ────────────────────────────────────────────────────
   const handleDocClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!placingMode || !docViewerRef.current) return;
+    if (!docViewerRef.current) return;
     const r = docViewerRef.current.getBoundingClientRect();
-    setSigBounds({ x: e.clientX - r.left - DEFAULT_SIG_W / 2, y: e.clientY - r.top - DEFAULT_SIG_H / 2, w: DEFAULT_SIG_W, h: DEFAULT_SIG_H });
-    setPlacingMode(false);
+    if (placingMode) {
+      setSigBounds({ x: e.clientX - r.left - DEFAULT_SIG_W / 2, y: e.clientY - r.top - DEFAULT_SIG_H / 2, w: DEFAULT_SIG_W, h: DEFAULT_SIG_H });
+      setPlacingMode(false);
+    } else if (placingDateMode) {
+      setDateDataUrl(renderDateStamp(dateText));
+      setDateBounds({ x: e.clientX - r.left - DEFAULT_DATE_W / 2, y: e.clientY - r.top - DEFAULT_DATE_H / 2, w: DEFAULT_DATE_W, h: DEFAULT_DATE_H });
+      setPlacingDateMode(false);
+    }
   };
   const handleSigMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -407,17 +451,32 @@ export default function SignatureGenerator({ onClose }: Props) {
     setResizing(true);
     setResizeStart({ x: e.clientX, y: e.clientY, w: sigBounds.w, h: sigBounds.h });
   };
+  const handleDateMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!dateBounds) return;
+    setDateDragging(true);
+    dateDragStart.current = { x: e.clientX - dateBounds.x, y: e.clientY - dateBounds.y };
+  };
+  const handleDateResizeMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation(); e.preventDefault();
+    if (!dateBounds) return;
+    setDateResizing(true);
+    dateResizeStart.current = { x: e.clientX, y: e.clientY, w: dateBounds.w, h: dateBounds.h };
+  };
+
   const handleViewerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (dragging && sigBounds) setSigBounds({ ...sigBounds, x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
     else if (resizing && sigBounds) setSigBounds({ ...sigBounds, w: Math.max(60, resizeStart.w + e.clientX - resizeStart.x), h: Math.max(20, resizeStart.h + e.clientY - resizeStart.y) });
+    if (dateDragging && dateBounds) setDateBounds({ ...dateBounds, x: e.clientX - dateDragStart.current.x, y: e.clientY - dateDragStart.current.y });
+    else if (dateResizing && dateBounds) setDateBounds({ ...dateBounds, w: Math.max(80, dateResizeStart.current.w + e.clientX - dateResizeStart.current.x), h: Math.max(20, dateResizeStart.current.h + e.clientY - dateResizeStart.current.y) });
   };
-  const handleViewerMouseUp = () => { setDragging(false); setResizing(false); };
+  const handleViewerMouseUp = () => { setDragging(false); setResizing(false); setDateDragging(false); setDateResizing(false); };
 
   // ─ Export ─────────────────────────────────────────────────────────────────
   const exportSigned = async () => {
     if (!docFile || docPages.length === 0) return;
-    if (!sigBounds && letterhead === "none" && docType !== "word") {
-      showNotif("Select a letterhead or place a signature first", false);
+    if (!sigBounds && !dateBounds && letterhead === "none" && docType !== "word") {
+      showNotif("Select a letterhead or place a signature / date first", false);
       return;
     }
     const displayRect = docViewerRef.current?.getBoundingClientRect();
@@ -428,33 +487,39 @@ export default function SignatureGenerator({ onClose }: Props) {
     try {
       // ── No letterhead: original per-type behavior ──────────────────────
       if (letterhead === "none") {
-        if (docType === "pdf" && docArrayBuffer && sigBounds && sigDataUrl) {
+        if (docType === "pdf" && docArrayBuffer && (sigBounds || dateBounds)) {
           const pdfDoc = await PDFDocument.load(docArrayBuffer);
           const page = pdfDoc.getPages()[currentPage];
           const { width: pW, height: pH } = page.getSize();
           const sx = pW / displayW, sy = pH / displayH;
-          const pngBytes = await (await fetch(sigDataUrl)).arrayBuffer();
-          page.drawImage(await pdfDoc.embedPng(pngBytes), { x: sigBounds.x * sx, y: pH - (sigBounds.y + sigBounds.h) * sy, width: sigBounds.w * sx, height: sigBounds.h * sy });
+          if (sigBounds && sigDataUrl) {
+            const pngBytes = await (await fetch(sigDataUrl)).arrayBuffer();
+            page.drawImage(await pdfDoc.embedPng(pngBytes), { x: sigBounds.x * sx, y: pH - (sigBounds.y + sigBounds.h) * sy, width: sigBounds.w * sx, height: sigBounds.h * sy });
+          }
+          if (dateBounds && dateDataUrl) {
+            const datePngBytes = await (await fetch(dateDataUrl)).arrayBuffer();
+            page.drawImage(await pdfDoc.embedPng(datePngBytes), { x: dateBounds.x * sx, y: pH - (dateBounds.y + dateBounds.h) * sy, width: dateBounds.w * sx, height: dateBounds.h * sy });
+          }
           const a = document.createElement("a"); a.download = `signed_${docFile.name}.pdf`;
           a.href = URL.createObjectURL(new Blob([new Uint8Array(await pdfDoc.save())], { type: "application/pdf" }));
           a.click(); showNotif("Signed PDF downloaded!");
-        } else if (docType === "image" && docViewerRef.current && sigBounds && sigDataUrl) {
+        } else if (docType === "image" && docViewerRef.current && (sigBounds || dateBounds)) {
           const page = docPages[currentPage];
           const imgEl = docViewerRef.current.querySelector("img");
           const natW = imgEl?.naturalWidth || displayW, natH = imgEl?.naturalHeight || displayH;
           const c = document.createElement("canvas"); c.width = natW; c.height = natH;
           const ctx = c.getContext("2d")!;
           await new Promise<void>((res) => { const di = new Image(); di.onload = () => { ctx.drawImage(di, 0, 0); res(); }; di.src = page.dataUrl; });
-          await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(natW/displayW), sigBounds.y*(natH/displayH), sigBounds.w*(natW/displayW), sigBounds.h*(natH/displayH)); res(); }; si.src = sigDataUrl; });
+          if (sigBounds && sigDataUrl) await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(natW/displayW), sigBounds.y*(natH/displayH), sigBounds.w*(natW/displayW), sigBounds.h*(natH/displayH)); res(); }; si.src = sigDataUrl; });
+          if (dateBounds && dateDataUrl) await new Promise<void>((res) => { const di = new Image(); di.onload = () => { ctx.drawImage(di, dateBounds.x*(natW/displayW), dateBounds.y*(natH/displayH), dateBounds.w*(natW/displayW), dateBounds.h*(natH/displayH)); res(); }; di.src = dateDataUrl; });
           const a = document.createElement("a"); a.download = `signed_${docFile.name}.png`; a.href = c.toDataURL("image/png"); a.click(); showNotif("Signed image downloaded!");
         } else if (docType === "word") {
           const currentHtml = wordViewRef.current?.innerHTML ?? wordHtml ?? "";
           const W = 794, H = 1123;
           const wc = await renderHtmlToCanvas(currentHtml, W, H);
-          if (sigBounds && sigDataUrl) {
-            const ctx = wc.getContext("2d")!;
-            await new Promise<void>((res) => { const si = new Image(); si.onload = () => { ctx.drawImage(si, sigBounds.x*(W/displayW), sigBounds.y*(H/displayH), sigBounds.w*(W/displayW), sigBounds.h*(H/displayH)); res(); }; si.src = sigDataUrl; });
-          }
+          const wctx = wc.getContext("2d")!;
+          if (sigBounds && sigDataUrl) await new Promise<void>((res) => { const si = new Image(); si.onload = () => { wctx.drawImage(si, sigBounds.x*(W/displayW), sigBounds.y*(H/displayH), sigBounds.w*(W/displayW), sigBounds.h*(H/displayH)); res(); }; si.src = sigDataUrl; });
+          if (dateBounds && dateDataUrl) await new Promise<void>((res) => { const di = new Image(); di.onload = () => { wctx.drawImage(di, dateBounds.x*(W/displayW), dateBounds.y*(H/displayH), dateBounds.w*(W/displayW), dateBounds.h*(H/displayH)); res(); }; di.src = dateDataUrl; });
           const pdfDoc = await PDFDocument.create();
           const pp = pdfDoc.addPage([W, H]);
           pp.drawImage(await pdfDoc.embedPng(await (await fetch(wc.toDataURL("image/png"))).arrayBuffer()), { x: 0, y: 0, width: W, height: H });
@@ -474,17 +539,18 @@ export default function SignatureGenerator({ onClose }: Props) {
         pageDataUrl = docPages[currentPage]?.dataUrl ?? "";
       }
       const { canvas: composed, headerH } = await composeWithLetterhead(pageDataUrl, letterhead as keyof typeof LETTERHEAD_CONFIGS);
-      if (sigBounds && sigDataUrl) {
+      {
         const ctx = composed.getContext("2d")!;
         const cW = composed.width;
         const docAreaH = composed.height - headerH;
-        const si = await loadImgAsync(sigDataUrl);
-        ctx.drawImage(si,
-          sigBounds.x * (cW / displayW),
-          headerH + sigBounds.y * (docAreaH / displayH),
-          sigBounds.w * (cW / displayW),
-          sigBounds.h * (docAreaH / displayH)
-        );
+        if (sigBounds && sigDataUrl) {
+          const si = await loadImgAsync(sigDataUrl);
+          ctx.drawImage(si, sigBounds.x*(cW/displayW), headerH + sigBounds.y*(docAreaH/displayH), sigBounds.w*(cW/displayW), sigBounds.h*(docAreaH/displayH));
+        }
+        if (dateBounds && dateDataUrl) {
+          const di = await loadImgAsync(dateDataUrl);
+          ctx.drawImage(di, dateBounds.x*(cW/displayW), headerH + dateBounds.y*(docAreaH/displayH), dateBounds.w*(cW/displayW), dateBounds.h*(docAreaH/displayH));
+        }
       }
       const pdfDoc = await PDFDocument.create();
       const pW = composed.width, pH = composed.height;
@@ -803,7 +869,7 @@ export default function SignatureGenerator({ onClose }: Props) {
 
                       {/* Action bar */}
                       <div className="flex items-center gap-2 mb-3 flex-wrap">
-                        <button type="button" onClick={() => setPlacingMode(!placingMode)}
+                        <button type="button" onClick={() => { setPlacingMode(!placingMode); setPlacingDateMode(false); }}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                             placingMode ? "bg-emerald-600 text-white" : "bg-stone-900 text-white hover:bg-emerald-600"
                           }`}>
@@ -813,6 +879,27 @@ export default function SignatureGenerator({ onClose }: Props) {
                           <button type="button" onClick={() => setSigBounds(null)}
                             className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors">
                             ✕ Remove Sig
+                          </button>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="text"
+                            value={dateText}
+                            onChange={(e) => setDateText(e.target.value)}
+                            placeholder="e.g. 21 April 2026"
+                            className="w-32 px-2 py-1.5 rounded-lg border border-stone-200 text-xs text-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-400"
+                          />
+                          <button type="button" onClick={() => { setPlacingDateMode(!placingDateMode); setPlacingMode(false); }}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                              placingDateMode ? "bg-amber-500 text-white" : "border border-stone-200 text-stone-600 hover:bg-amber-50 hover:border-amber-400"
+                            }`}>
+                            <Calendar size={12} /> {placingDateMode ? "Click to place…" : dateBounds ? "Move Date" : "Place Date"}
+                          </button>
+                        </div>
+                        {dateBounds && (
+                          <button type="button" onClick={() => setDateBounds(null)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors">
+                            ✕ Remove Date
                           </button>
                         )}
                         {docType === "word" && (
@@ -845,6 +932,11 @@ export default function SignatureGenerator({ onClose }: Props) {
                           ✦ Click anywhere on the document to place your signature
                         </div>
                       )}
+                      {placingDateMode && (
+                        <div className="mb-2 px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-700 font-medium text-center">
+                          ✦ Click anywhere on the document to place the date stamp
+                        </div>
+                      )}
 
                       {/* Letterhead preview header (shown above the document viewer) */}
                       {letterhead !== "none" && (() => {
@@ -869,7 +961,8 @@ export default function SignatureGenerator({ onClose }: Props) {
                           letterhead !== "none" ? "rounded-b-xl border-t-0" : "rounded-xl"
                         } ${
                           placingMode ? "border-emerald-400 cursor-crosshair" :
-                          dragging || resizing ? "border-stone-300 cursor-grabbing" :
+                          placingDateMode ? "border-amber-400 cursor-crosshair" :
+                          dragging || resizing || dateDragging || dateResizing ? "border-stone-300 cursor-grabbing" :
                           "border-stone-200"
                         }`}
                       >
@@ -896,11 +989,27 @@ export default function SignatureGenerator({ onClose }: Props) {
                           >
                             <img src={currentVariantData} alt="Signature"
                               className="w-full h-full object-contain block pointer-events-none" />
-                            {/* Resize handle */}
                             <div onMouseDown={handleResizeMouseDown}
                               className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 rounded-sm bg-emerald-600 cursor-se-resize" />
-                            {/* Remove */}
                             <button type="button" aria-label="Remove signature" onClick={(e) => { e.stopPropagation(); setSigBounds(null); }}
+                              className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 shadow-sm">
+                              <X size={11} />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Draggable date stamp */}
+                        {dateBounds && dateDataUrl && (
+                          <div
+                            onMouseDown={handleDateMouseDown}
+                            className="absolute border-2 border-amber-400 rounded"
+                            style={{ left: dateBounds.x, top: dateBounds.y, width: dateBounds.w, height: dateBounds.h, cursor: dateDragging ? "grabbing" : "grab", boxSizing: "border-box" }}
+                          >
+                            <img src={dateDataUrl} alt="Date stamp"
+                              className="w-full h-full object-contain block pointer-events-none" />
+                            <div onMouseDown={handleDateResizeMouseDown}
+                              className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 rounded-sm bg-amber-500 cursor-se-resize" />
+                            <button type="button" aria-label="Remove date" onClick={(e) => { e.stopPropagation(); setDateBounds(null); }}
                               className="absolute -top-3 -right-3 w-6 h-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 shadow-sm">
                               <X size={11} />
                             </button>

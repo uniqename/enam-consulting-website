@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { PenLine, Lock, FileText, ExternalLink, FileScan } from 'lucide-react';
+import { PenLine, Lock, FileText, ExternalLink, FileScan, Calendar } from 'lucide-react';
 import SignatureGenerator from '../../features/landing/SignatureGenerator';
 import DocConverterModal from '../../features/landing/DocConverterModal';
+import DateGenerator from '../../features/landing/DateGenerator';
 
 const DOC_CATEGORIES = [
   {
@@ -50,6 +51,7 @@ const DOC_CATEGORIES = [
 const Tools = () => {
   const [showSig, setShowSig] = useState(false);
   const [showConverter, setShowConverter] = useState(false);
+  const [showDate, setShowDate] = useState(false);
 
   return (
     <div className="min-h-screen bg-stone-50 pt-28 pb-24">
@@ -107,6 +109,25 @@ const Tools = () => {
 
           <div className="bg-white rounded-2xl p-7 border border-stone-100 shadow-sm">
             <div className="flex items-center gap-4 mb-4">
+              <div className="w-11 h-11 rounded-xl bg-amber-500 flex items-center justify-center text-white">
+                <Calendar size={20} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-stone-900">Date Generator</h2>
+                <p className="text-stone-400 text-xs mt-0.5">Pick a date and copy in any format — Long, US, ISO, ordinal, and more.</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowDate(true)}
+              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-stone-900 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all"
+            >
+              <Calendar size={14} /> Open Date Tool
+            </button>
+          </div>
+
+          <div className="bg-white rounded-2xl p-7 border border-stone-100 shadow-sm">
+            <div className="flex items-center gap-4 mb-4">
               <div className="w-11 h-11 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700">
                 <FileText size={20} />
               </div>
@@ -151,6 +172,7 @@ const Tools = () => {
 
       {showSig && <SignatureGenerator onClose={() => setShowSig(false)} />}
       {showConverter && <DocConverterModal onClose={() => setShowConverter(false)} />}
+      {showDate && <DateGenerator onClose={() => setShowDate(false)} />}
     </div>
   );
 };
