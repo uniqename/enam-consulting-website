@@ -21,14 +21,28 @@ const Contact = () => {
     const data = new FormData(form);
 
     try {
+      // Submit to Netlify Forms
       await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
       });
+
+      // Fire auto-reply emails via Resend (non-blocking — don't fail the submission if this errors)
+      fetch('/.netlify/functions/send-contact-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.get('name') as string,
+          email: data.get('email') as string,
+          company: (data.get('company') as string) || '',
+          service: (data.get('service') as string) || 'General Inquiry',
+          message: data.get('message') as string,
+        }),
+      }).catch(() => {});
+
       setSubmitted(true);
     } catch {
-      // fallback: open mailto
       window.location.href = `mailto:ename@doxaandco.co?subject=Inquiry from ${data.get('name')}`;
     } finally {
       setLoading(false);
@@ -69,7 +83,7 @@ const Contact = () => {
           >
             {/* Netlify hidden fields */}
             <input type="hidden" name="form-name" value="contact" />
-            <p className="hidden"><input name="bot-field" /></p>
+            <p className="hidden"><input name="bot-field" aria-label="bot-field" /></p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
@@ -110,6 +124,7 @@ const Contact = () => {
                   name="service"
                   required
                   defaultValue=""
+                  title="I'm interested in"
                   className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all text-stone-900 bg-white"
                 >
                   <option value="" disabled>Select a service</option>
