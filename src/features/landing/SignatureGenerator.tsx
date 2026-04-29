@@ -18,6 +18,15 @@ const INK_OPTIONS = [
   { id: "bold",  label: "Bold",  color: "#0d0d0d", stroke: 4.5 },
 ];
 
+const PRESET_SIGNATURES = [
+  { label: "Black",       src: "/signatures/sig_black.png" },
+  { label: "Dark Gray",   src: "/signatures/sig_dark_gray.png" },
+  { label: "Navy Blue",   src: "/signatures/sig_navy_blue.png" },
+  { label: "Transparent", src: "/signatures/sig_transparent.png" },
+];
+
+const LS_KEY = "doxa_saved_signatures";
+
 const DEFAULT_SIG_W = 180;
 const DEFAULT_SIG_H = 60;
 const DEFAULT_DATE_W = 220;
@@ -139,7 +148,9 @@ export default function SignatureGenerator({ onClose }: Props) {
   const [processedVariants, setProcessedVariants] = useState<Variants | null>(null);
   const [selectedVariant, setSelectedVariant] = useState("black");
   const [strokeWidth, setStrokeWidth] = useState(2.5);
-  const [savedSignatures, setSavedSignatures] = useState<Array<{ id: number; variants: Variants; label: string }>>([]);
+  const [savedSignatures, setSavedSignatures] = useState<Array<{ id: number; variants: Variants; label: string }>>(() => {
+    try { return JSON.parse(localStorage.getItem(LS_KEY) ?? "[]"); } catch { return []; }
+  });
   const [activeTab, setActiveTab] = useState("download");
   const [notification, setNotification] = useState<{ msg: string; ok: boolean } | null>(null);
 
@@ -207,6 +218,11 @@ export default function SignatureGenerator({ onClose }: Props) {
     return () => { canvas.removeEventListener("touchstart", ts); canvas.removeEventListener("touchmove", tm); canvas.removeEventListener("touchend", te); };
   }, [step, mode, strokeWidth]);
 
+  // Persist saved signatures across modal opens
+  useEffect(() => {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(savedSignatures)); } catch { /* quota */ }
+  }, [savedSignatures]);
+
   // Sync wordHtml state into the ref-controlled div (avoids dangerouslySetInnerHTML + contentEditable conflict)
   useEffect(() => {
     if (wordViewRef.current && wordHtml !== null) {
@@ -244,6 +260,21 @@ export default function SignatureGenerator({ onClose }: Props) {
     setProcessedVariants(v); setStep(3);
   };
   const generateFromDraw = () => generateVariants(canvasRef.current!);
+
+  const loadPreset = (src: string) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas"); c.width = 600; c.height = 200;
+      const ctx = c.getContext("2d")!;
+      ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, 600, 200);
+      const ratio = Math.min(600 / img.width, 200 / img.height);
+      ctx.drawImage(img, (600 - img.width * ratio) / 2, (200 - img.height * ratio) / 2, img.width * ratio, img.height * ratio);
+      generateVariants(removeBackground(c));
+    };
+    img.crossOrigin = "anonymous";
+    img.src = src;
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f) return;
     const reader = new FileReader();
@@ -644,8 +675,8 @@ export default function SignatureGenerator({ onClose }: Props) {
           {step === 1 && (
             <div className="text-center">
               <h3 className="text-2xl font-bold text-stone-900 mb-2">How would you like to sign?</h3>
-              <p className="text-stone-500 mb-8">Draw it by hand, or upload a photo of your existing signature</p>
-              <div className="flex gap-5 justify-center flex-wrap">
+              <p className="text-stone-500 mb-8">Use a saved preset, draw it by hand, or upload a photo</p>
+              <div className="flex gap-5 justify-center flex-wrap mb-8">
                 {[
                   { k: "draw",   icon: <PenLine size={32} />,  title: "Draw",          sub: "Mouse, touch, or stylus" },
                   { k: "upload", icon: <Upload size={32} />,   title: "Upload Photo",  sub: "JPG, PNG, HEIC — auto-cleaned" },
@@ -661,6 +692,39 @@ export default function SignatureGenerator({ onClose }: Props) {
                   </button>
                 ))}
               </div>
+
+              {/* Presets */}
+              <div className="border-t border-stone-100 pt-6">
+                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">My Preset Signatures</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {PRESET_SIGNATURES.map((sig) => (
+                    <button key={sig.label} type="button"
+                      onClick={() => loadPreset(sig.src)}
+                      className="border-2 border-stone-100 hover:border-emerald-300 hover:bg-emerald-50 rounded-xl p-3 transition-all text-left group">
+                      <img src={sig.src} alt={sig.label} className="h-10 w-full object-contain mb-2" />
+                      <p className="text-xs text-stone-500 text-center group-hover:text-emerald-700">{sig.label}</p>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-stone-400 mt-3">Clicking a preset loads it directly — skip to style &amp; export.</p>
+              </div>
+
+              {/* Saved signatures from localStorage */}
+              {savedSignatures.length > 0 && (
+                <div className="border-t border-stone-100 pt-6 mt-6">
+                  <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Previously Saved</p>
+                  <div className="flex gap-3 flex-wrap justify-center">
+                    {savedSignatures.map((s) => (
+                      <button key={s.id} type="button"
+                        onClick={() => { setProcessedVariants(s.variants); setStep(3); showNotif("Loaded!"); }}
+                        className="flex flex-col items-center gap-2 p-3 rounded-xl border border-stone-100 hover:border-emerald-300 bg-stone-50 hover:bg-emerald-50 transition-all w-32">
+                        <img src={s.variants["black"]} alt={s.label} className="w-full h-8 object-contain" />
+                        <span className="text-xs text-stone-500">{s.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
