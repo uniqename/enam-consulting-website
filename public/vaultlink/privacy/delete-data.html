@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete My Data - VaultLink</title>
+    <style>
+        :root { --primary: #0D1F2D; --accent: #06B6D4; --accent-light: #e0f7fa; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f9ff; color: #1a1a1a; line-height: 1.7; }
+        header { background: linear-gradient(135deg, var(--primary), #0f2a3d); color: white; padding: 32px 20px; text-align: center; }
+        .logo-mark { font-size: 36px; margin-bottom: 8px; }
+        header h1 { font-size: 26px; font-weight: 700; color: var(--accent); }
+        header p { color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 6px; }
+        .container { max-width: 740px; margin: 0 auto; padding: 28px 20px 60px; }
+        .card { background: white; border-radius: 14px; padding: 36px; box-shadow: 0 2px 16px rgba(0,0,0,0.07); margin-bottom: 20px; }
+        .warning { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 16px 20px; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-size: 15px; }
+        h2 { color: var(--primary); font-size: 18px; font-weight: 700; margin: 28px 0 12px; }
+        h2:first-of-type { margin-top: 0; }
+        p { margin-bottom: 12px; font-size: 15px; }
+        ul { padding-left: 22px; margin-bottom: 14px; }
+        li { margin-bottom: 7px; font-size: 15px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; color: var(--primary); }
+        input, select, textarea { width: 100%; padding: 12px 14px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; transition: border-color 0.2s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+        textarea { min-height: 100px; resize: vertical; }
+        .btn { background: var(--primary); color: white; border: none; padding: 14px 32px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.2s; }
+        .btn:hover { background: #142636; }
+        .btn-alt { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; display: inline-block; margin-top: 8px; text-decoration: none; text-align: center; }
+        .retained { background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: 16px 20px; margin-top: 12px; }
+        .retained li { color: #555; }
+        .success { display: none; background: #e8f5e9; border: 1px solid #4caf50; border-radius: 10px; padding: 24px; text-align: center; }
+        .footer { text-align: center; margin-top: 32px; color: #888; font-size: 13px; }
+        .footer a { color: #0891b2; }
+        a { color: #0891b2; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo-mark">🔐</div>
+    <h1>VaultLink</h1>
+    <p>Account &amp; Data Deletion Request</p>
+</header>
+
+<div class="container">
+<div class="card">
+    <div class="warning">
+        ⚠️ <strong>This action is permanent.</strong> Deleting your account removes your profile, listings, and messages. Escrow and contract records are retained as required by financial regulations.
+    </div>
+
+    <h2>What Gets Deleted</h2>
+    <ul>
+        <li>Your account profile (name, email, phone, photo)</li>
+        <li>Storage space listings you host (if applicable)</li>
+        <li>VA profile and public listing (if applicable)</li>
+        <li>Active job postings and pending applications</li>
+        <li>Messages and communication history</li>
+        <li>App preferences, saved searches, and recently viewed items</li>
+    </ul>
+
+    <h2>What We Retain (Required by Law)</h2>
+    <div class="retained">
+        <ul>
+            <li>Escrow payment records and release history (7 years, financial compliance)</li>
+            <li>Completed VA contracts and digital service agreements (7 years)</li>
+            <li>Storage rental transaction records (7 years, tax compliance)</li>
+            <li>Records related to active disputes or legal proceedings</li>
+        </ul>
+    </div>
+
+    <h2>Submit Your Request</h2>
+    <p>Fill in the form or email <a href="mailto:consulting.enam@gmail.com">consulting.enam@gmail.com</a> with subject "VaultLink Data Deletion Request". We process all requests within <strong>30 days</strong>.</p>
+
+    <form id="deleteForm" style="margin-top:24px;" onsubmit="handleSubmit(event)">
+        <div class="form-group">
+            <label for="email">Email registered with VaultLink *</label>
+            <input type="email" id="email" name="email" required placeholder="you@email.com">
+        </div>
+        <div class="form-group">
+            <label for="name">Full name on account *</label>
+            <input type="text" id="name" name="name" required placeholder="Your full name">
+        </div>
+        <div class="form-group">
+            <label for="role">Your account type *</label>
+            <select id="role" name="role" required>
+                <option value="">Select your role</option>
+                <option value="client">Client (renting storage or hiring VA)</option>
+                <option value="storage_host">Storage host (listing spaces)</option>
+                <option value="va">Virtual Assistant</option>
+                <option value="multiple">Multiple roles</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="request_type">What would you like to delete? *</label>
+            <select id="request_type" name="request_type" required>
+                <option value="">Select an option</option>
+                <option value="full_account">Delete entire account and all data</option>
+                <option value="storage_listings">Remove my storage listings only</option>
+                <option value="va_profile">Remove my VA profile only</option>
+                <option value="messages">Delete my messages only</option>
+                <option value="specific">Delete specific data (describe below)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="reason">Reason (optional)</label>
+            <textarea id="reason" name="reason" placeholder="Help us improve — why are you leaving? (optional)"></textarea>
+        </div>
+        <button type="submit" class="btn">Submit Deletion Request</button>
+    </form>
+
+    <div class="success" id="successMsg">
+        <p style="font-size:32px;margin-bottom:12px;">✅</p>
+        <h2 style="color:#2e7d32;margin-bottom:8px;">Request Received</h2>
+        <p>We'll process your deletion request within <strong>30 days</strong> and send confirmation to your email.</p>
+        <p style="margin-top:16px;color:#666;font-size:14px;">Questions? Email <a href="mailto:consulting.enam@gmail.com">consulting.enam@gmail.com</a></p>
+    </div>
+</div>
+
+<div class="card" style="padding:24px;">
+    <h2 style="margin-top:0;">Prefer to Email?</h2>
+    <p>Send your request directly:</p>
+    <a href="mailto:consulting.enam@gmail.com?subject=VaultLink%20Data%20Deletion%20Request&body=Please%20delete%20my%20VaultLink%20account%20and%20all%20associated%20data.%0A%0AName%3A%20%0AEmail%3A%20%0ARole%3A%20%0AReason%3A%20" class="btn-alt">📧 Email Deletion Request</a>
+    <p style="margin-top:16px;font-size:13px;color:#888;">Response time: within 30 days · <a href="https://doxaandco.co/vaultlink/privacy-policy.html">Privacy Policy</a></p>
+</div>
+
+<div class="footer">
+    <p>© 2026 VaultLink · <a href="https://doxaandco.co/vaultlink/privacy-policy.html">Privacy Policy</a> · <a href="mailto:consulting.enam@gmail.com">Contact</a></p>
+</div>
+</div>
+
+<script>
+function handleSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const name = document.getElementById('name').value;
+    const role = document.getElementById('role').value;
+    const type = document.getElementById('request_type').value;
+    const reason = document.getElementById('reason').value;
+    const subject = encodeURIComponent('VaultLink Data Deletion Request');
+    const body = encodeURIComponent(`Data Deletion Request\n\nName: ${name}\nEmail: ${email}\nRole: ${role}\nRequest Type: ${type}\nReason: ${reason || 'Not provided'}\n\nPlease process this deletion request within 30 days.`);
+    window.location.href = `mailto:consulting.enam@gmail.com?subject=${subject}&body=${body}`;
+    document.getElementById('deleteForm').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+}
+</script>
+</body>
+</html>
