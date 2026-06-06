@@ -75,7 +75,7 @@ const Navbar = () => {
             <img
               src="/assets/images/doxa-logo-new.jpg"
               alt="Doxa & Co"
-              className="h-10 w-auto rounded"
+              className="h-16 w-auto rounded-lg"
             />
           </Link>
 

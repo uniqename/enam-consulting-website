@@ -24,7 +24,7 @@ const Footer = () => {
               <img
                 src="/assets/images/doxa-logo-new.jpg"
                 alt="Doxa & Co"
-                className="h-10 w-auto rounded"
+                className="h-14 w-auto rounded-lg"
               />
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed">
