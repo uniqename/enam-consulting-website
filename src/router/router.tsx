@@ -25,6 +25,22 @@ import Team from "../pages/clarityb/portal/Team";
 import StrategicPlan from "../pages/clarityb/portal/StrategicPlan";
 import AdminPortal from "../pages/clarityb/admin/AdminPortal";
 
+// DoxaOS Auth pages
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
+
+// DoxaOS Portal pages
+import PortalLayout from "../pages/portal/PortalLayout";
+import PortalDashboard from "../pages/portal/Dashboard";
+import Health from "../pages/portal/Health";
+import PortalKPIs from "../pages/portal/KPIs";
+import SOPs from "../pages/portal/SOPs";
+import GRC from "../pages/portal/GRC";
+import PortalProjects from "../pages/portal/Projects";
+import Strategy from "../pages/portal/Strategy";
+import CRM from "../pages/portal/CRM";
+import Settings from "../pages/portal/Settings";
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -70,6 +86,64 @@ export const router = createBrowserRouter([
       {
         path: 'terms',
         element: <Terms />,
+      },
+    ],
+  },
+  // DoxaOS Auth Routes
+  {
+    path: 'auth',
+    children: [
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'register',
+        element: <Register />,
+      },
+    ],
+  },
+  // DoxaOS Portal Routes
+  {
+    path: 'portal',
+    element: <PortalLayout />,
+    children: [
+      {
+        index: true,
+        element: <PortalDashboard />,
+        path: 'dashboard',
+      },
+      {
+        path: 'health',
+        element: <Health />,
+      },
+      {
+        path: 'kpis',
+        element: <PortalKPIs />,
+      },
+      {
+        path: 'sops',
+        element: <SOPs />,
+      },
+      {
+        path: 'grc',
+        element: <GRC />,
+      },
+      {
+        path: 'projects',
+        element: <PortalProjects />,
+      },
+      {
+        path: 'strategy',
+        element: <Strategy />,
+      },
+      {
+        path: 'crm',
+        element: <CRM />,
+      },
+      {
+        path: 'settings',
+        element: <Settings />,
       },
     ],
   },
