@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, BarChart3, FileText, CheckSquare, Settings, LayoutDashboard, Eye, EyeOff } from 'lucide-react';
 
-// Owner password (doxa) - same as /tools
-const OWNER_PASSWORD_HASH = '1d4f0e3851971998e732078544c11c82f590e8f7e40f427a6fb3ee86f3ff3f59';
+// Owner password (doxa2025) - same as /tools
+const OWNER_PASSWORD_HASH = '12bd42f84e9b6fb261fe8bb8a56a5cc6fb2a2ff1721f6417fd8a75c153ad4582';
 const SESSION_KEY = 'clarityb_owner_session';
 const SHAKE = { x: [0, -10, 10, -8, 8, 0] };
 

@@ -5,7 +5,7 @@ import SignatureGenerator from '../../features/landing/SignatureGenerator';
 import DocConverterModal from '../../features/landing/DocConverterModal';
 import DateGenerator from '../../features/landing/DateGenerator';
 
-const PW_HASH = '1d4f0e3851971998e732078544c11c82f590e8f7e40f427a6fb3ee86f3ff3f59'; // doxa
+const PW_HASH = '12bd42f84e9b6fb261fe8bb8a56a5cc6fb2a2ff1721f6417fd8a75c153ad4582'; // doxa2025
 const SESSION_KEY = 'doxa_tools_unlocked';
 
 async function sha256(str: string): Promise<string> {
