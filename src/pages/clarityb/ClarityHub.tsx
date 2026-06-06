@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, BarChart3, FileText, CheckSquare, Settings, LayoutDashboard, Eye, EyeOff } from 'lucide-react';
 
-// Owner password (clarityb2025)
-const OWNER_PASSWORD_HASH = 'd8f2c8e7e6f9a3b2c1d4e5f6a7b8c9d0e1f2a3b';
+// Owner password (owner)
+const OWNER_PASSWORD_HASH = 'b0411998d3f547c9fdf44d9d85e98fcfd54a8ab1d4e19b821c37e89f9ca6d2f9';
 const SESSION_KEY = 'clarityb_owner_session';
 const SHAKE = { x: [0, -10, 10, -8, 8, 0] };
 
@@ -216,12 +216,12 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
             <div className="bg-white rounded-2xl p-8 border border-stone-100">
               <div className="space-y-6">
                 <div>
-                  <label className="block text-xs font-semibold text-stone-600 mb-2">Portal Name</label>
-                  <input type="text" value="Doxa ClarityHub" disabled className="w-full px-4 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-900 text-sm" />
+                  <label htmlFor="portal-name" className="block text-xs font-semibold text-stone-600 mb-2">Portal Name</label>
+                  <input id="portal-name" type="text" value="Doxa ClarityHub" disabled title="Portal name" className="w-full px-4 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-900 text-sm" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-stone-600 mb-2">Organization</label>
-                  <input type="text" value="Doxa & Co. LLC" disabled className="w-full px-4 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-900 text-sm" />
+                  <label htmlFor="organization" className="block text-xs font-semibold text-stone-600 mb-2">Organization</label>
+                  <input id="organization" type="text" value="Doxa & Co. LLC" disabled title="Organization name" className="w-full px-4 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-900 text-sm" />
                 </div>
               </div>
             </div>
