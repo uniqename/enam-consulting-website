@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, LogOut, BarChart3, FileText, CheckSquare, Settings, LayoutDashboard, AlertCircle, Loader, Eye, EyeOff } from 'lucide-react';
+import { LogOut, BarChart3, FileText, CheckSquare, Settings, LayoutDashboard, AlertCircle, Loader, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
