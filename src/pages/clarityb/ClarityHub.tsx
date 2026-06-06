@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, BarChart3, FileText, CheckSquare, Settings, LayoutDashboard, AlertCircle, Loader, Eye, EyeOff } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { supabase, hasSupabase } from '../../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
 interface ClientData {
@@ -48,6 +48,13 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
     setLoading(true);
 
     try {
+      if (!hasSupabase || !supabase) {
+        setError('Supabase not configured. Please contact support.');
+        setShake(s => s + 1);
+        setLoading(false);
+        return;
+      }
+
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -172,7 +179,7 @@ const Dashboard = ({ user, clientData, onLogout }: { user: User; clientData: Cli
   }, [clientData]);
 
   async function loadData() {
-    if (!clientData) return;
+    if (!clientData || !hasSupabase || !supabase) return;
     setLoading(true);
 
     try {
@@ -454,6 +461,11 @@ const ClarityHub = () => {
 
   async function checkAuth() {
     try {
+      if (!hasSupabase || !supabase) {
+        setLoading(false);
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
@@ -473,7 +485,9 @@ const ClarityHub = () => {
   }
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     setUser(null);
     setClientData(null);
   }
