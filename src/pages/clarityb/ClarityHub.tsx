@@ -103,13 +103,13 @@ const Dashboard = ({ onLogout }: { onLogout: () => void }) => {
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
       <div className="bg-white border-b border-stone-100 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-stone-900 flex items-center justify-center text-white">
-              <BarChart3 size={20} />
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-600 to-stone-900 flex items-center justify-center text-white flex-shrink-0">
+              <BarChart3 size={24} />
             </div>
-            <div>
-              <p className="text-xs text-stone-500">ClarityHub</p>
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wide">ClarityHub</p>
               <h1 className="text-lg font-bold text-stone-900">Owner Portal</h1>
             </div>
           </div>
