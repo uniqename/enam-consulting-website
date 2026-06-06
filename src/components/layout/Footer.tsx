@@ -22,9 +22,9 @@ const Footer = () => {
           <div className="space-y-4">
             <Link to="/">
               <img
-                src="/doxa-logo.jpg"
+                src="/assets/images/doxa-logo-horizontal.svg"
                 alt="Doxa & Co"
-                className="h-10 w-auto rounded-lg"
+                className="h-8 w-auto"
               />
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed">
