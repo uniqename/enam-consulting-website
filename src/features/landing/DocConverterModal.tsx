@@ -25,7 +25,7 @@ const BRAND = {
   footerBorder: "#bbf7d0",
   org:      "DOXA &amp; CO",
   orgPlain: "DOXA & CO",
-  tagline:  "Strategy · Product · Delivery",
+  tagline:  "Strategy. Execution. Impact.",
   contact:  "ename@doxaandco.co &nbsp;·&nbsp; doxaandco.co",
   footer:   "Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co",
   footerRight: "Confidential — Internal Use",

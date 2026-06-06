@@ -49,7 +49,7 @@ const LETTERHEAD_CONFIGS = {
   doxa: {
     label: "Doxa & Co",
     org: "DOXA & CO",
-    tagline: "Strategy · Product · Delivery",
+    tagline: "Strategy. Execution. Impact.",
     contact: "ename@doxaandco.co  ·  doxaandco.co",
     primaryColor: "#8B7030",
     accentColor: "#059669",
