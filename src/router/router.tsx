@@ -28,6 +28,7 @@ import AdminPortal from "../pages/clarityb/admin/AdminPortal";
 // DoxaOS Auth pages
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import Callback from "../pages/auth/Callback";
 
 // DoxaOS Portal pages
 import PortalLayout from "../pages/portal/PortalLayout";
@@ -100,6 +101,10 @@ export const router = createBrowserRouter([
       {
         path: 'register',
         element: <Register />,
+      },
+      {
+        path: 'callback',
+        element: <Callback />,
       },
     ],
   },

@@ -71,9 +71,6 @@ export default function Register() {
       const { data: { user }, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: { org_name: orgName },
-        },
       });
 
       if (signUpError) {
@@ -88,12 +85,20 @@ export default function Register() {
         return;
       }
 
+      // Get the session with JWT token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        setError('Failed to get authentication token');
+        setLoading(false);
+        return;
+      }
+
       // Call serverless function to create org and add user
       const response = await fetch('/.netlify/functions/auth/create-org', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.id}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           orgName,
@@ -105,7 +110,8 @@ export default function Register() {
       });
 
       if (!response.ok) {
-        setError('Failed to create organization');
+        const errData = await response.json();
+        setError(errData.error || 'Failed to create organization');
         setLoading(false);
         return;
       }

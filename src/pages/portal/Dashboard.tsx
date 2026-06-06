@@ -1,21 +1,47 @@
 import { useEffect, useState } from 'react';
 import { BarChart3, FolderKanban, Target, AlertCircle } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+
+interface DashboardData {
+  healthScore: number;
+  activeProjects: number;
+  kpisOnTrack: number;
+  overdueItems: number;
+}
 
 export default function Dashboard() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/.netlify/functions/portal/get-dashboard', {
-          headers: { Authorization: `Bearer ${(await fetch('/.netlify/functions/auth/get-session').then(r => r.json())).userId}` },
-        });
-        if (response.ok) {
-          setData(await response.json());
+        const { data: session } = await supabase.auth.getSession();
+        if (!session?.session?.access_token) {
+          setError('Not authenticated');
+          setLoading(false);
+          return;
         }
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
+
+        const response = await fetch('/.netlify/functions/portal/get-dashboard', {
+          headers: { Authorization: `Bearer ${session.session.access_token}` },
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setData({
+            healthScore: result.healthScore || 0,
+            activeProjects: result.activeProjects || 0,
+            kpisOnTrack: result.kpisOnTrack || 0,
+            overdueItems: result.overdueItems || 0,
+          });
+        } else {
+          setError('Failed to load dashboard data');
+        }
+      } catch (err: any) {
+        console.error('Dashboard error:', err);
+        setError(err.message || 'An error occurred');
       } finally {
         setLoading(false);
       }
@@ -24,7 +50,20 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (loading) {
+    return <div className="p-8">Loading dashboard...</div>;
+  }
+
+  if (error) {
+    return <div className="p-8 text-red-600">{error}</div>;
+  }
+
+  const metrics = [
+    { label: 'Business Health', value: data?.healthScore || 0, unit: '%', icon: BarChart3, color: 'emerald' },
+    { label: 'Active Projects', value: data?.activeProjects || 0, unit: '', icon: FolderKanban, color: 'blue' },
+    { label: 'KPIs On Track', value: data?.kpisOnTrack || 0, unit: '', icon: Target, color: 'teal' },
+    { label: 'Overdue Items', value: data?.overdueItems || 0, unit: '', icon: AlertCircle, color: 'red' },
+  ];
 
   return (
     <div className="p-8 max-w-7xl">
@@ -35,18 +74,18 @@ export default function Dashboard() {
 
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {[
-          { label: 'Business Health', value: '73', unit: '%', icon: BarChart3, color: 'emerald' },
-          { label: 'Active Projects', value: '2', unit: '', icon: FolderKanban, color: 'blue' },
-          { label: 'KPIs On Track', value: '5', unit: '', icon: Target, color: 'teal' },
-          { label: 'Overdue Items', value: '0', unit: '', icon: AlertCircle, color: 'red' },
-        ].map((metric, i) => {
+        {metrics.map((metric, i) => {
           const Icon = metric.icon;
+          const colorClasses: { [key: string]: { bg: string; text: string } } = {
+            emerald: { bg: 'bg-emerald-100', text: 'text-emerald-600' },
+            blue: { bg: 'bg-blue-100', text: 'text-blue-600' },
+            teal: { bg: 'bg-teal-100', text: 'text-teal-600' },
+            red: { bg: 'bg-red-100', text: 'text-red-600' },
+          };
+          const colors = colorClasses[metric.color] || colorClasses.emerald;
+
           return (
-            <div
-              key={i}
-              className="bg-white rounded-2xl border border-stone-100 p-6"
-            >
+            <div key={i} className="bg-white rounded-2xl border border-stone-100 p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs text-stone-600 uppercase font-semibold">{metric.label}</p>
@@ -54,8 +93,8 @@ export default function Dashboard() {
                     {metric.value}{metric.unit}
                   </p>
                 </div>
-                <div className={`w-12 h-12 rounded-lg bg-${metric.color}-100 flex items-center justify-center`}>
-                  <Icon size={24} className={`text-${metric.color}-600`} />
+                <div className={`w-12 h-12 rounded-lg ${colors.bg} flex items-center justify-center`}>
+                  <Icon size={24} className={colors.text} />
                 </div>
               </div>
             </div>
