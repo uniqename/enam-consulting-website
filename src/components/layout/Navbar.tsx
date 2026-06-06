@@ -73,9 +73,9 @@ const Navbar = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <img
-              src="/assets/images/doxa-logo-horizontal.svg"
+              src="/assets/images/doxa-logo-new.jpg"
               alt="Doxa & Co"
-              className="h-9 w-auto"
+              className="h-10 w-auto rounded"
             />
           </Link>
 

@@ -15,14 +15,13 @@ const Landing = () => {
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
       <Hero />
-      <TrustedBy />
       <About />
-      <WhoIWorkWith />
+      <TrustedBy />
+      <PortfolioPreview />
       <Services />
       <WhoIWorkWith />
       <ClaritySprint />
       <HowIWork />
-      <PortfolioPreview />
       <FAQ />
       <Contact />
       <CallToAction />
