@@ -1,34 +1,67 @@
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Loader } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export default function Health() {
   const [assessments, setAssessments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem('doxa_assessments');
-    if (saved) {
-      setAssessments(JSON.parse(saved));
-    } else {
-      setAssessments([
-        { date: '2026-06-06', score: 78, status: 'Excellent', trend: 'up', change: 5 },
-        { date: '2026-05-06', score: 73, status: 'Good', trend: 'up', change: 8 },
-        { date: '2026-03-15', score: 65, status: 'Fair', trend: 'down', change: -3 },
-      ]);
-    }
+    loadAssessments();
   }, []);
 
-  const handleTakeAssessment = () => {
+  const loadAssessments = async () => {
+    try {
+      setLoading(true);
+      if (!supabase) {
+        setAssessments([
+          { id: '1', date: '2026-06-06', score: 78, status: 'Excellent', trend: 'up', change: 5 },
+          { id: '2', date: '2026-05-06', score: 73, status: 'Good', trend: 'up', change: 8 },
+          { id: '3', date: '2026-03-15', score: 65, status: 'Fair', trend: 'down', change: 3 },
+        ]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('health_checks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.log('Error fetching assessments:', error.message);
+        setAssessments([]);
+      } else {
+        setAssessments(data || []);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTakeAssessment = async () => {
     const score = Math.floor(Math.random() * 35) + 60;
     const status = score >= 80 ? 'Excellent' : score >= 70 ? 'Good' : 'Fair';
     const lastScore = assessments[0]?.score || 70;
-    const change = score - lastScore;
-    const trend = change >= 0 ? 'up' : 'down';
+    const change = Math.abs(score - lastScore);
+    const trend = score >= lastScore ? 'up' : 'down';
     const today = new Date().toISOString().split('T')[0];
 
-    const newAssessment = { date: today, score, status, trend, change: Math.abs(change) };
-    const updated = [newAssessment, ...assessments];
-    setAssessments(updated);
-    localStorage.setItem('doxa_assessments', JSON.stringify(updated));
+    if (!supabase) {
+      const newAssessment = { id: Date.now().toString(), date: today, score, status, trend, change };
+      setAssessments([newAssessment, ...assessments]);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('health_checks')
+      .insert([{ date: today, score, status, trend, change }])
+      .select();
+
+    if (error) {
+      alert('Error saving assessment: ' + error.message);
+    } else {
+      setAssessments([...data, ...assessments]);
+    }
   };
 
   return (
@@ -38,6 +71,14 @@ export default function Health() {
         <p className="text-stone-600 mt-2">Assessment history and domain analysis</p>
       </div>
 
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader className="animate-spin text-emerald-600" size={32} />
+        </div>
+      )}
+
+      {!loading && (
+      <>
       <div className="mb-8">
         <button
           onClick={handleTakeAssessment}
@@ -49,8 +90,8 @@ export default function Health() {
       </div>
 
       <div className="space-y-4">
-        {assessments.map((assessment, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-stone-100 p-6">
+        {assessments.map((assessment) => (
+          <div key={assessment.id} className="bg-white rounded-2xl border border-stone-100 p-6">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-sm text-stone-600">{assessment.date}</p>
@@ -79,6 +120,8 @@ export default function Health() {
           </div>
         ))}
       </div>
+      </>
+      )}
     </div>
   );
 }

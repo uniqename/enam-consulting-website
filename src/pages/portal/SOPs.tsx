@@ -1,33 +1,76 @@
-import { Plus, FileText, X } from 'lucide-react';
+import { Plus, FileText, X, Loader } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export default function SOPs() {
   const [sops, setSops] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ title: '', category: 'Operations', lastUpdated: '', status: 'active' });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({ title: '', category: 'Operations', status: 'active' });
 
   useEffect(() => {
-    const saved = localStorage.getItem('doxa_sops');
-    if (saved) {
-      setSops(JSON.parse(saved));
-    } else {
-      setSops([
-        { title: 'Sales Process v2.1', category: 'Sales', lastUpdated: '2026-06-01', status: 'active' },
-        { title: 'Customer Onboarding', category: 'Operations', lastUpdated: '2026-05-15', status: 'active' },
-        { title: 'Product Development Workflow', category: 'Engineering', lastUpdated: '2026-04-20', status: 'active' },
-        { title: 'Financial Reporting Checklist', category: 'Finance', lastUpdated: '2026-03-10', status: 'review' },
-      ]);
-    }
+    loadSOPs();
   }, []);
 
-  const handleAddSop = () => {
+  const loadSOPs = async () => {
+    try {
+      setLoading(true);
+      if (!supabase) {
+        setSops([
+          { id: '1', title: 'Sales Process v2.1', category: 'Sales', updated_at: '2026-06-01', status: 'active' },
+          { id: '2', title: 'Customer Onboarding', category: 'Operations', updated_at: '2026-05-15', status: 'active' },
+          { id: '3', title: 'Product Development Workflow', category: 'Engineering', updated_at: '2026-04-20', status: 'active' },
+          { id: '4', title: 'Financial Reporting Checklist', category: 'Finance', updated_at: '2026-03-10', status: 'review' },
+        ]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('sops')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.log('Error fetching SOPs:', error.message);
+        setSops([]);
+      } else {
+        setSops(data || []);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddSop = async () => {
     if (!formData.title) return;
-    const today = new Date().toISOString().split('T')[0];
-    const updated = [...sops, { ...formData, lastUpdated: today }];
-    setSops(updated);
-    localStorage.setItem('doxa_sops', JSON.stringify(updated));
-    setFormData({ title: '', category: 'Operations', lastUpdated: '', status: 'active' });
-    setShowForm(false);
+
+    try {
+      setSaving(true);
+
+      if (!supabase) {
+        const newSop = { ...formData, id: Date.now().toString(), updated_at: new Date().toISOString().split('T')[0] };
+        setSops([newSop, ...sops]);
+        setFormData({ title: '', category: 'Operations', status: 'active' });
+        setShowForm(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('sops')
+        .insert([formData])
+        .select();
+
+      if (error) {
+        alert('Error saving SOP: ' + error.message);
+      } else {
+        setSops([...data, ...sops]);
+        setFormData({ title: '', category: 'Operations', status: 'active' });
+        setShowForm(false);
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -82,10 +125,12 @@ export default function SOPs() {
               <div className="flex gap-2">
                 <button
                   onClick={handleAddSop}
-                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-sm"
+                  disabled={saving}
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white rounded-lg font-semibold text-sm flex items-center justify-center gap-2"
                   type="button"
                 >
-                  Create SOP
+                  {saving && <Loader size={16} className="animate-spin" />}
+                  {saving ? 'Saving...' : 'Create SOP'}
                 </button>
                 <button
                   onClick={() => setShowForm(false)}
@@ -100,16 +145,23 @@ export default function SOPs() {
         </div>
       )}
 
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader className="animate-spin text-emerald-600" size={32} />
+        </div>
+      )}
+
+      {!loading && (
       <div className="space-y-4">
-        {sops.map((sop, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-stone-100 p-6 flex items-center justify-between">
+        {sops.map((sop) => (
+          <div key={sop.id} className="bg-white rounded-2xl border border-stone-100 p-6 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
                 <FileText size={24} className="text-blue-600" />
               </div>
               <div>
                 <p className="font-semibold text-stone-900">{sop.title}</p>
-                <p className="text-sm text-stone-600 mt-1">{sop.category} • Updated {sop.lastUpdated}</p>
+                <p className="text-sm text-stone-600 mt-1">{sop.category} • Updated {sop.updated_at}</p>
               </div>
             </div>
             <div className={`px-3 py-1 rounded text-xs font-semibold ${
@@ -120,6 +172,7 @@ export default function SOPs() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

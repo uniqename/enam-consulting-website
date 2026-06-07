@@ -1,33 +1,77 @@
-import { Plus, Mail, X } from 'lucide-react';
+import { Plus, Mail, X, Loader } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export default function CRM() {
   const [contacts, setContacts] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({ name: '', company: '', email: '', role: '', status: 'Active' });
 
   useEffect(() => {
-    const saved = localStorage.getItem('doxa_contacts');
-    if (saved) {
-      setContacts(JSON.parse(saved));
-    } else {
-      setContacts([
-        { name: 'Sarah Johnson', company: 'Tech Solutions Inc', email: 'sarah@techsol.com', status: 'Active', role: 'CEO' },
-        { name: 'Michael Chen', company: 'Growth Ventures', email: 'mchen@growthvc.com', status: 'Active', role: 'Partner' },
-        { name: 'Emma Rodriguez', company: 'Digital Marketing Co', email: 'emma@digmarket.com', status: 'Prospect', role: 'Director' },
-        { name: 'David Thompson', company: 'Consulting Group', email: 'dthompson@consult.com', status: 'Active', role: 'Principal' },
-        { name: 'Lisa Wang', company: 'Commerce Platform', email: 'lisa@commerce.com', status: 'Prospect', role: 'Head of Ops' },
-      ]);
-    }
+    loadContacts();
   }, []);
 
-  const handleAddContact = () => {
+  const loadContacts = async () => {
+    try {
+      setLoading(true);
+      if (!supabase) {
+        setContacts([
+          { id: '1', name: 'Sarah Johnson', company: 'Tech Solutions Inc', email: 'sarah@techsol.com', status: 'Active', role: 'CEO' },
+          { id: '2', name: 'Michael Chen', company: 'Growth Ventures', email: 'mchen@growthvc.com', status: 'Active', role: 'Partner' },
+          { id: '3', name: 'Emma Rodriguez', company: 'Digital Marketing Co', email: 'emma@digmarket.com', status: 'Prospect', role: 'Director' },
+          { id: '4', name: 'David Thompson', company: 'Consulting Group', email: 'dthompson@consult.com', status: 'Active', role: 'Principal' },
+          { id: '5', name: 'Lisa Wang', company: 'Commerce Platform', email: 'lisa@commerce.com', status: 'Prospect', role: 'Head of Ops' },
+        ]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.log('Error fetching contacts:', error.message);
+        setContacts([]);
+      } else {
+        setContacts(data || []);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddContact = async () => {
     if (!formData.name || !formData.email) return;
-    const updated = [...contacts, formData];
-    setContacts(updated);
-    localStorage.setItem('doxa_contacts', JSON.stringify(updated));
-    setFormData({ name: '', company: '', email: '', role: '', status: 'Active' });
-    setShowForm(false);
+
+    try {
+      setSaving(true);
+
+      if (!supabase) {
+        const newContact = { ...formData, id: Date.now().toString() };
+        setContacts([newContact, ...contacts]);
+        setFormData({ name: '', company: '', email: '', role: '', status: 'Active' });
+        setShowForm(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('contacts')
+        .insert([formData])
+        .select();
+
+      if (error) {
+        alert('Error saving contact: ' + error.message);
+      } else {
+        setContacts([...data, ...contacts]);
+        setFormData({ name: '', company: '', email: '', role: '', status: 'Active' });
+        setShowForm(false);
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -92,10 +136,12 @@ export default function CRM() {
               <div className="flex gap-2">
                 <button
                   onClick={handleAddContact}
-                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-sm"
+                  disabled={saving}
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white rounded-lg font-semibold text-sm flex items-center justify-center gap-2"
                   type="button"
                 >
-                  Add Contact
+                  {saving && <Loader size={16} className="animate-spin" />}
+                  {saving ? 'Saving...' : 'Add Contact'}
                 </button>
                 <button
                   onClick={() => setShowForm(false)}
@@ -110,9 +156,16 @@ export default function CRM() {
         </div>
       )}
 
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader className="animate-spin text-emerald-600" size={32} />
+        </div>
+      )}
+
+      {!loading && (
       <div className="space-y-3">
-        {contacts.map((contact, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-stone-100 p-6">
+        {contacts.map((contact) => (
+          <div key={contact.id} className="bg-white rounded-2xl border border-stone-100 p-6">
             <div className="flex justify-between items-start mb-3">
               <div>
                 <p className="font-semibold text-stone-900">{contact.name}</p>
@@ -132,6 +185,7 @@ export default function CRM() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

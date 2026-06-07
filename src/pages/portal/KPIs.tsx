@@ -1,34 +1,96 @@
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Loader } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export default function KPIs() {
   const [kpis, setKpis] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({ name: '', target: '', current: '', status: 'on-track' });
 
   useEffect(() => {
-    const saved = localStorage.getItem('doxa_kpis');
-    if (saved) {
-      setKpis(JSON.parse(saved));
-    } else {
-      setKpis([
-        { name: 'Monthly Revenue', target: '$500k', current: '$487k', status: 'on-track', progress: 97 },
-        { name: 'Customer Acquisition', target: '50/mo', current: '42/mo', status: 'at-risk', progress: 84 },
-        { name: 'Customer Retention', target: '95%', current: '93%', status: 'at-risk', progress: 98 },
-        { name: 'Operational Efficiency', target: '85%', current: '82%', status: 'on-track', progress: 96 },
-        { name: 'Team Utilization', target: '80%', current: '78%', status: 'on-track', progress: 97 },
-      ]);
-    }
+    loadKpis();
   }, []);
 
-  const handleAddKpi = () => {
+  const loadKpis = async () => {
+    try {
+      setLoading(true);
+
+      if (!supabase) {
+        // Fallback to demo data
+        setKpis([
+          { id: '1', name: 'Monthly Revenue', target: '$500k', current: '$487k', status: 'on-track', progress: 97 },
+          { id: '2', name: 'Customer Acquisition', target: '50/mo', current: '42/mo', status: 'at-risk', progress: 84 },
+          { id: '3', name: 'Customer Retention', target: '95%', current: '93%', status: 'at-risk', progress: 98 },
+          { id: '4', name: 'Operational Efficiency', target: '85%', current: '82%', status: 'on-track', progress: 96 },
+          { id: '5', name: 'Team Utilization', target: '80%', current: '78%', status: 'on-track', progress: 97 },
+        ]);
+        return;
+      }
+
+      // Try to fetch from Supabase
+      const { data, error } = await supabase
+        .from('kpis')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.log('Supabase fetch error:', error.message);
+        // Fallback to demo data
+        setKpis([
+          { id: '1', name: 'Monthly Revenue', target: '$500k', current: '$487k', status: 'on-track', progress: 97 },
+          { id: '2', name: 'Customer Acquisition', target: '50/mo', current: '42/mo', status: 'at-risk', progress: 84 },
+          { id: '3', name: 'Customer Retention', target: '95%', current: '93%', status: 'at-risk', progress: 98 },
+          { id: '4', name: 'Operational Efficiency', target: '85%', current: '82%', status: 'on-track', progress: 96 },
+          { id: '5', name: 'Team Utilization', target: '80%', current: '78%', status: 'on-track', progress: 97 },
+        ]);
+      } else {
+        setKpis(data || []);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddKpi = async () => {
     if (!formData.name || !formData.target || !formData.current) return;
-    const newKpi = { ...formData, progress: Math.round(Math.random() * 100) };
-    const updated = [...kpis, newKpi];
-    setKpis(updated);
-    localStorage.setItem('doxa_kpis', JSON.stringify(updated));
-    setFormData({ name: '', target: '', current: '', status: 'on-track' });
-    setShowForm(false);
+
+    try {
+      setSaving(true);
+
+      if (!supabase) {
+        // Add to local only
+        const newKpi = { ...formData, id: Date.now().toString(), progress: Math.round(Math.random() * 100) };
+        setKpis([newKpi, ...kpis]);
+        setFormData({ name: '', target: '', current: '', status: 'on-track' });
+        setShowForm(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('kpis')
+        .insert([
+          {
+            name: formData.name,
+            target: formData.target,
+            current_value: formData.current,
+            status: formData.status,
+            created_at: new Date().toISOString(),
+          },
+        ])
+        .select();
+
+      if (error) {
+        alert('Error saving KPI: ' + error.message);
+      } else {
+        setKpis([...data, ...kpis]);
+        setFormData({ name: '', target: '', current: '', status: 'on-track' });
+        setShowForm(false);
+      }
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -85,9 +147,12 @@ export default function KPIs() {
               <div className="flex gap-2">
                 <button
                   onClick={handleAddKpi}
-                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-sm"
+                  disabled={saving}
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white rounded-lg font-semibold text-sm flex items-center justify-center gap-2"
+                  type="button"
                 >
-                  Add KPI
+                  {saving && <Loader size={16} className="animate-spin" />}
+                  {saving ? 'Saving...' : 'Add KPI'}
                 </button>
                 <button
                   onClick={() => setShowForm(false)}
@@ -101,9 +166,16 @@ export default function KPIs() {
         </div>
       )}
 
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader className="animate-spin text-emerald-600" size={32} />
+        </div>
+      )}
+
+      {!loading && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {kpis.map((kpi, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-stone-100 p-6">
+        {kpis.map((kpi) => (
+          <div key={kpi.id} className="bg-white rounded-2xl border border-stone-100 p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="text-sm text-stone-600">{kpi.name}</p>
@@ -127,6 +199,7 @@ export default function KPIs() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }

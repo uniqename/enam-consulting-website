@@ -1,31 +1,79 @@
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Loader } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export default function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({ title: '', phase: 'Planning', progress: 0, dueDate: '' });
 
   useEffect(() => {
-    const saved = localStorage.getItem('doxa_projects');
-    if (saved) {
-      setProjects(JSON.parse(saved));
-    } else {
-      setProjects([
-        { title: 'Website Redesign', phase: 'Implementation', progress: 65, dueDate: '2026-07-15' },
-        { title: 'CRM Migration', phase: 'Planning', progress: 30, dueDate: '2026-08-30' },
-        { title: 'Team Training Program', phase: 'Execution', progress: 90, dueDate: '2026-06-20' },
-      ]);
-    }
+    loadProjects();
   }, []);
 
-  const handleAddProject = () => {
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      if (!supabase) {
+        setProjects([
+          { id: '1', title: 'Website Redesign', phase: 'Implementation', progress: 65, due_date: '2026-07-15' },
+          { id: '2', title: 'CRM Migration', phase: 'Planning', progress: 30, due_date: '2026-08-30' },
+          { id: '3', title: 'Team Training Program', phase: 'Execution', progress: 90, due_date: '2026-06-20' },
+        ]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.log('Error fetching projects:', error.message);
+        setProjects([]);
+      } else {
+        setProjects(data || []);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddProject = async () => {
     if (!formData.title || !formData.dueDate) return;
-    const updated = [...projects, formData];
-    setProjects(updated);
-    localStorage.setItem('doxa_projects', JSON.stringify(updated));
-    setFormData({ title: '', phase: 'Planning', progress: 0, dueDate: '' });
-    setShowForm(false);
+
+    try {
+      if (!supabase) {
+        const newProject = { ...formData, id: Date.now().toString() };
+        setProjects([newProject, ...projects]);
+        setFormData({ title: '', phase: 'Planning', progress: 0, dueDate: '' });
+        setShowForm(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('projects')
+        .insert([
+          {
+            title: formData.title,
+            phase: formData.phase,
+            progress: formData.progress,
+            due_date: formData.dueDate,
+          },
+        ])
+        .select();
+
+      if (error) {
+        alert('Error saving project: ' + error.message);
+      } else {
+        setProjects([...data, ...projects]);
+        setFormData({ title: '', phase: 'Planning', progress: 0, dueDate: '' });
+        setShowForm(false);
+      }
+    } catch (err: any) {
+      alert('Error: ' + err.message);
+    }
   };
 
   return (
@@ -101,13 +149,20 @@ export default function Projects() {
         </div>
       )}
 
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader className="animate-spin text-emerald-600" size={32} />
+        </div>
+      )}
+
+      {!loading && (
       <div className="space-y-4">
-        {projects.map((project, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-stone-100 p-6">
+        {projects.map((project) => (
+          <div key={project.id} className="bg-white rounded-2xl border border-stone-100 p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="font-semibold text-stone-900">{project.title}</p>
-                <p className="text-sm text-stone-600 mt-1">{project.phase} • Due {project.dueDate}</p>
+                <p className="text-sm text-stone-600 mt-1">{project.phase} • Due {project.due_date}</p>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold text-stone-900">{project.progress}%</p>
@@ -119,6 +174,7 @@ export default function Projects() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }
