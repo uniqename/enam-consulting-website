@@ -47,29 +47,51 @@ export default function Login() {
         setLoading(false);
       } else {
         // Password signin with 10-second timeout
+        console.log('[Auth] Attempting signin for:', email);
+
         const signInPromise = supabase.auth.signInWithPassword({
           email,
           password,
+        }).then((result) => {
+          console.log('[Auth] Signin response received:', result);
+          return result;
+        }).catch((err) => {
+          console.log('[Auth] Signin error caught:', err);
+          throw err;
         });
 
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Login timeout - please try again')), 10000)
+          setTimeout(() => {
+            const timeoutErr = new Error('Login timeout after 10 seconds - Supabase not responding');
+            console.log('[Auth] Timeout fired:', timeoutErr);
+            reject(timeoutErr);
+          }, 10000)
         );
 
-        const result = await Promise.race([
-          signInPromise,
-          timeoutPromise,
-        ]).catch((err: any) => ({ error: err })) as any;
+        try {
+          const result = await Promise.race([
+            signInPromise,
+            timeoutPromise,
+          ]) as any;
+          console.log('[Auth] Race resolved:', result);
 
-        if (result.error) {
-          setError(result.error.message || 'Login failed');
+          if (result.error) {
+            console.log('[Auth] Result has error:', result.error);
+            setError(result.error.message || 'Login failed');
+            setLoading(false);
+          } else {
+            console.log('[Auth] Login successful, redirecting...');
+            setLoading(false);
+            setTimeout(() => navigate('/portal/dashboard'), 500);
+          }
+        } catch (err: any) {
+          console.log('[Auth] Race error caught:', err);
+          setError(err.message || 'Login failed - Supabase timeout');
           setLoading(false);
-        } else {
-          setLoading(false);
-          setTimeout(() => navigate('/portal/dashboard'), 500);
         }
       }
     } catch (err: any) {
+      console.log('[Auth] Outer catch:', err);
       setError(err.message || 'An error occurred');
       setLoading(false);
     }
