@@ -92,20 +92,29 @@ export default function Register() {
       //   }),
       // });
 
-      // Sign in with password to get session
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      // Sign in with password to get session (with timeout)
+      const signInPromise = supabase.auth.signInWithPassword({
         email,
         password,
       });
 
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Sign-in timeout')), 10000)
+      );
+
+      const { error: signInError } = await Promise.race([
+        signInPromise,
+        timeoutPromise,
+      ]).catch((err: any) => ({ error: err }));
+
       if (signInError) {
-        setError('Sign-in failed: ' + signInError.message);
+        setError('Sign-in failed: ' + (signInError.message || 'Unknown error'));
         setLoading(false);
         return;
       }
 
       // Redirect to portal
-      navigate('/portal/dashboard');
+      setTimeout(() => navigate('/portal/dashboard'), 500);
     } catch (err: any) {
       setError(err.message || 'An error occurred');
     } finally {
@@ -256,12 +265,14 @@ export default function Register() {
                   className="w-full px-4 py-3 rounded-lg border border-stone-200 bg-stone-50 focus:border-emerald-500 focus:outline-none"
                 >
                   <option value="">Select industry</option>
+                  <option value="Consulting">Consulting</option>
                   <option value="Retail">Retail</option>
                   <option value="Services">Services</option>
                   <option value="Technology">Technology</option>
                   <option value="Healthcare">Healthcare</option>
                   <option value="Construction">Construction</option>
                   <option value="Education">Education</option>
+                  <option value="Nonprofit">Nonprofit</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
