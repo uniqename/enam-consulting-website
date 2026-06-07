@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, AlertCircle, Loader } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { directSignIn } from '../../lib/auth-direct';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -23,75 +23,33 @@ export default function Login() {
 
     try {
       if (useTestMode) {
-        // Skip Supabase and use test mode
+        // Skip auth and use test mode
         setTimeout(() => navigate('/portal/dashboard'), 500);
         return;
       }
 
-      if (!supabase) {
-        setError('Supabase not initialized. Use test mode to continue.');
+      if (useMagicLink) {
+        setError('Magic link auth not yet implemented - use password or test mode');
         setLoading(false);
         return;
       }
 
-      if (useMagicLink) {
-        const { error: err } = await supabase.auth.signInWithOtp({
-          email,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-        });
-        if (err) {
-          setError(err.message);
-        } else {
-          setMagicSent(true);
-        }
+      // Use direct fetch-based auth (avoids SDK issues)
+      const result = await directSignIn(email, password, 10000);
+
+      if (result.error) {
+        setError(result.error.message || 'Login failed');
         setLoading(false);
+      } else if (result.access_token) {
+        console.log('[Auth] Login successful, redirecting to portal...');
+        setLoading(false);
+        setTimeout(() => navigate('/portal/dashboard'), 500);
       } else {
-        // Password signin with 10-second timeout
-        console.log('[Auth] Attempting signin for:', email);
-
-        const signInPromise = supabase.auth.signInWithPassword({
-          email,
-          password,
-        }).then((result) => {
-          console.log('[Auth] Signin response received:', result);
-          return result;
-        }).catch((err) => {
-          console.log('[Auth] Signin error caught:', err);
-          throw err;
-        });
-
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => {
-            const timeoutErr = new Error('Login timeout after 10 seconds - Supabase not responding');
-            console.log('[Auth] Timeout fired:', timeoutErr);
-            reject(timeoutErr);
-          }, 10000)
-        );
-
-        try {
-          const result = await Promise.race([
-            signInPromise,
-            timeoutPromise,
-          ]) as any;
-          console.log('[Auth] Race resolved:', result);
-
-          if (result.error) {
-            console.log('[Auth] Result has error:', result.error);
-            setError(result.error.message || 'Login failed');
-            setLoading(false);
-          } else {
-            console.log('[Auth] Login successful, redirecting...');
-            setLoading(false);
-            setTimeout(() => navigate('/portal/dashboard'), 500);
-          }
-        } catch (err: any) {
-          console.log('[Auth] Race error caught:', err);
-          setError(err.message || 'Login failed - Supabase timeout');
-          setLoading(false);
-        }
+        setError('Login failed - no token received');
+        setLoading(false);
       }
     } catch (err: any) {
-      console.log('[Auth] Outer catch:', err);
+      console.log('[Auth] Unexpected error:', err);
       setError(err.message || 'An error occurred');
       setLoading(false);
     }

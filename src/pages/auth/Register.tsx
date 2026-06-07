@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Loader, ArrowRight, ArrowLeft } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { directSignUp, directSignIn } from '../../lib/auth-direct';
 
 type Step = 1 | 2;
 
@@ -53,71 +53,41 @@ export default function Register() {
 
     try {
       if (useTestMode) {
-        // Skip Supabase and use test mode
+        // Skip auth and use test mode
         setTimeout(() => navigate('/portal/dashboard'), 500);
         return;
       }
 
-      if (!supabase) {
-        setError('Supabase not initialized. Use test mode to continue.');
+      // Sign up user using direct fetch API
+      const signUpResult = await directSignUp(email, password, 10000);
+
+      if (signUpResult.error) {
+        setError(signUpResult.error.message || 'Sign up failed');
         setLoading(false);
         return;
       }
 
-      // Sign up user
-      const { data: { user }, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      // Automatically sign in after signup
+      const signInResult = await directSignIn(email, password, 10000);
 
-      if (signUpError) {
-        setError(signUpError.message);
+      if (signInResult.error) {
+        setError(signInResult.error.message || 'Sign in failed after signup');
         setLoading(false);
         return;
       }
 
-      if (!user) {
-        setError('Sign up failed');
+      if (signInResult.access_token) {
+        console.log('[Auth] Signup & signin successful, redirecting to portal...');
+        // TODO: Create org - temporarily bypassed for testing
+        // await fetch('/.netlify/functions/auth/create-org', {...})
+        setTimeout(() => navigate('/portal/dashboard'), 500);
+      } else {
+        setError('Signup succeeded but signin failed');
         setLoading(false);
-        return;
       }
-
-      // TODO: Create org - temporarily bypassed for testing
-      // const response = await fetch('/.netlify/functions/auth/create-org', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     orgName, entityType, industry, plan: 'STARTER', userId: user.id,
-      //   }),
-      // });
-
-      // Sign in with password to get session (with timeout)
-      const signInPromise = supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Sign-in timeout')), 10000)
-      );
-
-      const result = await Promise.race([
-        signInPromise,
-        timeoutPromise,
-      ]).catch((err: any) => ({ error: err })) as any;
-
-      if (result.error) {
-        const errorMsg = result.error instanceof Error ? result.error.message : 'Unknown error';
-        setError('Sign-in failed: ' + errorMsg);
-        setLoading(false);
-        return;
-      }
-
-      // Redirect to portal
-      setTimeout(() => navigate('/portal/dashboard'), 500);
     } catch (err: any) {
+      console.log('[Auth] Register error:', err);
       setError(err.message || 'An error occurred');
-    } finally {
       setLoading(false);
     }
   };
