@@ -22,11 +22,6 @@ export const handler: Handler = async (event) => {
   }
 
   try {
-    const authHeader = event.headers.authorization;
-    if (!authHeader) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Unauthorized' }) };
-    }
-
     const body = JSON.parse(event.body || '{}');
     const data = CreateOrgSchema.parse(body);
 

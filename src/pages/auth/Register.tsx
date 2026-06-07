@@ -85,20 +85,12 @@ export default function Register() {
         return;
       }
 
-      // Get the session with JWT token
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session?.access_token) {
-        setError('Failed to get authentication token');
-        setLoading(false);
-        return;
-      }
-
       // Call serverless function to create org and add user
+      // Use the user ID directly - no session needed yet since we just created the user
       const response = await fetch('/.netlify/functions/auth/create-org', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           orgName,
@@ -110,9 +102,21 @@ export default function Register() {
       });
 
       if (!response.ok) {
-        const errData = await response.json();
+        const errData = await response.json().catch(() => ({}));
         setError(errData.error || 'Failed to create organization');
         setLoading(false);
+        return;
+      }
+
+      // Org created. Now sign in with password to get session
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        setError('Account created, but sign-in failed. Try logging in manually.');
+        setTimeout(() => navigate('/auth/login'), 2000);
         return;
       }
 
