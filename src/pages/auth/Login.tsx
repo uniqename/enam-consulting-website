@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, AlertCircle, Loader } from 'lucide-react';
@@ -12,6 +13,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [useMagicLink, setUseMagicLink] = useState(false);
   const [magicSent, setMagicSent] = useState(false);
+  const [useTestMode, setUseTestMode] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
@@ -20,6 +22,18 @@ export default function Login() {
     setLoading(true);
 
     try {
+      if (useTestMode) {
+        // Skip Supabase and use test mode
+        setTimeout(() => navigate('/portal/dashboard'), 500);
+        return;
+      }
+
+      if (!supabase) {
+        setError('Supabase not initialized. Use test mode to continue.');
+        setLoading(false);
+        return;
+      }
+
       if (useMagicLink) {
         const { error: err } = await supabase.auth.signInWithOtp({
           email,
@@ -192,6 +206,19 @@ export default function Login() {
             {useMagicLink ? 'Use Password Instead' : 'Use Magic Link'}
           </button>
         </form>
+
+        {!useTestMode && (
+          <button
+            type="button"
+            onClick={() => {
+              setUseTestMode(true);
+              setError('');
+            }}
+            className="w-full mt-3 px-4 py-2 rounded-lg border border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 font-semibold text-xs transition-colors"
+          >
+            ✨ Use Test Account (Demo Mode)
+          </button>
+        )}
 
         <div className="mt-6 pt-6 border-t border-stone-100 text-center text-xs text-stone-600">
           <p>Don't have an account?</p>

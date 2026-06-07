@@ -5,7 +5,9 @@ export default function Settings() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     navigate('/auth/login');
   };
 
@@ -16,7 +18,7 @@ export default function Settings() {
       <div className="mt-8 space-y-6">
         <div className="bg-white rounded-2xl border border-stone-100 p-6">
           <p className="text-xs uppercase font-semibold text-stone-600 mb-2">Organization</p>
-          <p className="text-xl font-bold text-stone-900">Test Organization</p>
+          <p className="text-xl font-bold text-stone-900">Doxa & Co</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-stone-100 p-6">

@@ -8,13 +8,12 @@ interface DashboardData {
 }
 
 export default function Dashboard() {
-  // TODO: Fetch data from get-dashboard when backend is stable
-  // For now, show default data to prevent infinite loading
+  // Mock data for UI demonstration
   const data: DashboardData = {
-    healthScore: 0,
-    activeProjects: 0,
-    kpisOnTrack: 0,
-    overdueItems: 0,
+    healthScore: 78,
+    activeProjects: 3,
+    kpisOnTrack: 4,
+    overdueItems: 1,
   };
 
   const metrics = [

@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Loader, ArrowRight, ArrowLeft } from 'lucide-react';
@@ -10,6 +11,7 @@ export default function Register() {
   const [step, setStep] = useState<Step>(1);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [useTestMode, setUseTestMode] = useState(false);
   const navigate = useNavigate();
 
   // Step 1: Account
@@ -38,25 +40,10 @@ export default function Register() {
     return true;
   };
 
-  const validateStep2 = () => {
-    if (!orgName || !entityType || !industry) {
-      setError('All fields are required');
-      return false;
-    }
-    return true;
-  };
-
   const handleStep1 = async () => {
     setError('');
     if (!validateStep1()) return;
     setStep(2);
-  };
-
-  const handleStep2 = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    if (!validateStep2()) return;
-    await handleRegister(e);
   };
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
@@ -65,6 +52,18 @@ export default function Register() {
     setLoading(true);
 
     try {
+      if (useTestMode) {
+        // Skip Supabase and use test mode
+        setTimeout(() => navigate('/portal/dashboard'), 500);
+        return;
+      }
+
+      if (!supabase) {
+        setError('Supabase not initialized. Use test mode to continue.');
+        setLoading(false);
+        return;
+      }
+
       // Sign up user
       const { data: { user }, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -102,13 +101,14 @@ export default function Register() {
         setTimeout(() => reject(new Error('Sign-in timeout')), 10000)
       );
 
-      const { error: signInError } = await Promise.race([
+      const result = await Promise.race([
         signInPromise,
         timeoutPromise,
-      ]).catch((err: any) => ({ error: err }));
+      ]).catch((err: any) => ({ error: err })) as any;
 
-      if (signInError) {
-        setError('Sign-in failed: ' + (signInError.message || 'Unknown error'));
+      if (result.error) {
+        const errorMsg = result.error instanceof Error ? result.error.message : 'Unknown error';
+        setError('Sign-in failed: ' + errorMsg);
         setLoading(false);
         return;
       }
@@ -288,6 +288,16 @@ export default function Register() {
           </div>
         )}
 
+        {step === 2 && !useTestMode && (
+          <button
+            type="button"
+            onClick={() => setUseTestMode(true)}
+            className="w-full mt-3 px-4 py-2 rounded-lg border border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 font-semibold text-xs transition-colors"
+          >
+            ✨ Use Test Mode (Demo Account)
+          </button>
+        )}
+
         {/* Buttons */}
         <div className="flex gap-3 mt-8">
           {step > 1 && (
@@ -307,6 +317,16 @@ export default function Register() {
               className="flex-1 px-4 py-3 rounded-lg bg-stone-900 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
             >
               Next <ArrowRight size={16} />
+            </button>
+          ) : useTestMode ? (
+            <button
+              type="button"
+              onClick={() => setTimeout(() => navigate('/portal/dashboard'), 500)}
+              disabled={loading}
+              className="flex-1 px-4 py-3 rounded-lg bg-stone-900 hover:bg-emerald-700 disabled:bg-stone-400 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+            >
+              {loading && <Loader size={16} className="animate-spin" />}
+              {loading ? 'Entering...' : 'Enter Demo Portal'}
             </button>
           ) : (
             <form onSubmit={handleRegister} className="flex-1">

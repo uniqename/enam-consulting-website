@@ -10,6 +10,12 @@ export default function Callback() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
+        if (!supabase) {
+          setError('Supabase not initialized');
+          setTimeout(() => navigate('/auth/login'), 3000);
+          return;
+        }
+
         const code = searchParams.get('code');
         const type = searchParams.get('type');
 

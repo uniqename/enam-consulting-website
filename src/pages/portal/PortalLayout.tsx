@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Outlet, Navigate, useNavigate } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
 import { supabase } from '../../lib/supabase';
-import { LogOut, Menu, X, LayoutDashboard, BarChart3, FileText, Folder, CheckSquare, Users, Target, Settings, Home } from 'lucide-react';
+import { LogOut, Menu, X, LayoutDashboard, BarChart3, FileText, Folder, CheckSquare, Users, Target, Settings } from 'lucide-react';
 
 export default function PortalLayout() {
   const [user, setUser] = useState<any>(null);
@@ -13,6 +13,12 @@ export default function PortalLayout() {
   useEffect(() => {
     const checkAuth = async () => {
       // TODO: TEMPORARY - Bypass auth for testing. Remove this before production.
+      if (!supabase) {
+        setUser({ email: 'admin@test.local', id: 'test-user' });
+        setOrg({ name: 'Test Organization', id: 'test-org' });
+        setLoading(false);
+        return;
+      }
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -63,7 +69,9 @@ export default function PortalLayout() {
   ];
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     navigate('/auth/login');
   };
 
