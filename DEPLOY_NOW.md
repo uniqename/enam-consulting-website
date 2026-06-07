@@ -28,10 +28,10 @@ VITE_SUPABASE_ANON_KEY
 sb_publishable_-5VqAXBa563ryrbprfCRAA_k8zeSBk7
 
 SUPABASE_SERVICE_ROLE_KEY
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpyY2NnbW9wd3F3ZHVzc2tuZGppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDc0NTk2MywiZXhwIjoyMDk2MzIxOTYzfQ.CXDzw86AgAeGqB9irSzfUASxs3guKQTUCp6q4fgAuUw
+[Copy from Supabase → Settings → API → Service Role Secret]
 
 DATABASE_URL
-postgresql://postgres:Uniqabla1806!@db.jrccgmopwqwdusskndji.supabase.co:5432/postgres
+postgresql://postgres:[YOUR-PASSWORD]@db.jrccgmopwqwdusskndji.supabase.co:5432/postgres
 ```
 
 Click "Save" for each one.
