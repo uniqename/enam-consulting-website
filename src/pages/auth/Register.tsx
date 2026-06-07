@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, Loader, ArrowRight, ArrowLeft } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2;
 
 export default function Register() {
   const [step, setStep] = useState<Step>(1);
@@ -21,9 +21,6 @@ export default function Register() {
   const [orgName, setOrgName] = useState('');
   const [entityType, setEntityType] = useState('FOR_PROFIT');
   const [industry, setIndustry] = useState('');
-
-  // Step 3: Plan Selection
-  const [plan, setPlan] = useState('STARTER');
 
   const validateStep1 = () => {
     if (!email || !password || !confirmPassword) {
@@ -55,10 +52,11 @@ export default function Register() {
     setStep(2);
   };
 
-  const handleStep2 = () => {
+  const handleStep2 = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setError('');
     if (!validateStep2()) return;
-    setStep(3);
+    await handleRegister(e);
   };
 
   const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
@@ -86,7 +84,7 @@ export default function Register() {
       }
 
       // Call serverless function to create org and add user
-      // Use the user ID directly - no session needed yet since we just created the user
+      // Default to STARTER plan - admins can change later
       const response = await fetch('/.netlify/functions/auth/create-org', {
         method: 'POST',
         headers: {
@@ -96,7 +94,7 @@ export default function Register() {
           orgName,
           entityType,
           industry,
-          plan,
+          plan: 'STARTER',
           userId: user.id,
         }),
       });
@@ -138,12 +136,12 @@ export default function Register() {
       >
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-stone-900">Get Started</h1>
-          <p className="text-stone-600 text-sm mt-2">Step {step} of 3</p>
+          <p className="text-stone-600 text-sm mt-2">Step {step} of 2</p>
         </div>
 
         {/* Progress */}
         <div className="flex gap-2 mb-8">
-          {[1, 2, 3].map(s => (
+          {[1, 2].map(s => (
             <div
               key={s}
               className={`h-2 flex-1 rounded-full transition-colors ${
@@ -284,43 +282,6 @@ export default function Register() {
             </motion.div>
           )}
 
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-4"
-            >
-              <p className="text-sm text-stone-600 mb-4">Choose your plan:</p>
-              {[
-                { id: 'STARTER', name: 'Starter', price: '$49/mo' },
-                { id: 'GROWTH', name: 'Growth', price: '$99/mo' },
-                { id: 'ENTERPRISE', name: 'Enterprise', price: 'Custom' },
-              ].map(p => (
-                <label key={p.id} className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all" style={{
-                  borderColor: plan === p.id ? '#059669' : '#e7e5e4',
-                  backgroundColor: plan === p.id ? '#ecfdf5' : '#fafaf9',
-                }}>
-                  <input
-                    type="radio"
-                    name="plan"
-                    value={p.id}
-                    checked={plan === p.id}
-                    onChange={(e) => {
-                      setPlan(e.target.value);
-                      setError('');
-                    }}
-                    className="w-4 h-4"
-                  />
-                  <div className="ml-3 flex-1">
-                    <div className="font-semibold text-stone-900">{p.name}</div>
-                    <div className="text-xs text-stone-600">{p.price}</div>
-                  </div>
-                </label>
-              ))}
-            </motion.div>
-          )}
         </AnimatePresence>
 
         {error && (
@@ -334,6 +295,7 @@ export default function Register() {
         <div className="flex gap-3 mt-8">
           {step > 1 && (
             <button
+              type="button"
               onClick={() => setStep((step - 1) as Step)}
               className="flex-1 px-4 py-3 rounded-lg border border-stone-200 text-stone-900 hover:bg-stone-50 font-semibold text-sm transition-colors flex items-center justify-center gap-2"
             >
@@ -341,9 +303,10 @@ export default function Register() {
             </button>
           )}
 
-          {step < 3 ? (
+          {step === 1 ? (
             <button
-              onClick={step === 1 ? handleStep1 : handleStep2}
+              type="button"
+              onClick={handleStep1}
               className="flex-1 px-4 py-3 rounded-lg bg-stone-900 hover:bg-emerald-700 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
             >
               Next <ArrowRight size={16} />
