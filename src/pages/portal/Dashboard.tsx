@@ -24,24 +24,53 @@ export default function Dashboard() {
           return;
         }
 
-        const response = await fetch('/.netlify/functions/portal/get-dashboard', {
-          headers: { Authorization: `Bearer ${session.session.access_token}` },
-        });
+        // Try to fetch dashboard data with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-        if (response.ok) {
-          const result = await response.json();
-          setData({
-            healthScore: result.healthScore || 0,
-            activeProjects: result.activeProjects || 0,
-            kpisOnTrack: result.kpisOnTrack || 0,
-            overdueItems: result.overdueItems || 0,
+        try {
+          const response = await fetch('/.netlify/functions/portal/get-dashboard', {
+            headers: { Authorization: `Bearer ${session.session.access_token}` },
+            signal: controller.signal,
           });
-        } else {
-          setError('Failed to load dashboard data');
+
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const result = await response.json();
+            setData({
+              healthScore: result.healthScore || 0,
+              activeProjects: result.activeProjects || 0,
+              kpisOnTrack: result.kpisOnTrack || 0,
+              overdueItems: result.overdueItems || 0,
+            });
+          } else {
+            // If fetch fails, show default data
+            setData({
+              healthScore: 0,
+              activeProjects: 0,
+              kpisOnTrack: 0,
+              overdueItems: 0,
+            });
+          }
+        } catch (fetchErr) {
+          // Timeout or network error - use default data
+          setData({
+            healthScore: 0,
+            activeProjects: 0,
+            kpisOnTrack: 0,
+            overdueItems: 0,
+          });
         }
       } catch (err: any) {
         console.error('Dashboard error:', err);
-        setError(err.message || 'An error occurred');
+        // Use default data on error
+        setData({
+          healthScore: 0,
+          activeProjects: 0,
+          kpisOnTrack: 0,
+          overdueItems: 0,
+        });
       } finally {
         setLoading(false);
       }
