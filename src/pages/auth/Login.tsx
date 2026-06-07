@@ -30,20 +30,33 @@ export default function Login() {
         } else {
           setMagicSent(true);
         }
+        setLoading(false);
       } else {
-        const { error: err } = await supabase.auth.signInWithPassword({
+        // Password signin with 10-second timeout
+        const signInPromise = supabase.auth.signInWithPassword({
           email,
           password,
         });
-        if (err) {
-          setError(err.message);
+
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Login timeout - please try again')), 10000)
+        );
+
+        const result = await Promise.race([
+          signInPromise,
+          timeoutPromise,
+        ]).catch((err: any) => ({ error: err })) as any;
+
+        if (result.error) {
+          setError(result.error.message || 'Login failed');
+          setLoading(false);
         } else {
-          navigate('/portal/dashboard');
+          setLoading(false);
+          setTimeout(() => navigate('/portal/dashboard'), 500);
         }
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred');
-    } finally {
       setLoading(false);
     }
   };
