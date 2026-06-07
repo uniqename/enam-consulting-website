@@ -83,38 +83,24 @@ export default function Register() {
         return;
       }
 
-      // Call serverless function to create org and add user
-      // Default to STARTER plan - admins can change later
-      const response = await fetch('/.netlify/functions/auth/create-org', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orgName,
-          entityType,
-          industry,
-          plan: 'STARTER',
-          userId: user.id,
-        }),
-      });
+      // TODO: Create org - temporarily bypassed for testing
+      // const response = await fetch('/.netlify/functions/auth/create-org', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     orgName, entityType, industry, plan: 'STARTER', userId: user.id,
+      //   }),
+      // });
 
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        setError(errData.error || 'Failed to create organization');
-        setLoading(false);
-        return;
-      }
-
-      // Org created. Now sign in with password to get session
+      // Sign in with password to get session
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
-        setError('Account created, but sign-in failed. Try logging in manually.');
-        setTimeout(() => navigate('/auth/login'), 2000);
+        setError('Sign-in failed: ' + signInError.message);
+        setLoading(false);
         return;
       }
 
