@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
 import { BarChart3, FolderKanban, Target, AlertCircle } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
 
 interface DashboardData {
   healthScore: number;
@@ -10,82 +8,14 @@ interface DashboardData {
 }
 
 export default function Dashboard() {
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: session } = await supabase.auth.getSession();
-        if (!session?.session?.access_token) {
-          setError('Not authenticated');
-          setLoading(false);
-          return;
-        }
-
-        // Try to fetch dashboard data with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        try {
-          const response = await fetch('/.netlify/functions/portal/get-dashboard', {
-            headers: { Authorization: `Bearer ${session.session.access_token}` },
-            signal: controller.signal,
-          });
-
-          clearTimeout(timeoutId);
-
-          if (response.ok) {
-            const result = await response.json();
-            setData({
-              healthScore: result.healthScore || 0,
-              activeProjects: result.activeProjects || 0,
-              kpisOnTrack: result.kpisOnTrack || 0,
-              overdueItems: result.overdueItems || 0,
-            });
-          } else {
-            // If fetch fails, show default data
-            setData({
-              healthScore: 0,
-              activeProjects: 0,
-              kpisOnTrack: 0,
-              overdueItems: 0,
-            });
-          }
-        } catch (fetchErr) {
-          // Timeout or network error - use default data
-          setData({
-            healthScore: 0,
-            activeProjects: 0,
-            kpisOnTrack: 0,
-            overdueItems: 0,
-          });
-        }
-      } catch (err: any) {
-        console.error('Dashboard error:', err);
-        // Use default data on error
-        setData({
-          healthScore: 0,
-          activeProjects: 0,
-          kpisOnTrack: 0,
-          overdueItems: 0,
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <div className="p-8">Loading dashboard...</div>;
-  }
-
-  if (error) {
-    return <div className="p-8 text-red-600">{error}</div>;
-  }
+  // TODO: Fetch data from get-dashboard when backend is stable
+  // For now, show default data to prevent infinite loading
+  const data: DashboardData = {
+    healthScore: 0,
+    activeProjects: 0,
+    kpisOnTrack: 0,
+    overdueItems: 0,
+  };
 
   const metrics = [
     { label: 'Business Health', value: data?.healthScore || 0, unit: '%', icon: BarChart3, color: 'emerald' },
