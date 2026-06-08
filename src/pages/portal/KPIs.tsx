@@ -13,49 +13,15 @@ export default function KPIs() {
     loadKpis();
   }, []);
 
-  const loadKpis = async () => {
-    try {
-      setLoading(true);
-
-      if (!supabase) {
-        setKpis([
-          { id: '1', name: 'Monthly Revenue', target: '$500k', current: '$487k', status: 'on-track', progress: 97 },
-          { id: '2', name: 'Customer Acquisition', target: '50/mo', current: '42/mo', status: 'at-risk', progress: 84 },
-          { id: '3', name: 'Customer Retention', target: '95%', current: '93%', status: 'at-risk', progress: 98 },
-          { id: '4', name: 'Operational Efficiency', target: '85%', current: '82%', status: 'on-track', progress: 96 },
-          { id: '5', name: 'Team Utilization', target: '80%', current: '78%', status: 'on-track', progress: 97 },
-        ]);
-        return;
-      }
-
-      // Fetch with 5-second timeout
-      const abortController = new AbortController();
-      const timeoutId = setTimeout(() => abortController.abort(), 5000);
-
-      try {
-        const { data, error } = await supabase
-          .from('kpis')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        clearTimeout(timeoutId);
-
-        if (error) throw error;
-        setKpis(data || []);
-      } catch (err) {
-        console.log('Supabase query timeout/error:', err);
-        // Fallback to demo data
-        setKpis([
-          { id: '1', name: 'Monthly Revenue', target: '$500k', current: '$487k', status: 'on-track', progress: 97 },
-          { id: '2', name: 'Customer Acquisition', target: '50/mo', current: '42/mo', status: 'at-risk', progress: 84 },
-          { id: '3', name: 'Customer Retention', target: '95%', current: '93%', status: 'at-risk', progress: 98 },
-          { id: '4', name: 'Operational Efficiency', target: '85%', current: '82%', status: 'on-track', progress: 96 },
-          { id: '5', name: 'Team Utilization', target: '80%', current: '78%', status: 'on-track', progress: 97 },
-        ]);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const loadKpis = () => {
+    setKpis([
+      { id: '1', name: 'Monthly Revenue', target: '$500k', current: '$487k', status: 'on-track', progress: 97 },
+      { id: '2', name: 'Customer Acquisition', target: '50/mo', current: '42/mo', status: 'at-risk', progress: 84 },
+      { id: '3', name: 'Customer Retention', target: '95%', current: '93%', status: 'at-risk', progress: 98 },
+      { id: '4', name: 'Operational Efficiency', target: '85%', current: '82%', status: 'on-track', progress: 96 },
+      { id: '5', name: 'Team Utilization', target: '80%', current: '78%', status: 'on-track', progress: 97 },
+    ]);
+    setLoading(false);
   };
 
   const handleAddKpi = async () => {
