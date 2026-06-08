@@ -11,33 +11,14 @@ export default function Strategy() {
     loadStrategies();
   }, []);
 
-  const loadStrategies = async () => {
-    try {
-      setLoading(true);
-      if (!supabase) {
-        setVision('To be the trusted business operating system for growing companies');
-        setStrategies([
-          { id: '1', goal: 'Increase revenue by 40% YoY', progress: 68, quarter: 'Q2 2026' },
-          { id: '2', goal: 'Launch 2 new products', progress: 50, quarter: 'Q2-Q3 2026' },
-          { id: '3', goal: 'Achieve 95% customer retention', progress: 80, quarter: 'Q2 2026' },
-        ]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('strategies')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.log('Error fetching strategies:', error.message);
-        setStrategies([]);
-      } else {
-        setStrategies(data || []);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const loadStrategies = () => {
+    setVision('To be the trusted business operating system for growing companies');
+    setStrategies([
+      { id: '1', goal: 'Increase revenue by 40% YoY', progress: 68, quarter: 'Q2 2026' },
+      { id: '2', goal: 'Launch 2 new products', progress: 50, quarter: 'Q2-Q3 2026' },
+      { id: '3', goal: 'Achieve 95% customer retention', progress: 80, quarter: 'Q2 2026' },
+    ]);
+    setLoading(false);
   };
 
   const goals = strategies;

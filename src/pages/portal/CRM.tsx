@@ -13,34 +13,15 @@ export default function CRM() {
     loadContacts();
   }, []);
 
-  const loadContacts = async () => {
-    try {
-      setLoading(true);
-      if (!supabase) {
-        setContacts([
-          { id: '1', name: 'Sarah Johnson', company: 'Tech Solutions Inc', email: 'sarah@techsol.com', status: 'Active', role: 'CEO' },
-          { id: '2', name: 'Michael Chen', company: 'Growth Ventures', email: 'mchen@growthvc.com', status: 'Active', role: 'Partner' },
-          { id: '3', name: 'Emma Rodriguez', company: 'Digital Marketing Co', email: 'emma@digmarket.com', status: 'Prospect', role: 'Director' },
-          { id: '4', name: 'David Thompson', company: 'Consulting Group', email: 'dthompson@consult.com', status: 'Active', role: 'Principal' },
-          { id: '5', name: 'Lisa Wang', company: 'Commerce Platform', email: 'lisa@commerce.com', status: 'Prospect', role: 'Head of Ops' },
-        ]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('contacts')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.log('Error fetching contacts:', error.message);
-        setContacts([]);
-      } else {
-        setContacts(data || []);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const loadContacts = () => {
+    setContacts([
+      { id: '1', name: 'Sarah Johnson', company: 'Tech Solutions Inc', email: 'sarah@techsol.com', status: 'Active', role: 'CEO' },
+      { id: '2', name: 'Michael Chen', company: 'Growth Ventures', email: 'mchen@growthvc.com', status: 'Active', role: 'Partner' },
+      { id: '3', name: 'Emma Rodriguez', company: 'Digital Marketing Co', email: 'emma@digmarket.com', status: 'Prospect', role: 'Director' },
+      { id: '4', name: 'David Thompson', company: 'Consulting Group', email: 'dthompson@consult.com', status: 'Active', role: 'Principal' },
+      { id: '5', name: 'Lisa Wang', company: 'Commerce Platform', email: 'lisa@commerce.com', status: 'Prospect', role: 'Head of Ops' },
+    ]);
+    setLoading(false);
   };
 
   const handleAddContact = async () => {

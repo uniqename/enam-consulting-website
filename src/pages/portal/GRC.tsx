@@ -10,32 +10,13 @@ export default function GRC() {
     loadRisks();
   }, []);
 
-  const loadRisks = async () => {
-    try {
-      setLoading(true);
-      if (!supabase) {
-        setRisks([
-          { id: '1', title: 'Key Person Risk', severity: 'high', probability: 'Medium', impact: 'High', status: 'monitored' },
-          { id: '2', title: 'Cash Flow Volatility', severity: 'medium', probability: 'Medium', impact: 'Medium', status: 'mitigating' },
-          { id: '3', title: 'Data Security Gaps', severity: 'medium', probability: 'Low', impact: 'High', status: 'monitored' },
-        ]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('risks')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.log('Error fetching risks:', error.message);
-        setRisks([]);
-      } else {
-        setRisks(data || []);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const loadRisks = () => {
+    setRisks([
+      { id: '1', title: 'Key Person Risk', severity: 'high', probability: 'Medium', impact: 'High', status: 'monitored' },
+      { id: '2', title: 'Cash Flow Volatility', severity: 'medium', probability: 'Medium', impact: 'Medium', status: 'mitigating' },
+      { id: '3', title: 'Data Security Gaps', severity: 'medium', probability: 'Low', impact: 'High', status: 'monitored' },
+    ]);
+    setLoading(false);
   };
 
   return (

@@ -10,32 +10,13 @@ export default function Health() {
     loadAssessments();
   }, []);
 
-  const loadAssessments = async () => {
-    try {
-      setLoading(true);
-      if (!supabase) {
-        setAssessments([
-          { id: '1', date: '2026-06-06', score: 78, status: 'Excellent', trend: 'up', change: 5 },
-          { id: '2', date: '2026-05-06', score: 73, status: 'Good', trend: 'up', change: 8 },
-          { id: '3', date: '2026-03-15', score: 65, status: 'Fair', trend: 'down', change: 3 },
-        ]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('health_checks')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.log('Error fetching assessments:', error.message);
-        setAssessments([]);
-      } else {
-        setAssessments(data || []);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const loadAssessments = () => {
+    setAssessments([
+      { id: '1', date: '2026-06-06', score: 78, status: 'Excellent', trend: 'up', change: 5 },
+      { id: '2', date: '2026-05-06', score: 73, status: 'Good', trend: 'up', change: 8 },
+      { id: '3', date: '2026-03-15', score: 65, status: 'Fair', trend: 'down', change: 3 },
+    ]);
+    setLoading(false);
   };
 
   const handleTakeAssessment = async () => {

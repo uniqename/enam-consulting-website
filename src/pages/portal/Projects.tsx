@@ -12,32 +12,13 @@ export default function Projects() {
     loadProjects();
   }, []);
 
-  const loadProjects = async () => {
-    try {
-      setLoading(true);
-      if (!supabase) {
-        setProjects([
-          { id: '1', title: 'Website Redesign', phase: 'Implementation', progress: 65, due_date: '2026-07-15' },
-          { id: '2', title: 'CRM Migration', phase: 'Planning', progress: 30, due_date: '2026-08-30' },
-          { id: '3', title: 'Team Training Program', phase: 'Execution', progress: 90, due_date: '2026-06-20' },
-        ]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.log('Error fetching projects:', error.message);
-        setProjects([]);
-      } else {
-        setProjects(data || []);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const loadProjects = () => {
+    setProjects([
+      { id: '1', title: 'Website Redesign', phase: 'Implementation', progress: 65, due_date: '2026-07-15' },
+      { id: '2', title: 'CRM Migration', phase: 'Planning', progress: 30, due_date: '2026-08-30' },
+      { id: '3', title: 'Team Training Program', phase: 'Execution', progress: 90, due_date: '2026-06-20' },
+    ]);
+    setLoading(false);
   };
 
   const handleAddProject = async () => {

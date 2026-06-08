@@ -13,33 +13,14 @@ export default function SOPs() {
     loadSOPs();
   }, []);
 
-  const loadSOPs = async () => {
-    try {
-      setLoading(true);
-      if (!supabase) {
-        setSops([
-          { id: '1', title: 'Sales Process v2.1', category: 'Sales', updated_at: '2026-06-01', status: 'active' },
-          { id: '2', title: 'Customer Onboarding', category: 'Operations', updated_at: '2026-05-15', status: 'active' },
-          { id: '3', title: 'Product Development Workflow', category: 'Engineering', updated_at: '2026-04-20', status: 'active' },
-          { id: '4', title: 'Financial Reporting Checklist', category: 'Finance', updated_at: '2026-03-10', status: 'review' },
-        ]);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('sops')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.log('Error fetching SOPs:', error.message);
-        setSops([]);
-      } else {
-        setSops(data || []);
-      }
-    } finally {
-      setLoading(false);
-    }
+  const loadSOPs = () => {
+    setSops([
+      { id: '1', title: 'Sales Process v2.1', category: 'Sales', updated_at: '2026-06-01', status: 'active' },
+      { id: '2', title: 'Customer Onboarding', category: 'Operations', updated_at: '2026-05-15', status: 'active' },
+      { id: '3', title: 'Product Development Workflow', category: 'Engineering', updated_at: '2026-04-20', status: 'active' },
+      { id: '4', title: 'Financial Reporting Checklist', category: 'Finance', updated_at: '2026-03-10', status: 'review' },
+    ]);
+    setLoading(false);
   };
 
   const handleAddSop = async () => {
