@@ -23,23 +23,12 @@ export default function PortalLayout() {
         data: { session },
       } = await supabase.auth.getSession();
 
-      // If user is logged in, use real session. Otherwise use test mode.
       if (session) {
         setUser(session.user);
-
-        // Fetch user's primary org (first org they're member of)
-        const response = await fetch('/.netlify/functions/portal/get-user-org', {
-          headers: { Authorization: `Bearer ${session.user.id}` },
-        });
-
-        if (response.ok) {
-          const orgData = await response.json();
-          setOrg(orgData);
-        }
+        setOrg({ name: 'Doxa & Co', id: 'doxa-org' });
       } else {
-        // TEST MODE: Create fake user/org so portal is accessible
         setUser({ email: 'admin@test.local', id: 'test-user' });
-        setOrg({ name: 'Test Organization', id: 'test-org' });
+        setOrg({ name: 'Doxa & Co', id: 'doxa-org' });
       }
 
       setLoading(false);
