@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Invoice Template — Doxa & Co</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .toolbar button {
+    padding: 8px 18px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .btn-add    { background: #2563eb; color: #fff; }
+  .btn-add:hover    { background: #1d4ed8; }
+  .btn-remove { background: #dc2626; color: #fff; }
+  .btn-remove:hover { background: #b91c1c; }
+  .btn-calc   { background: #7c3aed; color: #fff; }
+  .btn-calc:hover   { background: #6d28d9; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+          border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+          box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4; border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .tagline { font-size: 12px; color: #78716c; margin-top: 2px; }
+  .letterhead-contact { margin-left: auto; text-align: right; font-size: 11px; color: #78716c; line-height: 1.6; }
+
+  .doc-body { outline: none; padding: 40px; min-height: 600px; font-family: Georgia, serif; font-size: .96rem; }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body ul { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th { border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top; }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  strong { font-weight: 700; }
+
+  #line-items-table tr.line-item:hover td { background: #f9fafb; }
+  .total-row td { background: #f0fdf4 !important; font-weight: 700; }
+
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-print"  onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+  <button class="btn-add"    onclick="addLineItem()">+ Add Line Item</button>
+  <button class="btn-remove" onclick="removeLastItem()">− Remove Last Item</button>
+  <button class="btn-calc"   onclick="recalcTotal()">⟳ Recalculate Total</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click any cell to edit · Add / remove rows · Recalculate auto-sums the total</span>
+</div>
+
+<div class="page">
+  <div class="letterhead" contenteditable="true">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
+    </div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
+    </div>
+  </div>
+
+  <div class="doc-body" contenteditable="true">
+
+    <table>
+      <tr>
+        <td>
+          <p><strong>INVOICE</strong></p>
+          <p>Doxa &amp; Co &nbsp;·&nbsp; Strategy · Product · Delivery</p>
+          <p>doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</p>
+        </td>
+        <td>
+          <p>Invoice #: DOX-[YEAR]-[###]</p>
+          <p>Date: [DATE]</p>
+          <p>Due Date: [DATE + 7 days]</p>
+          <p><strong>Status: UNPAID</strong></p>
+        </td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <td>
+          <p><strong>BILL TO</strong></p>
+          <p><strong>[CLIENT NAME]</strong></p>
+          <p>[Company]</p>
+          <p>[Address]</p>
+          <p>[Email]</p>
+        </td>
+        <td></td>
+        <td>
+          <p><strong>FOR</strong></p>
+          <p><strong><em>[Engagement Name / Type]</em></strong></p>
+          <p>SOW Reference: DOX-[YEAR]-[###]</p>
+          <p>Period: [Start Date] – [End Date]</p>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Line items — use toolbar buttons to add/remove rows -->
+    <table id="line-items-table" contenteditable="false">
+      <thead>
+        <tr>
+          <th style="width:50%">DESCRIPTION</th>
+          <th style="width:12%">QTY</th>
+          <th style="width:19%">RATE</th>
+          <th style="width:19%">AMOUNT</th>
+        </tr>
+      </thead>
+      <tbody id="line-items-body">
+        <tr class="line-item">
+          <td contenteditable="true">Website Design &amp; Development — Growth Package<br><small style="font-weight:400;color:#78716c;">Custom website up to 8 pages, full brand identity, premium hosting setup, analytics &amp; booking flow</small></td>
+          <td contenteditable="true">1</td>
+          <td contenteditable="true">$7,500.00</td>
+          <td contenteditable="true">$7,500.00</td>
+        </tr>
+        <tr class="line-item">
+          <td contenteditable="true">50% deposit — paid at project kickoff</td>
+          <td contenteditable="true">1</td>
+          <td contenteditable="true">-$3,750.00</td>
+          <td contenteditable="true">-$3,750.00</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="2"></td>
+          <td><strong>TOTAL DUE</strong></td>
+          <td id="total-cell" contenteditable="true"><strong>$3,750.00</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <p><strong>Payment Instructions</strong></p>
+    <ul>
+      <li>Zelle: [your Zelle email or phone]</li>
+      <li>ACH / Wire: contact ename@doxaandco.co to request bank details</li>
+      <li>PayPal: [PayPal.me link]</li>
+      <li>Check payable to: Enam Egyir / Doxa &amp; Co</li>
+    </ul>
+    <p><em>Payment is due within 7 days of invoice date. Accounts unpaid after 15 days accrue a 1.5% monthly late fee.</em></p>
+    <p>Thank you for the opportunity to work together.</p>
+
+  </div>
+
+  <div class="letterfoot" contenteditable="true">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+<script>
+  function addLineItem() {
+    const tbody = document.getElementById('line-items-body');
+    const tr = document.createElement('tr');
+    tr.className = 'line-item';
+    tr.innerHTML =
+      '<td contenteditable="true">[Description]</td>' +
+      '<td contenteditable="true">1</td>' +
+      '<td contenteditable="true">$0.00</td>' +
+      '<td contenteditable="true">$0.00</td>';
+    tbody.appendChild(tr);
+    tr.querySelector('td').focus();
+  }
+
+  function removeLastItem() {
+    const tbody = document.getElementById('line-items-body');
+    const rows = tbody.querySelectorAll('tr.line-item');
+    if (rows.length > 1) {
+      rows[rows.length - 1].remove();
+    } else {
+      alert('Keep at least one line item.');
+    }
+  }
+
+  function parseAmount(text) {
+    return parseFloat(text.replace(/[^0-9.\-]/g, '')) || 0;
+  }
+
+  function formatCurrency(n) {
+    const abs = Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (n < 0 ? '-$' : '$') + abs;
+  }
+
+  function recalcTotal() {
+    const rows = document.querySelectorAll('#line-items-body tr.line-item');
+    let total = 0;
+    rows.forEach(function(row) {
+      const cells = row.querySelectorAll('td');
+      const qty  = parseAmount(cells[1].innerText);
+      const rate = parseAmount(cells[2].innerText);
+      const amt  = qty * rate;
+      cells[3].innerText = formatCurrency(amt);
+      total += amt;
+    });
+    document.getElementById('total-cell').innerHTML = '<strong>' + formatCurrency(total) + '</strong>';
+  }
+</script>
+<script src="docs-utils.js"></script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Onboarding Welcome Letter &amp; Kickoff Agenda — Doxa &amp; Co</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .toolbar button {
+    padding: 8px 20px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  /* ── Page wrapper ── */
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+           border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  /* ── Letterhead header ── */
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4;
+    border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .org-name {
+    font-size: 18px; font-weight: 800; color: #1c1917; letter-spacing: -0.4px;
+  }
+  .letterhead-text .tagline {
+    font-size: 12px; color: #78716c; margin-top: 2px;
+  }
+  .letterhead-contact {
+    margin-left: auto; text-align: right;
+    font-size: 11px; color: #78716c; line-height: 1.6;
+  }
+
+  /* ── Document body ── */
+  .doc-body {
+    outline: none; padding: 40px;
+    min-height: 600px; font-family: Georgia, serif; font-size: .96rem;
+  }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body h1 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.6rem; margin-top: 1.4em; margin-bottom: .4em; color: #1c1917; }
+  .doc-body h2 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.15rem; margin-top: 1.3em; margin-bottom: .35em; color: #1c1917; }
+  .doc-body h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1rem; margin-top: 1.1em; margin-bottom: .3em; color: #1c1917; }
+  .doc-body ul, .doc-body ol { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th {
+    border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top;
+  }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .doc-body img { max-width: 100%; }
+  strong { font-weight: 700; }
+
+  /* ── Footer ── */
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click to edit · Sign · Save as PDF or Word</span>
+</div>
+
+<div class="page">
+  <div class="letterhead" contenteditable="true">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
+    </div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
+    </div>
+  </div>
+
+  <div class="doc-body" contenteditable="true">
+<div class="document">
+
+  <div class="doc-header">
+    <div>
+      <span class="logo-name">DOXA &amp; CO</span>
+      <span class="logo-tag">Strategy · Product · Delivery</span>
+    </div>
+    <div class="doc-meta">
+      Enam Egyir<br/>
+      ename@doxaandco.co<br/>
+      doxaandco.co
+    </div>
+  </div>
+  <div class="gold-line"></div>
+
+  <h1>Welcome to Doxa &amp; Co</h1>
+  <p class="subtitle">Sent to the client upon signing — includes onboarding checklist and kickoff agenda</p>
+
+  <!-- WELCOME LETTER -->
+  <div class="welcome-card">
+    <p>Dear [Client Name],</p>
+    <p>Welcome — and thank you for choosing Doxa &amp; Co. I don't take it lightly that you're trusting me with work that matters.</p>
+    <p>I've put this document together so you know exactly what to expect from day one. No surprises, no guessing. Everything you need before our kickoff call is in the checklist on the next page, and the kickoff agenda lays out how we'll use that first session together.</p>
+    <p>My job from here is simple: show up prepared, ask the right questions, and deliver work that actually moves your organization forward. If anything is unclear before our kickoff, reply to this email. I typically respond within one business day.</p>
+    <p>Let's build something that lasts.</p>
+    <p class="sign">— Enam Egyir<br/>Principal Consultant, Doxa &amp; Co<br/>ename@doxaandco.co</p>
+  </div>
+
+  <h2>Before the Kickoff — Your Onboarding Checklist</h2>
+  <p>Complete these items before our kickoff session. The more context you share upfront, the more useful our first session will be.</p>
+
+  <div class="checklist-card">
+    <h3>Documents to Send</h3>
+    <div class="check-row"><div class="check-box"></div>Signed Consulting Agreement and/or Retainer Agreement</div>
+    <div class="check-row"><div class="check-box"></div>Signed Statement of Work (SOW)</div>
+    <div class="check-row"><div class="check-box"></div>First invoice paid / payment confirmed</div>
+    <div class="check-row"><div class="check-box"></div>Any existing roadmap, product strategy doc, or requirements document</div>
+    <div class="check-row"><div class="check-box"></div>Org chart or team structure (even a rough one)</div>
+    <div class="check-row"><div class="check-box"></div>Current tools/platforms in use (project management, engineering, GRC, etc.)</div>
+  </div>
+
+  <div class="checklist-card">
+    <h3>Access to Provide</h3>
+    <div class="check-row"><div class="check-box"></div>Jira / Linear / Trello / Notion — whichever project tool your team uses</div>
+    <div class="check-row"><div class="check-box"></div>Slack or Teams — add ename@doxaandco.co to relevant channels</div>
+    <div class="check-row"><div class="check-box"></div>GitHub / GitLab (for MVP/build engagements)</div>
+    <div class="check-row"><div class="check-box"></div>GRC platform (read access to begin; write access post-kickoff)</div>
+    <div class="check-row"><div class="check-box"></div>Shared drive or Confluence space for documentation</div>
+  </div>
+
+  <div class="checklist-card">
+    <h3>People to Introduce</h3>
+    <div class="check-row"><div class="check-box"></div>Engineering lead or CTO (for MVP or build engagements)</div>
+    <div class="check-row"><div class="check-box"></div>Risk/compliance lead (for GRC engagements)</div>
+    <div class="check-row"><div class="check-box"></div>Key stakeholders who will attend sprint reviews or milestone presentations</div>
+    <div class="check-row"><div class="check-box"></div>Finance contact for invoicing / billing questions</div>
+  </div>
+
+  <h2>How We'll Work Together</h2>
+
+  <div class="info-grid">
+    <div class="info-box">
+      <div class="label">Primary Communication</div>
+      <p>Slack (preferred) or email. I'll join your workspace and respond within one business day to async messages.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Video Calls</div>
+      <p>Google Meet or Zoom, your preference. Calendar invites are sent from ename@doxaandco.co.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Sprint Cadence</div>
+      <p>2-week sprints (default). Sprint planning on Day 1, review/retro on Day 14. Adjusted to your team's rhythm.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Documentation</div>
+      <p>All deliverables written in your system of record (Notion, Confluence, etc.) — not in a format only I can access.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Invoicing</div>
+      <p>Invoices sent on the schedule in your SOW/Retainer. Payment due within 7 days of invoice date.</p>
+    </div>
+    <div class="info-box">
+      <div class="label">Escalation</div>
+      <p>If something isn't working, say so early. I'd rather have an awkward conversation in week 2 than a failed engagement in week 8.</p>
+    </div>
+  </div>
+
+  <!-- KICKOFF AGENDA — PAGE 2 -->
+  <div class="kickoff-break">
+    <h1>Kickoff Session Agenda</h1>
+    <p class="subtitle">Send this agenda to all attendees 24 hours before the kickoff call. Duration: 60–90 minutes.</p>
+
+    <p>The kickoff is not a demo or a sales call — it's the first working session. Come prepared to share the real picture: what's broken, what's been tried, and what success actually looks like. Everything said here is confidential.</p>
+
+    <div class="callout-emerald">
+      <p><strong>Attendees needed:</strong> The primary point of contact, any relevant technical leads, and ideally the executive sponsor or decision-maker. I'll take notes — you don't need to.</p>
+    </div>
+
+    <h2>Agenda</h2>
+
+    <div class="agenda-step">
+      <div class="agenda-num">1</div>
+      <div class="agenda-content">
+        <h3>Introductions &amp; Context-Setting</h3>
+        <div class="time">10 minutes</div>
+        <p>Brief round of introductions — name, role, and what each person's stake is in this engagement. Enam shares working style, communication preferences, and how she approaches the first 2 weeks.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">2</div>
+      <div class="agenda-content">
+        <h3>Current State Deep Dive</h3>
+        <div class="time">20–25 minutes</div>
+        <p>Walk through where things stand today. Not the polished version — the real one. What's working, what isn't, what's been tried and failed. For product engagements: existing backlog, technical architecture, team capacity. For GRC: current platform state, audit findings, compliance gaps. For AI: current tool stack, data readiness, team familiarity.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">3</div>
+      <div class="agenda-content">
+        <h3>Define "Done" — Success Criteria</h3>
+        <div class="time">15 minutes</div>
+        <p>What does a successful engagement look like at 30 days? At the end of the contract? Defining this now means we have a shared yardstick — and it prevents "I thought this would include…" conversations later. Enam will document these criteria and share them before the next session.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">4</div>
+      <div class="agenda-content">
+        <h3>Constraints, Risks &amp; Hard Questions</h3>
+        <div class="time">10–15 minutes</div>
+        <p>What might get in the way? Budget limits, team bandwidth, organizational politics, technical debt, upcoming audits or deadlines? What's the thing nobody says in meetings? This is the conversation most consultants avoid in week one. We won't.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">5</div>
+      <div class="agenda-content">
+        <h3>Tools, Access &amp; Team Introductions</h3>
+        <div class="time">10 minutes</div>
+        <p>Confirm all tool access from the onboarding checklist has been set up. Introduce any team members who weren't on the call. Set up recurring sprint ceremonies if applicable.</p>
+      </div>
+    </div>
+
+    <div class="agenda-step">
+      <div class="agenda-num">6</div>
+      <div class="agenda-content">
+        <h3>Next Steps &amp; First Deliverable</h3>
+        <div class="time">5–10 minutes</div>
+        <p>What happens in the first 7 days after this call? Enam will confirm the first concrete output — whether that's a backlog structure, a gap analysis, an AI readiness report, or a sprint planning session. No vague "we'll align on scope." Specific output, specific deadline.</p>
+      </div>
+    </div>
+
+    <h2>Post-Kickoff: What to Expect</h2>
+    <ul>
+      <li><strong>Within 24 hours:</strong> Kickoff notes and action items shared via email and your project tool</li>
+      <li><strong>Within 48 hours:</strong> Confirmed sprint cadence or milestone schedule added to shared calendar</li>
+      <li><strong>Within 7 days:</strong> First substantive deliverable delivered (per SOW)</li>
+      <li><strong>Ongoing:</strong> Weekly async status update every Friday — what was done, what's next, any blockers</li>
+    </ul>
+  </div>
+
+  <div class="doc-footer">
+    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
+    <span>Onboarding &amp; Kickoff · Rev. April 2026</span>
+  </div>
+
+</div>
+  </div>
+
+  <div class="letterfoot" contenteditable="true">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+<script src="docs-utils.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+import { Linkedin, Github, Instagram, Mail, MapPin, Phone } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
+import ChamberMembershipBadge from '../ChamberMembershipBadge';
+
+const Footer = () => {
+  const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+
+  const handleScrollTo = (id: string) => {
+    navigate('/');
+    setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  return (
+    <footer className="bg-white border-t border-gray-100 pt-16 pb-8">
+      <div className="w-full mx-auto px-6 lg:px-8">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          
+          <div className="space-y-4">
+            <Link to="/">
+              <img
+                src="/assets/images/doxa-logo-horizontal.svg"
+                alt="Doxa & Co"
+                className="h-8 w-auto"
+              />
+            </Link>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              Bridging the gap between Enterprise Rigor and Startup Agility. 
+              We build production-ready software and optimize GRC platforms for growth.
+            </p>
+            <div className="flex gap-4 pt-2">
+              <a href="https://www.linkedin.com/company/doxaandco/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="LinkedIn">
+                <Linkedin size={18} />
+              </a>
+              <a href="https://github.com/uniqename" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="GitHub">
+                <Github size={18} />
+              </a>
+              <a href="https://www.instagram.com/co.doxa/" target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 transition-colors" aria-label="Instagram">
+                <Instagram size={18} />
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-900 mb-4">Company</h3>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <button type="button" onClick={() => handleScrollTo('about')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">About Us</button>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleScrollTo('portfolio')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Case Studies</button>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Services</button>
+              </li>
+              <li>
+                <Link to="/booking" className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Book Consultation</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-900 mb-4">Expertise</h3>
+            <ul className="space-y-3 text-sm ">
+              <li>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Mobile App Development</button>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">GRC Platform Transformation</button>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">MVP Strategy & Build</button>
+              </li>
+              <li>
+                <button type="button" onClick={() => handleScrollTo('services')} className="text-gray-500 hover:text-emerald-600 transition-colors cursor-pointer">Technical Audits</button>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-900 mb-4">Contact</h3>
+            <ul className="space-y-4 text-sm">
+              <li className="flex items-start gap-3 text-gray-500">
+                <Mail size={18} className="shrink-0 text-emerald-600" />
+                <a href="mailto:ename@doxaandco.co" className="hover:text-gray-900 transition-colors">
+                  ename@doxaandco.co
+                </a>
+              </li>
+              <li className="flex items-start gap-3 text-gray-500">
+                <Phone size={18} className="shrink-0 text-emerald-600" />
+                <a href="tel:+16143776633" className="hover:text-gray-900 transition-colors">
+                  +1 614 377 6633
+                </a>
+              </li>
+              <li className="flex items-start gap-3 text-gray-500">
+                <MapPin size={18} className="shrink-0 text-emerald-600" />
+                <span>
+                  Columbus, Ohio<br />
+                  <span className="text-xs opacity-70">Remote Services Worldwide</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div className="py-8 border-t border-gray-100">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest text-center mb-6">Affiliations & Memberships</p>
+          <div className="flex justify-center mb-8">
+            <ChamberMembershipBadge />
+          </div>
+        </div>
+
+        <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+          <p>© {currentYear} Doxa and Co LLC. All rights reserved.</p>
+          <div className="flex gap-6">
+            <Link to="/privacy" className="hover:text-gray-900">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-gray-900">Terms of Service</Link>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

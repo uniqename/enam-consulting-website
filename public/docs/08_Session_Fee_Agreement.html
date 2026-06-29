@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Session Fee Agreement — Doxa &amp; Co</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .toolbar button {
+    padding: 8px 20px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  /* ── Page wrapper ── */
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+           border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  /* ── Letterhead header ── */
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4;
+    border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .org-name {
+    font-size: 18px; font-weight: 800; color: #1c1917; letter-spacing: -0.4px;
+  }
+  .letterhead-text .tagline {
+    font-size: 12px; color: #78716c; margin-top: 2px;
+  }
+  .letterhead-contact {
+    margin-left: auto; text-align: right;
+    font-size: 11px; color: #78716c; line-height: 1.6;
+  }
+
+  /* ── Document body ── */
+  .doc-body {
+    outline: none; padding: 40px;
+    min-height: 600px; font-family: Georgia, serif; font-size: .96rem;
+  }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body h1 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.6rem; margin-top: 1.4em; margin-bottom: .4em; color: #1c1917; }
+  .doc-body h2 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.15rem; margin-top: 1.3em; margin-bottom: .35em; color: #1c1917; }
+  .doc-body h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1rem; margin-top: 1.1em; margin-bottom: .3em; color: #1c1917; }
+  .doc-body ul, .doc-body ol { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th {
+    border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top;
+  }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .doc-body img { max-width: 100%; }
+  strong { font-weight: 700; }
+
+  /* ── Footer ── */
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click to edit · Sign · Save as PDF or Word</span>
+</div>
+
+<div class="page">
+  <div class="letterhead" contenteditable="true">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
+    </div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
+    </div>
+  </div>
+
+  <div class="doc-body" contenteditable="true">
+<div class="document">
+
+  <div class="doc-header">
+    <div class="logo-block">
+      <span class="logo-name">DOXA &amp; CO</span>
+      <span class="logo-tag">Strategy · Product · Delivery</span>
+    </div>
+    <div class="doc-meta">
+      Enam Egyir<br/>
+      ename@doxaandco.co<br/>
+      doxaandco.co
+    </div>
+  </div>
+  <div class="gold-line"></div>
+
+  <h1>Session Fee Agreement</h1>
+  <p class="subtitle">Non-Refundable Discovery &amp; Strategy Session Fee Policy · Acknowledgment Required Prior to Booking</p>
+
+  <p>This Agreement is entered into between <strong>Doxa &amp; Co</strong> ("Consultant"), operated by Enam Egyir, and the individual or organization identified below ("Client") in connection with a scheduled paid consulting session.</p>
+
+  <h2>Client &amp; Session Details</h2>
+  <table class="fill-table">
+    <tr><td>Client Name</td><td>&nbsp;</td></tr>
+    <tr><td>Company / Organization</td><td>&nbsp;</td></tr>
+    <tr><td>Email Address</td><td>&nbsp;</td></tr>
+    <tr><td>Session Type</td><td>&nbsp;</td></tr>
+    <tr><td>Scheduled Date &amp; Time</td><td>&nbsp;</td></tr>
+    <tr><td>Session Fee</td><td>&nbsp;</td></tr>
+  </table>
+
+  <h2>Fee Schedule</h2>
+  <p>The following session fees apply at the time of booking. Fees are collected before the session is confirmed.</p>
+  <div class="fee-schedule">
+    <div class="fee-row"><span class="type">Strategy &amp; GRC Consultation</span><span class="amount">$350</span></div>
+    <div class="fee-row"><span class="type">MVP Discovery Session</span><span class="amount">$500</span></div>
+    <div class="fee-row"><span class="type">AI Transformation Advisory</span><span class="amount">$250</span></div>
+    <div class="fee-row"><span class="type">Fractional PO Discovery Call</span><span class="free">Complimentary</span></div>
+    <div class="fee-row"><span class="type">General Inquiry Call</span><span class="free">Complimentary</span></div>
+  </div>
+
+  <h2>Fee Credit Policy</h2>
+  <p>The session fee is a <strong>commitment fee</strong>, not a service charge. If the Client proceeds to a signed engagement within <strong>30 days</strong> of the session, the full session fee is credited toward the first invoice of that engagement. No deduction is made — it is applied dollar-for-dollar.</p>
+  <ul>
+    <li>Strategy session ($350) → credited toward Enterprise GRC engagement</li>
+    <li>MVP session ($500) → credited toward MVP development contract</li>
+    <li>AI Advisory session ($250) → credited toward AI Readiness Audit or Build engagement</li>
+  </ul>
+
+  <div class="callout-gold">
+    <p><strong>The fee exists for one reason:</strong> Paid sessions attract clients who are serious about solving a real problem. Free discovery calls attract people who are still deciding if they have one. The session fee protects both parties' time.</p>
+  </div>
+
+  <h2>Non-Refund &amp; Cancellation Policy</h2>
+  <p>The session fee is <strong>non-refundable</strong> under the following circumstances:</p>
+  <ol>
+    <li><strong>Client cancels within 24 hours of the scheduled session</strong> — no refund, no credit. The slot is lost.</li>
+    <li><strong>Client does not attend (no-show)</strong> — no refund. A new session fee is required to reschedule.</li>
+    <li><strong>Client attends but does not proceed to an engagement</strong> — the fee is earned. No refund is issued. This is the primary purpose of the policy: Enam's preparation, research, and time have value regardless of whether the Client moves forward.</li>
+  </ol>
+
+  <p>The session fee is <strong>refundable</strong> only if:</p>
+  <ol>
+    <li>Doxa &amp; Co cancels the session with less than 24 hours notice and cannot reschedule within 7 business days.</li>
+    <li>A scheduling error on Doxa &amp; Co's side results in a confirmed time that was not actually available.</li>
+  </ol>
+
+  <h2>Reschedule Policy</h2>
+  <p>The Client may reschedule without penalty if they provide at least <strong>24 hours' notice</strong> before the scheduled session. Only one reschedule per booking is permitted. A second reschedule requires a new booking and a new session fee.</p>
+
+  <h2>What the Session Includes</h2>
+  <p>Each paid session includes:</p>
+  <ul>
+    <li>Pre-session research: review of any materials, URLs, or context provided by the Client</li>
+    <li>The scheduled video or phone consultation (duration per session type)</li>
+    <li>A written follow-up summary with key findings, recommendations, and proposed next steps, delivered within 2 business days</li>
+  </ul>
+  <p>The session does not include deliverables, documentation, code, or implementation work. Those are covered under a separate Statement of Work.</p>
+
+  <h2>No Engagement Guarantee</h2>
+  <p>Booking and completing a paid session does not obligate either party to enter into a further engagement. Doxa &amp; Co reserves the right to decline to take on a client after a session if the fit is not right. The session fee is not a deposit on future services.</p>
+
+  <h2>Acknowledgment &amp; Authorization</h2>
+  <p>By signing below (or by completing the online booking confirmation), the Client acknowledges that they have read, understood, and agreed to this Session Fee Agreement, including the non-refund policy.</p>
+
+  <div class="sig-section">
+    <div class="sig-grid">
+      <div class="sig-block">
+        <p style="font-size: 11px; color: var(--stone-500); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Client</p>
+        <div class="pre-sign"></div>
+        <div class="sig-line">
+          Signature<br/>
+          <br/>
+          Printed Name: ___________________________<br/>
+          Title: ___________________________<br/>
+          Date: ___________________________
+        </div>
+      </div>
+      <div class="sig-block">
+        <p style="font-size: 11px; color: var(--stone-500); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Doxa &amp; Co</p>
+        <div class="pre-sign"></div>
+        <div class="sig-line">
+          Enam Egyir, Principal Consultant<br/>
+          <br/>
+          Signature: ___________________________<br/>
+          Date: ___________________________
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; font-size: 11px; color: var(--stone-400); font-style: italic;">Note: For online bookings made through doxaandco.co, clicking "Confirm Booking" constitutes the Client's acknowledgment and agreement to this policy. A copy of this agreement is included in the booking confirmation email.</p>
+
+  <div class="doc-footer">
+    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
+    <span>Session Fee Agreement · Rev. April 2026</span>
+  </div>
+
+</div>
+  </div>
+
+  <div class="letterfoot" contenteditable="true">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+<script src="docs-utils.js"></script>
+</body>
+</html>

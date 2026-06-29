@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Website Package — Scope Explainer — Doxa & Co</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .toolbar button {
+    padding: 8px 18px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  .page { max-width: 900px; margin: 32px auto 64px; background: #fff;
+          border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+          box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4; border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .tagline { font-size: 12px; color: #78716c; margin-top: 2px; }
+  .letterhead-contact { margin-left: auto; text-align: right; font-size: 11px; color: #78716c; line-height: 1.6; }
+
+  .doc-body { padding: 40px 40px 48px; font-family: Georgia, serif; font-size: .95rem; line-height: 1.7; }
+
+  .doc-title { font-size: 1.4rem; font-weight: 800; color: #1c1917; font-family: 'Helvetica Neue', Arial, sans-serif; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .doc-subtitle { font-size: 13px; color: #78716c; margin-bottom: 36px; font-style: italic; }
+
+  .tier-section { margin-bottom: 40px; }
+  .tier-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px; border-radius: 10px; margin-bottom: 20px;
+    background: #f5f5f4; border-left: 4px solid #d6d3d1;
+  }
+  .tier-header.featured { background: #f0fdf4; border-left-color: #059669; }
+  .tier-label {
+    font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 20px; background: #e7e5e4; color: #78716c;
+  }
+  .tier-header.featured .tier-label { background: #059669; color: #fff; }
+  .tier-name { font-size: 1.05rem; font-weight: 800; color: #1c1917; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .tier-price { margin-left: auto; font-size: 1.05rem; font-weight: 800; color: #1c1917; font-family: 'Helvetica Neue', Arial, sans-serif; }
+
+  .deliverable-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px; }
+  .deliverable-table th {
+    text-align: left; background: #fafaf9; padding: 9px 14px; font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #78716c;
+    border-bottom: 2px solid #e7e5e4;
+  }
+  .deliverable-table td { padding: 10px 14px; border-bottom: 1px solid #f5f5f4; vertical-align: top; color: #44403c; }
+  .deliverable-table tr:last-child td { border-bottom: none; }
+  .deliverable-table td:first-child { font-weight: 700; color: #1c1917; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; width: 30%; white-space: nowrap; }
+  .deliverable-table td:nth-child(2) { width: 15%; color: #78716c; font-style: italic; font-size: 12px; }
+  .deliverable-table td:last-child { font-size: 12.5px; line-height: 1.55; }
+
+  .tier-note { font-size: 12px; color: #78716c; font-style: italic; padding: 10px 14px; background: #fafaf9; border-radius: 8px; border: 1px solid #e7e5e4; }
+
+  .notes-section { border-top: 2px solid #e7e5e4; padding-top: 28px; margin-top: 8px; }
+  .notes-section h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #78716c; margin-bottom: 12px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .notes-section ul { padding-left: 1.4em; }
+  .notes-section li { font-size: 12.5px; color: #44403c; margin: 5px 0; line-height: 1.6; }
+
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    @page { margin: 0; }
+    body { padding: 14mm 16mm; background: #fff; }
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+  <button onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click to edit · Internal use only</span>
+</div>
+
+<div class="page">
+  <div class="letterhead" contenteditable="true">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
+    </div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
+    </div>
+  </div>
+
+  <div class="doc-body" contenteditable="true">
+    <p class="doc-title">Website Packages — Scope Explainer</p>
+    <p class="doc-subtitle">What each deliverable means and what you actually receive</p>
+
+    <!-- CREDIBILITY -->
+    <div class="tier-section">
+      <div class="tier-header">
+        <div class="tier-label">Credibility</div>
+        <div class="tier-name">Credibility Package</div>
+        <div class="tier-price">$3,500</div>
+      </div>
+
+      <table class="deliverable-table">
+        <thead>
+          <tr>
+            <th>Deliverable</th>
+            <th>Tier</th>
+            <th>What it includes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Brand Direction &amp; Visual Identity Guidance</td>
+            <td>Credibility+</td>
+            <td>A short creative direction session (usually 1–2 calls) to align on colour palette, typography, and overall visual tone. You receive a reference sheet with font choices, hex codes, and a brief direction summary. No full brand identity is produced at this tier — that starts at Growth.</td>
+          </tr>
+          <tr>
+            <td>Domain Setup &amp; Configuration</td>
+            <td>Credibility+</td>
+            <td>Purchasing or connecting an existing custom domain (e.g. yourname.com) to your hosting account. Includes DNS configuration, SSL certificate activation, and basic redirect setup (www → non-www or vice versa). Domain registration fees are the client's responsibility.</td>
+          </tr>
+          <tr>
+            <td>Shared Hosting Setup &amp; Configuration</td>
+            <td>Credibility</td>
+            <td>Provisioning a shared hosting account (e.g. Hostinger, SiteGround), connecting it to the domain, and configuring the server environment for the site to run reliably. Monthly hosting cost is the client's responsibility after handoff.</td>
+          </tr>
+          <tr>
+            <td>Professional Website — up to 5 pages</td>
+            <td>Credibility</td>
+            <td>Design and build of up to five pages: typically Home, About, Services, Contact, and one additional page (e.g. FAQ or a single service detail). Each page is designed to your brand direction. Additional pages are available at $350 per page.</td>
+          </tr>
+          <tr>
+            <td>Mobile &amp; Tablet Optimisation</td>
+            <td>Credibility+</td>
+            <td>The site is built responsively so layout, text, and navigation work correctly on phones, tablets, and desktops. Tested across common screen sizes and major browsers (Chrome, Safari, Firefox).</td>
+          </tr>
+          <tr>
+            <td>Consultation Booking Integration</td>
+            <td>Credibility+</td>
+            <td>A calendar booking widget (Calendly, Cal.com, or similar) embedded on your site so visitors can schedule calls without back-and-forth email. Includes setup of your availability rules and basic confirmation messaging.</td>
+          </tr>
+          <tr>
+            <td>Contact Form</td>
+            <td>Credibility</td>
+            <td>A simple contact form with name, email, and message fields. Submissions are routed to your inbox. Includes spam protection (reCAPTCHA or honeypot) and a confirmation message to the sender.</td>
+          </tr>
+          <tr>
+            <td>Basic SEO Foundation</td>
+            <td>Credibility</td>
+            <td>Each page is configured with a unique title tag, meta description, and correct heading hierarchy (H1, H2). Your site is submitted to Google Search Console and a sitemap.xml is generated. This ensures Google can discover and index your pages — ongoing ranking depends on content.</td>
+          </tr>
+          <tr>
+            <td>Basic Security &amp; Performance Setup</td>
+            <td>Credibility</td>
+            <td>SSL/HTTPS enabled, security headers configured, image optimisation applied, and caching set up. Your site will load quickly for first-time visitors and earn a clean security posture. Does not include a Web Application Firewall (WAF) or CDN — those are included in Growth+.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="tier-note"><strong>Timeline:</strong> 2–3 weeks from kickoff. <strong>Best for:</strong> Solo consultants and professionals who need a clean, credible online home.</p>
+    </div>
+
+    <!-- GROWTH -->
+    <div class="tier-section">
+      <div class="tier-header featured">
+        <div class="tier-label">Most Popular</div>
+        <div class="tier-name">Growth Package</div>
+        <div class="tier-price">$7,500</div>
+      </div>
+
+      <table class="deliverable-table">
+        <thead>
+          <tr>
+            <th>Deliverable</th>
+            <th>Tier</th>
+            <th>What it includes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Everything in Credibility</td>
+            <td>Growth+</td>
+            <td>All nine Credibility deliverables are included and upgraded where relevant (e.g. shared hosting becomes premium hosting, basic SEO becomes content-ready SEO).</td>
+          </tr>
+          <tr>
+            <td>Full Brand Identity System</td>
+            <td>Growth+</td>
+            <td>A complete brand identity package: primary and secondary logo files (SVG, PNG, dark/light variants), a defined colour palette with hex and CMYK values, a typography system (heading and body typefaces), and a one-page brand usage guide. This is the asset set a designer or future vendor needs to keep your brand consistent.</td>
+          </tr>
+          <tr>
+            <td>Domain &amp; Social Handle Alignment Strategy</td>
+            <td>Growth+</td>
+            <td>A short audit of available domain variants and social media handles matching your brand. Recommendations on which to secure now. This prevents the common problem of having @YourBrand on the website but @YourBrand_Official on Instagram because you checked too late.</td>
+          </tr>
+          <tr>
+            <td>Premium Hosting Setup</td>
+            <td>Growth+</td>
+            <td>Configuration on a premium hosting plan (VPS, managed WordPress, or similar) with better performance guarantees, automatic backups, and a CDN (content delivery network) for faster global load times. Monthly hosting cost is the client's responsibility after handoff.</td>
+          </tr>
+          <tr>
+            <td>Custom-Designed Website — up to 8 pages</td>
+            <td>Growth</td>
+            <td>Up to eight pages designed with your full brand identity applied. Typically: Home, About, Services overview, 2–3 individual service pages, Blog/Resources landing, and Contact. Layout and visual treatment are custom — not off-the-shelf templates.</td>
+          </tr>
+          <tr>
+            <td>Clear Separation of Service Lines</td>
+            <td>Growth+</td>
+            <td>Distinct pages or sections for each service you offer, structured to help visitors self-identify their need and navigate to the right offer. Reduces "what exactly do you do?" friction before the sales call.</td>
+          </tr>
+          <tr>
+            <td>Advanced Consultation Booking Flow</td>
+            <td>Growth+</td>
+            <td>Multi-step booking widget with intake questions (e.g. "What are you looking to solve?") so you arrive at calls with context. Custom confirmation email and optional pre-call instructions. Integrates with your calendar and CRM if applicable.</td>
+          </tr>
+          <tr>
+            <td>SEO Foundation + Content-Ready Setup</td>
+            <td>Growth+</td>
+            <td>All Credibility SEO work, plus: schema markup for your business type, Open Graph tags for social sharing previews, a blog or resources section ready to publish into, and a keyword-informed page structure so new content you add can rank effectively.</td>
+          </tr>
+          <tr>
+            <td>Contact Forms with Lead Routing</td>
+            <td>Growth</td>
+            <td>Forms that capture lead intent (service interest, budget range, timeline) and route inquiries to the right inbox or CRM entry. Includes automated acknowledgment email to the prospect and internal notification to you.</td>
+          </tr>
+          <tr>
+            <td>Performance Optimisation</td>
+            <td>Growth+</td>
+            <td>Image compression, lazy loading, minified CSS/JS, and Core Web Vitals optimisation. Target: 85+ Google PageSpeed score. Fast sites convert better and rank higher.</td>
+          </tr>
+          <tr>
+            <td>Analytics &amp; Tracking Setup</td>
+            <td>Growth+</td>
+            <td>Google Analytics 4 (GA4) configured with goal tracking (form submissions, booking clicks). Google Search Console connected and verified. You'll know where traffic comes from and what visitors do on your site.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="tier-note"><strong>Timeline:</strong> 4–6 weeks from kickoff. <strong>Best for:</strong> Consulting firms and service businesses that need a professional brand presence that actively generates leads.</p>
+    </div>
+
+    <!-- AUTHORITY -->
+    <div class="tier-section">
+      <div class="tier-header">
+        <div class="tier-label">Authority</div>
+        <div class="tier-name">Authority Package</div>
+        <div class="tier-price">Starting at $14,500</div>
+      </div>
+
+      <table class="deliverable-table">
+        <thead>
+          <tr>
+            <th>Deliverable</th>
+            <th>Tier</th>
+            <th>What it includes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Everything in Growth</td>
+            <td>Authority+</td>
+            <td>All Growth deliverables are included and elevated — high-performance hosting replaces premium, and custom page count expands to 12.</td>
+          </tr>
+          <tr>
+            <td>Brand Strategy &amp; Positioning Session</td>
+            <td>Authority</td>
+            <td>A dedicated 90-minute strategic session to define your market positioning: who you serve, what makes you distinct, how you want to be perceived against alternatives. Output: a written positioning statement and messaging hierarchy you can use across all channels, not just the website.</td>
+          </tr>
+          <tr>
+            <td>Premium Visual Direction</td>
+            <td>Authority</td>
+            <td>Bespoke visual concept development — two distinct visual directions presented before the build begins. Includes custom icon set, illustration style guidance, and a more comprehensive brand guideline document (10–15 pages) covering photography style, layout principles, and tone of voice.</td>
+          </tr>
+          <tr>
+            <td>High-Performance Hosting Setup</td>
+            <td>Authority</td>
+            <td>Configuration on dedicated or high-tier managed cloud hosting (e.g. WP Engine, Kinsta, or similar). Includes staging environment for safe updates, advanced caching, global CDN, and 99.9% uptime SLA from the hosting provider. Monthly cost is the client's responsibility.</td>
+          </tr>
+          <tr>
+            <td>Fully Custom Website — up to 12 pages</td>
+            <td>Authority</td>
+            <td>Up to twelve fully custom-designed pages. Includes all Growth pages plus expanded service detail pages, a case studies or portfolio section, a team or about expanded page, and any additional pages relevant to the engagement scope.</td>
+          </tr>
+          <tr>
+            <td>Conversion-Focused Landing Sections</td>
+            <td>Authority</td>
+            <td>Dedicated high-converting sections or standalone landing pages built around specific calls to action — ideal for campaigns, speaking engagements, or lead magnets. Includes A/B-testable layout variants where applicable.</td>
+          </tr>
+          <tr>
+            <td>SEO Launch Pack</td>
+            <td>Authority</td>
+            <td>Everything in Growth SEO, plus: keyword research report for your top five service areas, meta copy written for all pages, initial internal linking structure, and a 90-day content calendar with recommended topics for the blog. Positions you to start ranking within weeks of launch, not months.</td>
+          </tr>
+          <tr>
+            <td>Advanced Booking &amp; Automation Setup</td>
+            <td>Authority</td>
+            <td>Multi-stage intake flow with conditional logic, CRM integration (HubSpot, Notion, Airtable, or your preferred tool), automated email sequences for new leads, and meeting prep automation. The pipeline runs without manual admin work on your end.</td>
+          </tr>
+          <tr>
+            <td>Blog Framework for Authority &amp; Google Ranking</td>
+            <td>Authority</td>
+            <td>A fully built blog section with category taxonomy, author profiles, featured image templates, and RSS feed. Three sample posts written and published at launch to demonstrate the format and seed the archive. Built for SEO from day one.</td>
+          </tr>
+          <tr>
+            <td>Email Capture &amp; CRM Integration</td>
+            <td>Authority</td>
+            <td>Lead magnet or newsletter opt-in integrated with your email platform (ConvertKit, Mailchimp, ActiveCampaign, or similar). Subscriber confirmation flow, welcome sequence, and list tagging by entry point. Your site becomes an active list-building asset.</td>
+          </tr>
+          <tr>
+            <td>30 Days Post-Launch Support &amp; Refinements</td>
+            <td>Authority</td>
+            <td>Thirty calendar days of direct support after launch: up to 8 hours of refinements based on real visitor behaviour, bug fixes, copy tweaks, and minor layout adjustments. Delivered async via email and a shared project board.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="tier-note"><strong>Timeline:</strong> 8–12 weeks from kickoff. Exact scope confirmed during discovery. <strong>Best for:</strong> Established firms and founders investing in a long-term digital brand that positions them as the clear authority in their space.</p>
+    </div>
+
+    <div class="notes-section" contenteditable="true">
+      <h2>General Notes</h2>
+      <ul>
+        <li>All packages are quoted as flat fees unless otherwise noted. A discovery call is required before a formal proposal is issued.</li>
+        <li>Additional pages beyond the tier page limit are $350 per page.</li>
+        <li>Copywriting is not included unless specified. Clients are responsible for providing page copy; copy editing support is available at the hourly rate.</li>
+        <li>Third-party platform costs (hosting, domain, booking tool, CRM, email platform) are the client's responsibility.</li>
+        <li>Payment: 50% upfront to begin, 50% before final delivery.</li>
+        <li>Ongoing maintenance retainers: $350–$600/month depending on scope.</li>
+        <li><em>Scope explainer current as of April 2025. Internal use only — not for distribution.</em></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="letterfoot" contenteditable="true">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential — Internal Use Only</span>
+  </div>
+</div>
+
+<script src="docs-utils.js"></script>
+</body>
+</html>

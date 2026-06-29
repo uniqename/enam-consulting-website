@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Change Order / Scope Amendment — Doxa &amp; Co</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .toolbar button {
+    padding: 8px 20px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  /* ── Page wrapper ── */
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+           border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  /* ── Letterhead header ── */
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4;
+    border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .org-name {
+    font-size: 18px; font-weight: 800; color: #1c1917; letter-spacing: -0.4px;
+  }
+  .letterhead-text .tagline {
+    font-size: 12px; color: #78716c; margin-top: 2px;
+  }
+  .letterhead-contact {
+    margin-left: auto; text-align: right;
+    font-size: 11px; color: #78716c; line-height: 1.6;
+  }
+
+  /* ── Document body ── */
+  .doc-body {
+    outline: none; padding: 40px;
+    min-height: 600px; font-family: Georgia, serif; font-size: .96rem;
+  }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body h1 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.6rem; margin-top: 1.4em; margin-bottom: .4em; color: #1c1917; }
+  .doc-body h2 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.15rem; margin-top: 1.3em; margin-bottom: .35em; color: #1c1917; }
+  .doc-body h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1rem; margin-top: 1.1em; margin-bottom: .3em; color: #1c1917; }
+  .doc-body ul, .doc-body ol { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th {
+    border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top;
+  }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .doc-body img { max-width: 100%; }
+  strong { font-weight: 700; }
+
+  /* ── Footer ── */
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click to edit · Sign · Save as PDF or Word</span>
+</div>
+
+<div class="page">
+  <div class="letterhead" contenteditable="true">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
+    </div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
+    </div>
+  </div>
+
+  <div class="doc-body" contenteditable="true">
+<div class="document">
+
+  <div class="doc-header">
+    <div>
+      <span class="logo-name">DOXA &amp; CO</span>
+      <span class="logo-tag">Strategy · Product · Delivery</span>
+    </div>
+    <div class="doc-meta">
+      Enam Egyir<br/>
+      ename@doxaandco.co<br/>
+      doxaandco.co
+    </div>
+  </div>
+  <div class="gold-line"></div>
+
+  <h1>Change Order / Scope Amendment</h1>
+  <p class="subtitle">All changes to scope, timeline, or fees require a signed Change Order before new work begins. This document amends — but does not replace — the original Consulting Agreement and SOW.</p>
+
+  <h2>Reference Information</h2>
+  <table class="fill-table">
+    <tr><td>Change Order Number</td><td>CO-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-</td></tr>
+    <tr><td>Client / Organization</td><td>&nbsp;</td></tr>
+    <tr><td>Original Agreement Date</td><td>&nbsp;</td></tr>
+    <tr><td>Original SOW Reference</td><td>&nbsp;</td></tr>
+    <tr><td>Change Order Date</td><td>&nbsp;</td></tr>
+    <tr><td>Requested By</td><td>☐ Client &nbsp;&nbsp; ☐ Doxa &amp; Co &nbsp;&nbsp; ☐ Mutual</td></tr>
+  </table>
+
+  <h2>Reason for Change</h2>
+  <p>Briefly describe why this scope amendment is needed:</p>
+  <div class="writein" style="min-height:50px;">&nbsp;</div>
+
+  <h2>Scope Changes</h2>
+
+  <div class="change-box removed">
+    <div class="change-label red">Scope Being Removed / Reduced</div>
+    <p style="font-size:12px; color:#991b1b; margin-bottom:8px;">Describe work that will no longer be performed under the original SOW:</p>
+    <div class="writein" style="background:#fff7f7; border-color:#fca5a5; min-height:60px;">&nbsp;</div>
+  </div>
+
+  <div class="change-box added">
+    <div class="change-label green">New Scope Being Added</div>
+    <p style="font-size:12px; color:#166534; margin-bottom:8px;">Describe new work or deliverables that will be added:</p>
+    <div class="writein" style="background:#f0fdf4; border-color:#86efac; min-height:60px;">&nbsp;</div>
+  </div>
+
+  <div class="change-box neutral">
+    <div class="change-label stone">Modifications to Existing Deliverables</div>
+    <p style="font-size:12px; color: var(--stone-500); margin-bottom:8px;">Describe any changes to how existing deliverables will be structured, formatted, or delivered:</p>
+    <div class="writein" style="min-height:60px;">&nbsp;</div>
+  </div>
+
+  <h2>Impact Summary</h2>
+
+  <div class="impact-grid">
+    <div class="impact-box">
+      <label>Fee Impact</label>
+      <p style="font-size:12px; margin-bottom:6px; color: var(--stone-500);">Change to total engagement fee:</p>
+      <p style="font-size:12px; color: var(--stone-500);">☐ No change &nbsp; ☐ Increase &nbsp; ☐ Decrease</p>
+      <p style="font-size:13px; font-weight:700; margin-top:8px;">Amount: $_____________</p>
+    </div>
+    <div class="impact-box">
+      <label>Timeline Impact</label>
+      <p style="font-size:12px; margin-bottom:6px; color: var(--stone-500);">Change to delivery date:</p>
+      <p style="font-size:12px; color: var(--stone-500);">☐ No change &nbsp; ☐ Extended &nbsp; ☐ Shortened</p>
+      <p style="font-size:13px; font-weight:700; margin-top:8px;">New end date: ________</p>
+    </div>
+    <div class="impact-box">
+      <label>Hours Impact</label>
+      <p style="font-size:12px; margin-bottom:6px; color: var(--stone-500);">Change to total hours:</p>
+      <p style="font-size:12px; color: var(--stone-500);">☐ No change &nbsp; ☐ More &nbsp; ☐ Fewer</p>
+      <p style="font-size:13px; font-weight:700; margin-top:8px;">New est. hours: _______</p>
+    </div>
+  </div>
+
+  <h2>Updated Fee Schedule (if applicable)</h2>
+  <table class="fill-table">
+    <tr><td>Original Engagement Fee</td><td>$</td></tr>
+    <tr><td>Change Order Fee Adjustment</td><td>+ / – $</td></tr>
+    <tr><td>Revised Total Engagement Fee</td><td>$</td></tr>
+    <tr><td>Additional Fee Due Date</td><td>&nbsp;</td></tr>
+    <tr><td>Payment Method</td><td>&nbsp;</td></tr>
+  </table>
+
+  <div class="callout-gold">
+    <p><strong>Policy reminder:</strong> No new scope work begins until this Change Order is signed by both parties. Work performed without a signed Change Order is not compensated unless explicitly agreed in writing. This protects both Client from uncontrolled cost growth and Consultant from unpaid work.</p>
+  </div>
+
+  <h2>Terms</h2>
+  <p>This Change Order modifies the original Consulting Agreement and SOW referenced above. All other terms of those documents remain in full force. By signing below, both parties agree to the modifications described herein.</p>
+
+  <div class="sig-grid">
+    <div class="sig-block">
+      <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--stone-500); margin-bottom: 4px;">Client Approval</p>
+      <div class="pre-sign"></div>
+      <div class="sig-line">
+        Signature<br/>
+        Printed Name: ___________________________<br/>
+        Title: ___________________________<br/>
+        Date: ___________________________
+      </div>
+    </div>
+    <div class="sig-block">
+      <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--stone-500); margin-bottom: 4px;">Doxa &amp; Co</p>
+      <div class="pre-sign"></div>
+      <div class="sig-line">
+        Enam Egyir, Principal Consultant<br/>
+        Signature: ___________________________<br/>
+        &nbsp;<br/>
+        Date: ___________________________
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
+    <span>Change Order Form · Rev. April 2026</span>
+  </div>
+
+</div>
+  </div>
+
+  <div class="letterfoot" contenteditable="true">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+<script src="docs-utils.js"></script>
+</body>
+</html>

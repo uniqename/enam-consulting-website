@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Project Closeout &amp; Handoff Report — Doxa &amp; Co</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #fafaf9; color: #1c1917; line-height: 1.75; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    padding: 12px 24px; background: #fff; border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .toolbar button {
+    padding: 8px 20px; border: none; border-radius: 50px;
+    cursor: pointer; font-size: 13px; font-weight: 700; transition: background .15s;
+  }
+  .btn-print  { background: #059669; color: #fff; }
+  .btn-print:hover  { background: #047857; }
+  .btn-select { background: #1c1917; color: #fff; }
+  .btn-select:hover { background: #0c0a09; }
+  .toolbar-note { margin-left: auto; font-size: 12px; color: #a8a29e; }
+
+  /* ── Page wrapper ── */
+  .page { max-width: 860px; margin: 32px auto 64px; background: #fff;
+           border: 1px solid #e7e5e4; border-radius: 12px; overflow: hidden;
+           box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+
+  /* ── Letterhead header ── */
+  .letterhead {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px 40px; background: #f0fdf4;
+    border-bottom: 4px solid #059669;
+  }
+  .letterhead img { height: 40px; object-fit: contain; flex-shrink: 0; }
+  .letterhead-text .org-name {
+    font-size: 18px; font-weight: 800; color: #1c1917; letter-spacing: -0.4px;
+  }
+  .letterhead-text .tagline {
+    font-size: 12px; color: #78716c; margin-top: 2px;
+  }
+  .letterhead-contact {
+    margin-left: auto; text-align: right;
+    font-size: 11px; color: #78716c; line-height: 1.6;
+  }
+
+  /* ── Document body ── */
+  .doc-body {
+    outline: none; padding: 40px;
+    min-height: 600px; font-family: Georgia, serif; font-size: .96rem;
+  }
+  .doc-body p  { margin: 0.55em 0; }
+  .doc-body h1 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.6rem; margin-top: 1.4em; margin-bottom: .4em; color: #1c1917; }
+  .doc-body h2 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.15rem; margin-top: 1.3em; margin-bottom: .35em; color: #1c1917; }
+  .doc-body h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1rem; margin-top: 1.1em; margin-bottom: .3em; color: #1c1917; }
+  .doc-body ul, .doc-body ol { margin: .55em 0; padding-left: 1.6em; }
+  .doc-body table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: .93rem; }
+  .doc-body td, .doc-body th {
+    border: 1px solid #d6d3d1; padding: 9px 14px; vertical-align: top;
+  }
+  .doc-body th { background: #f0fdf4; font-weight: 700; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .doc-body img { max-width: 100%; }
+  strong { font-weight: 700; }
+
+  /* ── Footer ── */
+  .letterfoot {
+    padding: 18px 40px; background: #f0fdf4; border-top: 1px solid #bbf7d0;
+    font-size: 11px; color: #a8a29e;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+
+  @media print {
+    .toolbar { display: none !important; }
+    .page { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <button class="btn-select" onclick="document.execCommand('selectAll')">Select All</button>
+    <button class="btn-sign" onclick="openSignatureModal()" style="background:#1c1917;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">✍️ Sign</button>
+  <button class="btn-word" onclick="saveAsWord()" style="background:#2563eb;color:#fff;padding:8px 18px;border:none;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;">💾 Save as Word</button>
+  <span class="toolbar-note">Click to edit · Sign · Save as PDF or Word</span>
+</div>
+
+<div class="page">
+  <div class="letterhead" contenteditable="true">
+    <img src="../assets/images/doxa-logo-horizontal.svg" alt="Doxa &amp; Co" />
+    <div class="letterhead-text">
+      <div class="tagline">Product Management Consulting &amp; Fractional PO Services</div>
+    </div>
+    <div class="letterhead-contact">
+      doxaandco.co<br>
+      ename@doxaandco.co
+    </div>
+  </div>
+
+  <div class="doc-body" contenteditable="true">
+<div class="document">
+
+  <div class="doc-header">
+    <div>
+      <span class="logo-name">DOXA &amp; CO</span>
+      <span class="logo-tag">Strategy · Product · Delivery</span>
+    </div>
+    <div class="doc-meta">
+      Enam Egyir<br/>
+      ename@doxaandco.co<br/>
+      doxaandco.co
+    </div>
+  </div>
+  <div class="gold-line"></div>
+
+  <h1>Project Closeout &amp; Handoff Report</h1>
+  <p class="subtitle">Completed at the end of each fixed-scope engagement. Shared with the client and retained by Doxa &amp; Co.</p>
+
+  <h2>Engagement Summary</h2>
+  <table class="fill-table">
+    <tr><td>Client / Organization</td><td>&nbsp;</td></tr>
+    <tr><td>Engagement Type</td><td>&nbsp;</td></tr>
+    <tr><td>Start Date</td><td>&nbsp;</td></tr>
+    <tr><td>End Date</td><td>&nbsp;</td></tr>
+    <tr><td>Total Engagement Duration</td><td>&nbsp;</td></tr>
+    <tr><td>Total Hours Worked</td><td>&nbsp;</td></tr>
+    <tr><td>Total Invoiced</td><td>$</td></tr>
+    <tr><td>Outstanding Balance</td><td>$</td></tr>
+    <tr><td>Final Invoice Date</td><td>&nbsp;</td></tr>
+  </table>
+
+  <h2>Deliverables — Status &amp; Handoff</h2>
+  <p>Review each deliverable defined in the original SOW. Mark status and confirm handoff location.</p>
+
+  <table class="deliverables-table">
+    <thead>
+      <tr>
+        <th>Deliverable (from SOW)</th>
+        <th>Status</th>
+        <th>Location / Format</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>&nbsp;</td>
+        <td><span class="status-done">Delivered</span></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><span class="status-done">Delivered</span></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><span class="status-partial">Partial</span></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Outcomes &amp; Results</h2>
+  <p>Record measurable outcomes achieved during the engagement. Compare against success criteria defined at kickoff.</p>
+
+  <div class="metrics-grid">
+    <div class="metric-box">
+      <span class="val">___</span>
+      <span class="lbl">Metric 1</span>
+      <span class="baseline">Baseline: ___</span>
+    </div>
+    <div class="metric-box">
+      <span class="val">___</span>
+      <span class="lbl">Metric 2</span>
+      <span class="baseline">Baseline: ___</span>
+    </div>
+    <div class="metric-box">
+      <span class="val">___</span>
+      <span class="lbl">Metric 3</span>
+      <span class="baseline">Baseline: ___</span>
+    </div>
+  </div>
+
+  <h3>Narrative Summary of Impact</h3>
+  <div class="write-box">&nbsp;</div>
+
+  <h2>What Was Descoped or Deferred</h2>
+  <p>Anything from the original SOW that was removed, reduced, or pushed out — with reason:</p>
+  <div class="write-box">&nbsp;</div>
+
+  <h2>Open Items &amp; Recommended Next Steps</h2>
+  <p>These are items that are outside the current engagement scope but should be addressed by the client's team or in a follow-on engagement:</p>
+  <div class="write-box">&nbsp;</div>
+
+  <h2>Handoff Documentation Index</h2>
+  <p>List all documents, repositories, and assets transferred to the client as part of this closeout:</p>
+
+  <table class="deliverables-table">
+    <thead>
+      <tr><th>Document / Asset</th><th>Format</th><th>Location</th><th>Access Granted To</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Access Revocation</h2>
+  <p>The following access granted to Doxa &amp; Co during the engagement will be revoked or transferred at closeout:</p>
+  <ul>
+    <li>Jira / project management workspace: ☐ Revoked &nbsp; ☐ Downgraded to read-only</li>
+    <li>Slack / Teams channels: ☐ Removed</li>
+    <li>GitHub / GitLab repository: ☐ Revoked &nbsp; ☐ Read-only</li>
+    <li>GRC platform: ☐ Revoked</li>
+    <li>Shared drive / Confluence: ☐ Revoked &nbsp; ☐ Read-only</li>
+    <li>Other: ___________________________ ☐ Revoked</li>
+  </ul>
+
+  <h2>Consultant's Final Notes</h2>
+  <p>Honest assessment of the engagement — what went well, what didn't, and what the client should know going forward:</p>
+  <div class="write-box" style="min-height: 80px;">&nbsp;</div>
+
+  <div class="callout-gold">
+    <p><strong>Referral &amp; Continuation:</strong> If you'd like to continue working together or refer Doxa &amp; Co to someone in your network, I'd appreciate it. Referrals are the primary way I take on new clients, and a brief note to ename@doxaandco.co is all it takes to make an introduction.</p>
+  </div>
+
+  <h2>Closeout Acknowledgment</h2>
+  <p>Both parties confirm that all deliverables have been received, all final payments have been made or scheduled, and the engagement is formally closed. Any further work requires a new Consulting Agreement and SOW.</p>
+
+  <div class="sig-grid">
+    <div class="sig-block">
+      <p style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--stone-500); margin-bottom:4px;">Client</p>
+      <div class="pre-sign"></div>
+      <div class="sig-line">
+        Signature<br/>
+        Printed Name: ___________________________<br/>
+        Title: ___________________________<br/>
+        Date: ___________________________
+      </div>
+    </div>
+    <div class="sig-block">
+      <p style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--stone-500); margin-bottom:4px;">Doxa &amp; Co</p>
+      <div class="pre-sign"></div>
+      <div class="sig-line">
+        Enam Egyir, Principal Consultant<br/>
+        Signature: ___________________________<br/>
+        &nbsp;<br/>
+        Date: ___________________________
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Doxa &amp; Co · ename@doxaandco.co · doxaandco.co</span>
+    <span>Project Closeout &amp; Handoff Report · Rev. April 2026</span>
+  </div>
+
+</div>
+  </div>
+
+  <div class="letterfoot" contenteditable="true">
+    <span>Doxa &amp; Co &nbsp;·&nbsp; doxaandco.co &nbsp;·&nbsp; ename@doxaandco.co</span>
+    <span>Confidential</span>
+  </div>
+</div>
+
+<script src="docs-utils.js"></script>
+</body>
+</html>

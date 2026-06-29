@@ -1,0 +1,1328 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Core Entities
+// ============================================================================
+
+model User {
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  fullName              String?
+  avatarUrl             String?
+  role                  UserRole  @default(ORG_MEMBER)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
+  lastLoginAt           DateTime?
+  stripeCustomerId      String?
+
+  // Relations
+  organizationMembers   OrganizationMember[]
+  organizationsOwned    Organization[]
+  engagements           Engagement[]
+  assessments           Assessment[]
+  kpis                  KPI[]
+  kpiEntries            KPIEntry[] @relation("KPIEntryUser")
+  sops                  SOP[]
+  sopVersions           SOPVersion[] @relation("SOPVersionUser")
+  sopAcknowledgments    SOPAcknowledgment[] @relation("SOPAcknowledgmentUser")
+  riskEntries           RiskEntry[]
+  auditLogs             AuditLog[]
+  policyAcknowledgments PolicyAcknowledgment[] @relation("PolicyAcknowledgmentUser")
+  projects              Project[]
+  milestones            Milestone[]
+  comments              Comment[]
+  decisionLogs          DecisionLog[]
+  visions               Vision[]
+  strategicGoals        StrategicGoal[]
+  okrs                  OKR[]
+  deals                 Deal[]
+  interactions          Interaction[]
+  trainingPrograms      TrainingProgram[]
+  cohorts               Cohort[]
+  participantProgress   ParticipantProgress[]
+  caseNotes             CaseNote[]
+  referrals             Referral[]
+  conversionHistory     ConversationHistory[]
+  taskAssignees         Task[] @relation("TaskAssignee")
+  taskReports           Task[] @relation("TaskReporter")
+
+  @@index([email])
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ORG_ADMIN
+  ORG_MEMBER
+  CLIENT_READONLY
+}
+
+model Organization {
+  id                    String    @id @default(cuid())
+  name                  String
+  slug                  String    @unique
+  logoUrl               String?
+  primaryColor          String?   @default("#059669")
+  plan                  Plan      @default(STARTER)
+  planStatus            PlanStatus @default(ACTIVE)
+  stripeSubscriptionId  String?
+  stripeCustomerId      String?
+  entityType            EntityType @default(FOR_PROFIT)
+  missionPricing        Boolean   @default(false)
+  aiTokenBudget         Int       @default(100000)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
+  ownerId               String
+  owner                 User      @relation(fields: [ownerId], references: [id])
+
+  // Relations
+  members               OrganizationMember[]
+  engagements           Engagement[]
+  assessments           Assessment[]
+  kpis                  KPI[]
+  financialSnapshots    FinancialSnapshot[]
+  sopCategories         SOPCategory[]
+  sops                  SOP[]
+  riskEntries           RiskEntry[]
+  auditLogs             AuditLog[]
+  policyDocuments       PolicyDocument[]
+  projects              Project[]
+  tasks                 Task[]
+  decisionLogs          DecisionLog[]
+  visions               Vision[]
+  strategicGoals        StrategicGoal[]
+  okrs                  OKR[]
+  contacts              Contact[]
+  pipelines             Pipeline[]
+  deals                 Deal[]
+  invoices              Invoice[]
+  trainingPrograms      TrainingProgram[]
+  caseClients           CaseClient[]
+  referralPartners      ReferralPartner[]
+  referrals             Referral[]
+  grantFunders          GrantFunder[]
+  grants                Grant[]
+  conversationHistory   ConversationHistory[]
+
+  @@index([ownerId])
+}
+
+enum Plan {
+  STARTER
+  GROWTH
+  ENTERPRISE
+}
+
+enum PlanStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum EntityType {
+  FOR_PROFIT
+  NONPROFIT
+  GOVERNMENT
+  OTHER
+}
+
+model OrganizationMember {
+  id          String    @id @default(cuid())
+  orgId       String
+  userId      String
+  role        MemberRole @default(MEMBER)
+  invitedAt   DateTime?
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId])
+  @@index([orgId])
+  @@index([userId])
+}
+
+enum MemberRole {
+  ADMIN
+  MEMBER
+  READONLY
+}
+
+model Engagement {
+  id                String    @id @default(cuid())
+  orgId             String
+  title             String
+  status            EngagementStatus @default(ACTIVE)
+  startDate         DateTime
+  endDate           DateTime?
+  engagementType    EngagementType @default(FRACTIONAL_PO)
+  monthlyRate       Int?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+  createdBy         String
+  user              User      @relation(fields: [createdBy], references: [id])
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  projects          Project[]
+
+  @@index([orgId])
+  @@index([createdBy])
+}
+
+enum EngagementStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  ARCHIVED
+}
+
+enum EngagementType {
+  FRACTIONAL_PO
+  MVP_BUILD
+  GRC_STRATEGY
+  AGILE_AUDIT
+  MISSION_PRICING
+  ASSESSMENT_ONLY
+}
+
+// ============================================================================
+// Business Health & KPIs
+// ============================================================================
+
+model Assessment {
+  id            String    @id @default(cuid())
+  orgId         String
+  createdBy     String
+  version       Int       @default(1)
+  responses     Json
+  score         Int
+  strengths     Json
+  weaknesses    Json
+  risks         Json
+  opportunities Json
+  createdAt     DateTime  @default(now())
+
+  org           Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user          User @relation(fields: [createdBy], references: [id])
+
+  @@index([orgId])
+  @@index([createdBy])
+}
+
+model KPI {
+  id              String    @id @default(cuid())
+  orgId           String
+  name            String
+  description     String?
+  unit            KPIUnit
+  targetValue     Float
+  frequency       KPIFrequency
+  ownerId         String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  owner           User @relation(fields: [ownerId], references: [id])
+  entries         KPIEntry[]
+
+  @@index([orgId])
+  @@index([ownerId])
+}
+
+enum KPIUnit {
+  CURRENCY
+  PERCENT
+  COUNT
+  RATIO
+}
+
+enum KPIFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+}
+
+model KPIEntry {
+  id          String    @id @default(cuid())
+  kpiId       String
+  value       Float
+  periodStart DateTime
+  periodEnd   DateTime
+  note        String?
+  enteredBy   String
+  createdAt   DateTime  @default(now())
+
+  kpi         KPI @relation(fields: [kpiId], references: [id], onDelete: Cascade)
+  user        User @relation("KPIEntryUser", fields: [enteredBy], references: [id])
+
+  @@index([kpiId])
+  @@index([enteredBy])
+}
+
+model FinancialSnapshot {
+  id                      String    @id @default(cuid())
+  orgId                   String
+  period                  String    // YYYY-MM
+  revenue                 Float?
+  expenses                Float?
+  profit                  Float?
+  cashBalance             Float?
+  outstandingInvoicesCount Int?
+  outstandingInvoicesAmount Float?
+  createdAt               DateTime  @default(now())
+
+  org                     Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
+}
+
+// ============================================================================
+// SOP Center
+// ============================================================================
+
+model SOPCategory {
+  id          String    @id @default(cuid())
+  orgId       String
+  name        String
+  slug        String
+  parentId    String?   // Self-referential for nesting
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  parent      SOPCategory? @relation("CategoryNesting", fields: [parentId], references: [id])
+  children    SOPCategory[] @relation("CategoryNesting")
+  sops        SOP[]
+
+  @@unique([orgId, slug])
+  @@index([orgId])
+}
+
+model SOP {
+  id                      String    @id @default(cuid())
+  orgId                   String
+  categoryId              String
+  title                   String
+  slug                    String
+  content                 Json      // Tiptap JSON
+  version                 Int       @default(1)
+  status                  SOPStatus @default(DRAFT)
+  ownerId                 String
+  requiresAcknowledgment  Boolean   @default(false)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  deletedAt               DateTime?
+
+  org                     Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  category                SOPCategory @relation(fields: [categoryId], references: [id])
+  owner                   User @relation(fields: [ownerId], references: [id])
+  versions                SOPVersion[]
+  acknowledgments         SOPAcknowledgment[]
+
+  @@unique([orgId, slug])
+  @@index([orgId])
+  @@index([categoryId])
+  @@index([ownerId])
+}
+
+enum SOPStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  ARCHIVED
+}
+
+model SOPVersion {
+  id              String    @id @default(cuid())
+  sopId           String
+  version         Int
+  content         Json
+  changedBy       String
+  changeSummary   String?
+  createdAt       DateTime  @default(now())
+
+  sop             SOP @relation(fields: [sopId], references: [id], onDelete: Cascade)
+  user            User @relation("SOPVersionUser", fields: [changedBy], references: [id])
+
+  @@unique([sopId, version])
+  @@index([sopId])
+}
+
+model SOPAcknowledgment {
+  id              String    @id @default(cuid())
+  sopId           String
+  sopVersion      Int
+  userId          String
+  acknowledgedAt  DateTime
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime  @default(now())
+
+  sop             SOP @relation(fields: [sopId], references: [id], onDelete: Cascade)
+  user            User @relation("SOPAcknowledgmentUser", fields: [userId], references: [id])
+
+  @@index([sopId])
+  @@index([userId])
+}
+
+// ============================================================================
+// GRC Module
+// ============================================================================
+
+model RiskEntry {
+  id              String    @id @default(cuid())
+  orgId           String
+  title           String
+  description     String
+  category        RiskCategory
+  likelihood      Int       // 1-5
+  impact          Int       // 1-5
+  riskScore       Int       // computed: likelihood * impact
+  status          RiskStatus @default(OPEN)
+  ownerId         String
+  mitigationPlan  String?
+  reviewDate      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  owner           User @relation(fields: [ownerId], references: [id])
+
+  @@index([orgId])
+  @@index([ownerId])
+}
+
+enum RiskCategory {
+  OPERATIONAL
+  FINANCIAL
+  LEGAL
+  REPUTATIONAL
+  STRATEGIC
+}
+
+enum RiskStatus {
+  OPEN
+  MITIGATED
+  ACCEPTED
+  CLOSED
+}
+
+model AuditLog {
+  id              String    @id @default(cuid())
+  orgId           String
+  userId          String
+  action          String
+  resourceType    String
+  resourceId      String?
+  oldValue        Json?
+  newValue        Json?
+  ipAddress       String?
+  userAgent       String?
+  isImpersonation Boolean   @default(false)
+  impersonatedBy  String?
+  createdAt       DateTime  @default(now())
+
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user            User @relation(fields: [userId], references: [id])
+
+  @@index([orgId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model PolicyDocument {
+  id                      String    @id @default(cuid())
+  orgId                   String
+  title                   String
+  content                 Json
+  version                 Int       @default(1)
+  effectiveDate           DateTime
+  expiryDate              DateTime?
+  requiresAcknowledgment  Boolean   @default(false)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  org                     Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  acknowledgments         PolicyAcknowledgment[]
+
+  @@index([orgId])
+}
+
+model PolicyAcknowledgment {
+  id              String    @id @default(cuid())
+  policyId        String
+  policyVersion   Int
+  userId          String
+  acknowledgedAt  DateTime
+  ipAddress       String?
+  userAgent       String?
+  createdAt       DateTime  @default(now())
+
+  policy          PolicyDocument @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  user            User @relation("PolicyAcknowledgmentUser", fields: [userId], references: [id])
+
+  @@index([policyId])
+  @@index([userId])
+}
+
+// ============================================================================
+// Projects & Tasks
+// ============================================================================
+
+model Project {
+  id              String    @id @default(cuid())
+  orgId           String
+  engagementId    String?
+  title           String
+  description     String?
+  status          ProjectStatus @default(ACTIVE)
+  startDate       DateTime?
+  targetDate      DateTime?
+  ownerId         String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  engagement      Engagement? @relation(fields: [engagementId], references: [id])
+  owner           User @relation(fields: [ownerId], references: [id])
+  milestones      Milestone[]
+  tasks           Task[]
+  decisionLogs    DecisionLog[]
+
+  @@index([orgId])
+  @@index([engagementId])
+  @@index([ownerId])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+model Milestone {
+  id            String    @id @default(cuid())
+  projectId     String
+  title         String
+  dueDate       DateTime
+  status        MilestoneStatus @default(PENDING)
+  createdBy     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user          User @relation(fields: [createdBy], references: [id])
+
+  @@index([projectId])
+}
+
+enum MilestoneStatus {
+  PENDING
+  COMPLETE
+}
+
+model Task {
+  id              String    @id @default(cuid())
+  orgId           String
+  projectId       String?
+  title           String
+  description     String?
+  status          TaskStatus @default(TODO)
+  priority        TaskPriority @default(MEDIUM)
+  assigneeId      String?
+  reporterId      String
+  dueDate         DateTime?
+  completedAt     DateTime?
+  sortOrder       Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  project         Project? @relation(fields: [projectId], references: [id])
+  assignee        User? @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  reporter        User @relation("TaskReporter", fields: [reporterId], references: [id])
+  comments        Comment[]
+
+  @@index([orgId])
+  @@index([projectId])
+  @@index([assigneeId])
+  @@index([reporterId])
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Comment {
+  id            String    @id @default(cuid())
+  taskId        String
+  authorId      String
+  content       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  task          Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author        User @relation(fields: [authorId], references: [id])
+
+  @@index([taskId])
+  @@index([authorId])
+}
+
+model DecisionLog {
+  id              String    @id @default(cuid())
+  orgId           String
+  projectId       String?
+  title           String
+  description     String?
+  decisionMade    String
+  rationale       String?
+  decidedBy       String
+  decidedAt       DateTime
+  status          DecisionStatus @default(OPEN)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  project         Project? @relation(fields: [projectId], references: [id])
+  user            User @relation(fields: [decidedBy], references: [id])
+
+  @@index([orgId])
+  @@index([projectId])
+}
+
+enum DecisionStatus {
+  OPEN
+  DECIDED
+  REVERSED
+}
+
+// ============================================================================
+// Strategic Planning
+// ============================================================================
+
+model Vision {
+  id                String    @id @default(cuid())
+  orgId             String
+  statement         String
+  timeHorizonYears  Int
+  createdBy         String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user              User @relation(fields: [createdBy], references: [id])
+  goals             StrategicGoal[]
+
+  @@unique([orgId])
+  @@index([orgId])
+}
+
+model StrategicGoal {
+  id                String    @id @default(cuid())
+  orgId             String
+  visionId          String
+  title             String
+  description       String?
+  year              Int
+  ownerId           String
+  status            GoalStatus @default(ACTIVE)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  vision            Vision @relation(fields: [visionId], references: [id], onDelete: Cascade)
+  owner             User @relation(fields: [ownerId], references: [id])
+  okrs              OKR[]
+
+  @@index([orgId])
+  @@index([visionId])
+  @@index([ownerId])
+}
+
+enum GoalStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+model OKR {
+  id                String    @id @default(cuid())
+  orgId             String
+  goalId            String?
+  title             String
+  type              OKRType
+  parentId          String?   // Self-referential for nesting
+  quarter           String    // Q1, Q2, Q3, Q4
+  year              Int
+  ownerId           String
+  progress          Float     @default(0.0) // 0.0-1.0
+  status            OKRStatus @default(ON_TRACK)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  goal              StrategicGoal? @relation(fields: [goalId], references: [id])
+  parent            OKR? @relation("OKRNesting", fields: [parentId], references: [id])
+  children          OKR[] @relation("OKRNesting")
+  owner             User @relation(fields: [ownerId], references: [id])
+
+  @@index([orgId])
+  @@index([goalId])
+  @@index([parentId])
+  @@index([ownerId])
+}
+
+enum OKRType {
+  OBJECTIVE
+  KEY_RESULT
+}
+
+enum OKRStatus {
+  ON_TRACK
+  AT_RISK
+  BEHIND
+  COMPLETE
+}
+
+// ============================================================================
+// CRM
+// ============================================================================
+
+model Contact {
+  id                String    @id @default(cuid())
+  orgId             String
+  firstName         String
+  lastName          String
+  email             String?
+  phone             String?
+  company           String?
+  title             String?
+  type              ContactType
+  source            ContactSource
+  referredById       String?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  referredBy        Contact? @relation("ContactReferral", fields: [referredById], references: [id])
+  referrals         Contact[] @relation("ContactReferral")
+  deals             Deal[]
+  interactions      Interaction[]
+  invoices          Invoice[]
+
+  @@index([orgId])
+  @@index([referredById])
+}
+
+enum ContactType {
+  LEAD
+  CUSTOMER
+  PARTNER
+  VENDOR
+}
+
+enum ContactSource {
+  REFERRAL
+  OUTREACH
+  ASSESSMENT
+  APP_STORE
+  OTHER
+}
+
+model Pipeline {
+  id                String    @id @default(cuid())
+  orgId             String
+  name              String
+  stages            Json      // Array of {name, sortOrder}
+  serviceType       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  deals             Deal[]
+
+  @@index([orgId])
+}
+
+model Deal {
+  id                String    @id @default(cuid())
+  orgId             String
+  pipelineId        String
+  contactId         String
+  title             String
+  value             Float?
+  stage             String
+  status            DealStatus @default(OPEN)
+  ownerId           String
+  expectedCloseDate DateTime?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  pipeline          Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+  contact           Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  owner             User @relation(fields: [ownerId], references: [id])
+  interactions      Interaction[]
+
+  @@index([orgId])
+  @@index([pipelineId])
+  @@index([contactId])
+  @@index([ownerId])
+}
+
+enum DealStatus {
+  OPEN
+  WON
+  LOST
+}
+
+model Interaction {
+  id                String    @id @default(cuid())
+  orgId             String
+  contactId         String
+  dealId            String?
+  type              InteractionType
+  summary           String?
+  occurredAt        DateTime
+  createdBy         String
+  createdAt         DateTime  @default(now())
+
+  contact           Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  deal              Deal? @relation(fields: [dealId], references: [id])
+  user              User @relation(fields: [createdBy], references: [id])
+
+  @@index([orgId])
+  @@index([contactId])
+  @@index([dealId])
+}
+
+enum InteractionType {
+  CALL
+  EMAIL
+  MEETING
+  NOTE
+  DEMO
+}
+
+// ============================================================================
+// Invoicing
+// ============================================================================
+
+model Invoice {
+  id                        String    @id @default(cuid())
+  orgId                     String
+  invoiceNumber             String
+  contactId                 String
+  status                    InvoiceStatus @default(DRAFT)
+  issueDate                 DateTime
+  dueDate                   DateTime
+  paidAt                    DateTime?
+  subtotal                  Float
+  taxRate                   Float     @default(0.0)
+  taxAmount                 Float     @default(0.0)
+  total                     Float
+  currency                  String    @default("USD")
+  paymentMethod             String?
+  stripePaymentIntentId     String?
+  notes                     String?
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  org                       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  contact                   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  lineItems                 InvoiceLineItem[]
+
+  @@unique([orgId, invoiceNumber])
+  @@index([orgId])
+  @@index([contactId])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  VOID
+}
+
+model InvoiceLineItem {
+  id                String    @id @default(cuid())
+  invoiceId         String
+  description       String
+  quantity          Float
+  unitPrice         Float
+  amount            Float
+  sortOrder         Int       @default(0)
+
+  invoice           Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+// ============================================================================
+// Workforce Training Module
+// ============================================================================
+
+model TrainingProgram {
+  id                String    @id @default(cuid())
+  orgId             String
+  name              String
+  description       String?
+  fundingSource     String
+  reportingTemplate String?
+  startDate         DateTime
+  endDate           DateTime?
+  targetCompletionRate Float?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+  createdBy         String
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user              User @relation(fields: [createdBy], references: [id])
+  cohorts           Cohort[]
+  skillCheckpoints  SkillCheckpoint[]
+
+  @@index([orgId])
+  @@index([createdBy])
+}
+
+model Cohort {
+  id                String    @id @default(cuid())
+  programId         String
+  orgId             String
+  name              String
+  cohortNumber      Int
+  startDate         DateTime
+  endDate           DateTime?
+  maxParticipants   Int?
+  status            CohortStatus @default(PLANNED)
+  facilitatorId     String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  program           TrainingProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  facilitator       User @relation(fields: [facilitatorId], references: [id])
+  participants      Participant[]
+
+  @@index([programId])
+  @@index([facilitatorId])
+}
+
+enum CohortStatus {
+  PLANNED
+  ACTIVE
+  COMPLETED
+}
+
+model Participant {
+  id                String    @id @default(cuid())
+  cohortId          String
+  firstName         String
+  lastName          String
+  email             String?
+  phone             String?
+  demographics      Json?
+  enrollmentDate    DateTime
+  status            ParticipantStatus @default(ENROLLED)
+  completionDate    DateTime?
+  barrierNotes      String?
+  outcomeNotes      String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  cohort            Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  progress          ParticipantProgress[]
+
+  @@index([cohortId])
+}
+
+enum ParticipantStatus {
+  ENROLLED
+  ACTIVE
+  COMPLETED
+  DROPPED
+}
+
+model SkillCheckpoint {
+  id                String    @id @default(cuid())
+  programId         String
+  name              String
+  description       String?
+  sortOrder         Int       @default(0)
+  required          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+
+  program           TrainingProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  progress          ParticipantProgress[]
+
+  @@index([programId])
+}
+
+model ParticipantProgress {
+  id                String    @id @default(cuid())
+  participantId     String
+  checkpointId      String
+  status            ProgressStatus @default(PENDING)
+  achievedAt        DateTime?
+  verifiedBy        String?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  participant       Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  checkpoint        SkillCheckpoint @relation(fields: [checkpointId], references: [id], onDelete: Cascade)
+  verifier          User? @relation(fields: [verifiedBy], references: [id])
+
+  @@unique([participantId, checkpointId])
+  @@index([participantId])
+  @@index([checkpointId])
+}
+
+enum ProgressStatus {
+  PENDING
+  IN_PROGRESS
+  ACHIEVED
+  WAIVED
+}
+
+model GovernmentReport {
+  id                String    @id @default(cuid())
+  orgId             String
+  programId         String
+  cohortId          String?
+  reportType        String
+  periodStart       DateTime
+  periodEnd         DateTime
+  generatedAt       DateTime
+  generatedBy       String
+  fileUrl           String?
+  status            ReportStatus @default(DRAFT)
+  submissionReference String?
+  createdAt         DateTime  @default(now())
+
+  @@index([orgId])
+  @@index([programId])
+}
+
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+}
+
+// ============================================================================
+// Nonprofit Case Management
+// ============================================================================
+
+model CaseClient {
+  id                String    @id @default(cuid())
+  orgId             String
+  firstName         String
+  lastName          String
+  dob               DateTime?
+  gender            String?
+  raceEthnicity     Json?
+  intakeDate        DateTime
+  status            ClientStatus @default(ACTIVE)
+  caseNumber        String
+  primaryWorkerId   String
+  housingStatus     String?
+  employmentStatus  String?
+  consentSignedAt   DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  servicePlans      ServicePlan[]
+  caseNotes         CaseNote[]
+  referrals         Referral[]
+
+  @@index([orgId])
+  @@index([primaryWorkerId])
+}
+
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  CLOSED
+  TRANSFERRED
+}
+
+model ServicePlan {
+  id                String    @id @default(cuid())
+  clientId          String
+  orgId             String
+  title             String
+  goalNarrative     String?
+  startDate         DateTime
+  reviewDate        DateTime?
+  endDate           DateTime?
+  status            ServicePlanStatus @default(DRAFT)
+  createdBy         String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  client            CaseClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  goals             ServiceGoal[]
+  caseNotes         CaseNote[]
+
+  @@index([clientId])
+  @@index([orgId])
+}
+
+enum ServicePlanStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+model ServiceGoal {
+  id                String    @id @default(cuid())
+  servicePlanId     String
+  domain            ServiceDomain
+  goalStatement     String
+  targetDate        DateTime?
+  status            ServiceGoalStatus @default(NOT_STARTED)
+  achievedAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  servicePlan       ServicePlan @relation(fields: [servicePlanId], references: [id], onDelete: Cascade)
+
+  @@index([servicePlanId])
+}
+
+enum ServiceDomain {
+  HOUSING
+  EMPLOYMENT
+  EDUCATION
+  HEALTH
+  LEGAL
+  SOCIAL
+  FINANCIAL
+  OTHER
+}
+
+enum ServiceGoalStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  ACHIEVED
+  ABANDONED
+}
+
+model CaseNote {
+  id                String    @id @default(cuid())
+  clientId          String
+  servicePlanId     String?
+  authorId          String
+  noteType          CaseNoteType
+  content           String
+  contactMethod     ContactMethod
+  occurredAt        DateTime
+  createdAt         DateTime  @default(now())
+  lockedAt          DateTime? // 24 hours after creation
+
+  client            CaseClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  servicePlan       ServicePlan? @relation(fields: [servicePlanId], references: [id])
+  author            User @relation(fields: [authorId], references: [id])
+
+  @@index([clientId])
+  @@index([servicePlanId])
+  @@index([authorId])
+}
+
+enum CaseNoteType {
+  CONTACT
+  COLLATERAL
+  SERVICE
+  INCIDENT
+}
+
+enum ContactMethod {
+  IN_PERSON
+  PHONE
+  EMAIL
+  VIRTUAL
+  HOME_VISIT
+}
+
+model ReferralPartner {
+  id                String    @id @default(cuid())
+  orgId             String
+  name              String
+  organizationType  String
+  contactName       String
+  contactEmail      String
+  contactPhone      String?
+  serviceCategories Json
+  mouSignedAt       DateTime?
+  mouExpiry         DateTime?
+  mouFileUrl        String?
+  active            Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  referrals         Referral[]
+
+  @@index([orgId])
+}
+
+model Referral {
+  id                String    @id @default(cuid())
+  orgId             String
+  clientId          String
+  referringOrgId    String?
+  receivingPartnerId String
+  serviceCategory   String
+  status            ReferralStatus @default(PENDING)
+  referralDate      DateTime
+  outcome           String?
+  createdBy         String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  client            CaseClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  receivingPartner  ReferralPartner @relation(fields: [receivingPartnerId], references: [id])
+  user              User @relation(fields: [createdBy], references: [id])
+
+  @@index([orgId])
+  @@index([clientId])
+  @@index([receivingPartnerId])
+}
+
+enum ReferralStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+  DECLINED
+  CLOSED
+}
+
+model GrantFunder {
+  id                String    @id @default(cuid())
+  orgId             String
+  name              String
+  funderType        FunderType
+  contactName       String
+  contactEmail      String
+  website           String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  grants            Grant[]
+
+  @@index([orgId])
+}
+
+enum FunderType {
+  GOVERNMENT
+  FOUNDATION
+  CORPORATE
+  INDIVIDUAL
+}
+
+model Grant {
+  id                String    @id @default(cuid())
+  orgId             String
+  funderId          String
+  title             String
+  amountRequested   Float
+  amountAwarded     Float?
+  status            GrantStatus @default(PROSPECT)
+  applicationDate   DateTime?
+  awardDate         DateTime?
+  startDate         DateTime?
+  endDate           DateTime?
+  reportDueDates    Json      // Array of dates
+  reportingRequirements String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  funder            GrantFunder @relation(fields: [funderId], references: [id])
+
+  @@index([orgId])
+  @@index([funderId])
+}
+
+enum GrantStatus {
+  PROSPECT
+  APPLIED
+  AWARDED
+  DECLINED
+  REPORTING
+  CLOSED
+}
+
+// ============================================================================
+// AI & Conversations
+// ============================================================================
+
+model ConversationHistory {
+  id                String    @id @default(cuid())
+  orgId             String
+  userId            String
+  messages          Json      // Array of {role, content, timestamp}
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user              User @relation(fields: [userId], references: [id])
+
+  @@index([orgId])
+  @@index([userId])
+}
+
+model AIUsageLog {
+  id                String    @id @default(cuid())
+  orgId             String
+  tokensUsed        Int
+  feature           String    // 'chat', 'sop-draft', 'qbr-narrative'
+  createdAt         DateTime  @default(now())
+
+  @@index([orgId])
+  @@index([createdAt])
+}
