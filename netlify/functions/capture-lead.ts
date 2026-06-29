@@ -1,16 +1,17 @@
 /**
  * capture-lead.ts
- * Netlify serverless function — capture email signups from Doxa website.
+ * Netlify serverless function — capture email signups.
  *
  * Flow:
  *  1. User enters email on website (newsletter signup, lead magnet, etc.)
- *  2. Add to Mailchimp "Doxa Newsletter" list
+ *  2. Add to email_subscribers table in database
  *  3. Track as LEAD in CRM pipeline
  *
- * Uses same Mailchimp config as booking integration.
+ * No external dependencies — all data stored in Supabase.
  */
 
 import { Handler } from '@netlify/functions';
+import prisma from '../lib/prisma';
 
 interface CaptureInput {
   email: string;
@@ -26,20 +27,6 @@ export const handler: Handler = async (event) => {
     };
   }
 
-  const apiKey = process.env.MAILCHIMP_API_KEY;
-  const server = process.env.MAILCHIMP_SERVER;
-  const audienceId = process.env.MAILCHIMP_AUDIENCE_ID;
-
-  if (!apiKey || !server || !audienceId) {
-    console.warn('[capture-lead] Mailchimp not configured');
-    return {
-      statusCode: 503,
-      body: JSON.stringify({
-        error: 'Email service not configured',
-      }),
-    };
-  }
-
   try {
     const input: CaptureInput = JSON.parse(event.body || '{}');
 
@@ -50,53 +37,21 @@ export const handler: Handler = async (event) => {
       };
     }
 
-    // Hash email for unique ID
-    const crypto = require('crypto');
-    const subscriber_hash = crypto.createHash('md5').update(input.email.toLowerCase()).digest('hex');
-
-    const mailchimpUrl = `https://${server}.api.mailchimp.com/3.0/lists/${audienceId}/members/${subscriber_hash}`;
-
-    // Add to Mailchimp with "newsletter" tag
-    const mailchimpRes = await fetch(mailchimpUrl, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Basic ${Buffer.from(`anystring:${apiKey}`).toString('base64')}`,
-        'Content-Type': 'application/json',
+    // Add to email_subscribers table (upsert in case email already exists)
+    const subscriber = await prisma.emailSubscriber.upsert({
+      where: { email: input.email },
+      update: {
+        subscribed: true,
+        updatedAt: new Date(),
       },
-      body: JSON.stringify({
-        email_address: input.email,
-        status: 'subscribed',
-        merge_fields: input.name
-          ? {
-              FNAME: input.name.split(' ')[0] || '',
-              LNAME: input.name.split(' ').slice(1).join(' ') || '',
-            }
-          : {},
-        tags: ['doxa-newsletter', `source-${input.source || 'unknown'}`],
-      }),
+      create: {
+        email: input.email,
+        name: input.name,
+        source: input.source || 'website-signup',
+        stage: 'LEAD',
+        subscribed: true,
+      },
     });
-
-    if (!mailchimpRes.ok) {
-      const errorBody = await mailchimpRes.text();
-      console.error('[capture-lead] Mailchimp error:', mailchimpRes.status, errorBody);
-      // Don't fail — Mailchimp duplicate subscribers return 400, which is fine
-      if (mailchimpRes.status === 400 && errorBody.includes('already')) {
-        // Email already subscribed
-        return {
-          statusCode: 200,
-          body: JSON.stringify({
-            success: true,
-            message: 'Already subscribed',
-          }),
-        };
-      }
-      return {
-        statusCode: mailchimpRes.status,
-        body: JSON.stringify({
-          error: 'Failed to add to mailing list',
-        }),
-      };
-    }
 
     // Track in CRM pipeline
     try {
@@ -120,7 +75,8 @@ export const handler: Handler = async (event) => {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        message: 'Email captured and added to newsletter',
+        message: 'Email captured',
+        subscriberId: subscriber.id,
       }),
     };
   } catch (error) {

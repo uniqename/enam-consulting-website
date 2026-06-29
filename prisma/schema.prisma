@@ -1326,3 +1326,94 @@ model AIUsageLog {
   @@index([orgId])
   @@index([createdAt])
 }
+
+// ============================================================================
+// Hiring & Recruitment (Future Team Scaling)
+// ============================================================================
+
+model JobPosting {
+  id                String    @id @default(cuid())
+  title             String
+  department        String    // 'Engineering', 'Operations', 'Sales', etc.
+  description       String    // Full job description
+  responsibilities  Json      // Array of strings
+  requirements      Json      // Array of strings
+  compensation      String?   // Salary range or description
+  type              String    @default("Full-time") // Full-time, Part-time, Contract
+  location          String    @default("Remote")
+  status            String    @default("OPEN") // OPEN, CLOSED, ARCHIVED
+  postedAt          DateTime  @default(now())
+  closesAt          DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  applications      JobApplication[]
+
+  @@index([status])
+  @@index([postedAt])
+}
+
+model JobApplication {
+  id                String    @id @default(cuid())
+  jobId             String
+  email             String
+  fullName          String
+  phone             String?
+  resume_url        String?
+  coverLetter       String?
+  linkedIn          String?
+  portfolio         String?
+  status            String    @default("SUBMITTED") // SUBMITTED, REVIEWED, SHORTLISTED, INTERVIEW, OFFERED, REJECTED, HIRED
+  appliedAt         DateTime  @default(now())
+  lastUpdatedAt     DateTime  @updatedAt
+  notes             String?   // Admin notes
+  rating            Int?      // 1-5 star rating
+
+  job               JobPosting @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([email])
+  @@index([status])
+  @@index([appliedAt])
+}
+
+// ============================================================================
+// Email Management (Doxa)
+// ============================================================================
+
+model EmailSubscriber {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String?
+  company           String?
+  source            String    // 'landing-hero', 'booking-form', 'sidebar', etc.
+  stage             String    @default("LEAD") // LEAD, PROSPECT, PAID, CLIENT
+  subscribed        Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  emailSequences    EmailSequence[]
+
+  @@index([email])
+  @@index([stage])
+  @@index([subscribed])
+}
+
+model EmailSequence {
+  id                String    @id @default(cuid())
+  subscriber_id     String
+  sequence_type     String    // 'welcome', 'post-booking', 'nurture', 'abandoned'
+  step              Int       @default(1)
+  subject           String?
+  sent_at           DateTime?
+  opened_at         DateTime?
+  clicked_at        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  subscriber        EmailSubscriber @relation(fields: [subscriber_id], references: [id], onDelete: Cascade)
+
+  @@index([subscriber_id])
+  @@index([sequence_type])
+  @@index([sent_at])
+}
