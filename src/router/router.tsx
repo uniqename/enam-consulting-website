@@ -13,6 +13,7 @@ import EmailManagement from '@/pages/tools/EmailManagement';
 import ApplicantTracking from '@/pages/tools/ApplicantTracking';
 import Careers from '@/pages/hire/Careers';
 import JobApplication from '@/pages/hire/JobApplication';
+import Healthcheck from '@/pages/healthcheck/Healthcheck';
 
 const AppDeleteRedirect = () => {
   const { appName } = useParams();
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
       {
         path: 'booking',
         element: <BookingPage />,
+      },
+      {
+        path: 'healthcheck',
+        element: <Healthcheck />,
       },
       {
         path: 'doxa/admin/clients',
