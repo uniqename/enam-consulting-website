@@ -555,23 +555,63 @@ const Healthcheck = () => {
 
   // ============ THANK YOU PAGE ============
   const ThankYouPage = () => (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center">
-      <div className="max-w-2xl mx-auto px-6 lg:px-8 text-center py-12">
-        <CheckCircle2 className="w-20 h-20 text-emerald-600 mx-auto mb-6" />
-        <h2 className="text-3xl font-bold text-slate-900 mb-3">Thank You!</h2>
-        <p className="text-lg text-slate-600 mb-6">
-          We received your assessment, {formData.name}. Check your email ({formData.email}) for next steps.
-        </p>
-        <button
-          onClick={() => {
-            setCurrentPage('hub');
-            setFormData({ name: '', businessName: '', email: '' });
-          }}
-          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg"
-        >
-          Back to Assessments
-          <ArrowRight size={20} />
-        </button>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
+      <div className="max-w-2xl mx-auto px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <CheckCircle2 className="w-20 h-20 text-emerald-600 mx-auto mb-6" />
+          <h2 className="text-4xl font-bold text-slate-900 mb-3">Assessment Submitted!</h2>
+          <p className="text-lg text-slate-600">
+            Thanks, {formData.name}. We'll review your responses and reach out within 48 hours.
+          </p>
+        </div>
+
+        <div className="bg-emerald-50 border-2 border-emerald-200 p-8 rounded-lg mb-8">
+          <h3 className="text-xl font-bold text-slate-900 mb-4">What Happens Next?</h3>
+          <ul className="space-y-3 text-slate-700">
+            <li className="flex gap-3">
+              <span className="text-emerald-600 font-bold text-lg">→</span>
+              <span>We'll email your personalized insights to <strong>{formData.email}</strong></span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-emerald-600 font-bold text-lg">→</span>
+              <span>Review where you stand and identify your biggest opportunity</span>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-emerald-600 font-bold text-lg">→</span>
+              <span>Book a free 30-minute strategy call to create a plan</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <a
+            href="/booking"
+            className="block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-6 rounded-lg text-center transition-colors"
+          >
+            Book a Free Clarity Call
+            <div className="text-sm font-normal mt-1">30 minutes • No obligation</div>
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentPage('hub');
+              setFormData({ name: '', businessName: '', email: '' });
+            }}
+            className="bg-slate-200 hover:bg-slate-300 text-slate-900 font-semibold py-4 px-6 rounded-lg transition-colors"
+          >
+            Back to Assessments
+          </button>
+        </div>
+
+        <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg text-center">
+          <p className="text-blue-900 text-sm">
+            <strong>Already know what you want to work on?</strong><br />
+            Skip the wait and{' '}
+            <a href="/booking" className="font-bold text-blue-700 hover:underline">
+              schedule a call now
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
