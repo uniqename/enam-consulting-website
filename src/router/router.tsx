@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router/dom';
-import { useParams, useEffect } from 'react-router';
+import { useParams } from 'react-router/dom';
+import { useEffect } from 'react';
 
 // Layouts
 import MainLayout from '@/components/layout/MainLayout';
