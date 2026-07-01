@@ -1,0 +1,60 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Static asset folders for each app (must come before SPA catch-all)
+[[redirects]]
+  from = "/beacon/*"
+  to = "/beacon/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/homelinkgh/*"
+  to = "/homelinkgh/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/faithklinik/*"
+  to = "/faithklinik/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/vaultlink/*"
+  to = "/vaultlink/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/ministryhub/*"
+  to = "/ministryhub/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/nativenest/*"
+  to = "/nativenest/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/phoenix/*"
+  to = "/phoenix/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/docs/*"
+  to = "/docs/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/resources/*"
+  to = "/resources/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/signatures/*"
+  to = "/signatures/:splat"
+  status = 200
+
+# SPA catch-all (must be last)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
