@@ -8,34 +8,34 @@ const Healthcheck = () => {
 
   // ============ HUB PAGE ============
   const HubPage = () => (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
-      <div className="max-w-4xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 mb-3">Clarity Before Strategy</h1>
-          <p className="text-xl text-slate-600">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16">
+      <div className="max-w-5xl mx-auto px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h1 className="text-6xl font-black text-white mb-4">Clarity Before Strategy</h1>
+          <p className="text-2xl text-slate-200">
             Choose the assessment that fits where you are right now.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-8">
           {/* 1. Clarity */}
           <button
             type="button"
             onClick={() => setCurrentPage('clarity')}
-            className="bg-white p-8 rounded-lg border-2 border-slate-200 hover:border-emerald-600 cursor-pointer transition-all hover:shadow-lg text-left w-full"
+            className="bg-gradient-to-br from-blue-600 to-blue-700 p-10 rounded-xl border-2 border-blue-500 hover:border-blue-400 hover:shadow-2xl cursor-pointer transition-all hover:scale-105 text-left w-full"
           >
-            <div className="flex items-start gap-4 mb-4">
-              <FileText className="w-8 h-8 text-blue-600 flex-shrink-0" />
+            <div className="flex items-start gap-6 mb-6">
+              <FileText className="w-12 h-12 text-blue-200 flex-shrink-0" />
               <div>
-                <h3 className="text-xl font-bold text-slate-900">Clarity Before Strategy</h3>
-                <p className="text-sm text-slate-500 mt-1">3 questions • 5 minutes</p>
+                <h3 className="text-3xl font-black text-white">Clarity Before Strategy</h3>
+                <p className="text-base text-blue-100 mt-2 font-semibold">3 questions • 5 minutes</p>
               </div>
             </div>
-            <p className="text-slate-600 mb-4">
+            <p className="text-blue-50 mb-6 text-lg leading-relaxed">
               Answer 3 honest questions to reveal the real goal hiding behind your biggest problem.
             </p>
-            <div className="flex items-center gap-2 text-emerald-600 font-semibold">
-              Start <ArrowRight size={20} />
+            <div className="flex items-center gap-2 text-white font-bold text-lg">
+              Start Now <ArrowRight size={24} />
             </div>
           </button>
 
@@ -43,20 +43,20 @@ const Healthcheck = () => {
           <button
             type="button"
             onClick={() => setCurrentPage('quickwins')}
-            className="bg-white p-8 rounded-lg border-2 border-slate-200 hover:border-emerald-600 cursor-pointer transition-all hover:shadow-lg text-left w-full"
+            className="bg-gradient-to-br from-amber-500 to-amber-600 p-10 rounded-xl border-2 border-amber-400 hover:border-amber-300 hover:shadow-2xl cursor-pointer transition-all hover:scale-105 text-left w-full"
           >
-            <div className="flex items-start gap-4 mb-4">
-              <Lightbulb className="w-8 h-8 text-amber-600 flex-shrink-0" />
+            <div className="flex items-start gap-6 mb-6">
+              <Lightbulb className="w-12 h-12 text-amber-100 flex-shrink-0" />
               <div>
-                <h3 className="text-xl font-bold text-slate-900">5 Quick Wins</h3>
-                <p className="text-sm text-slate-500 mt-1">5 items • 5 minutes</p>
+                <h3 className="text-3xl font-black text-white">5 Quick Wins</h3>
+                <p className="text-base text-amber-100 mt-2 font-semibold">5 items • 5 minutes</p>
               </div>
             </div>
-            <p className="text-slate-600 mb-4">
+            <p className="text-amber-50 mb-6 text-lg leading-relaxed">
               5 practical improvements you can start this week — no budget required.
             </p>
-            <div className="flex items-center gap-2 text-emerald-600 font-semibold">
-              Start <ArrowRight size={20} />
+            <div className="flex items-center gap-2 text-white font-bold text-lg">
+              Start Now <ArrowRight size={24} />
             </div>
           </button>
 
@@ -64,20 +64,20 @@ const Healthcheck = () => {
           <button
             type="button"
             onClick={() => setCurrentPage('assessment')}
-            className="bg-white p-8 rounded-lg border-2 border-slate-200 hover:border-emerald-600 cursor-pointer transition-all hover:shadow-lg text-left w-full"
+            className="bg-gradient-to-br from-emerald-600 to-emerald-700 p-10 rounded-xl border-2 border-emerald-500 hover:border-emerald-400 hover:shadow-2xl cursor-pointer transition-all hover:scale-105 text-left w-full"
           >
-            <div className="flex items-start gap-4 mb-4">
-              <CheckSquare className="w-8 h-8 text-emerald-600 flex-shrink-0" />
+            <div className="flex items-start gap-6 mb-6">
+              <CheckSquare className="w-12 h-12 text-emerald-100 flex-shrink-0" />
               <div>
-                <h3 className="text-xl font-bold text-slate-900">Business Health Assessment</h3>
-                <p className="text-sm text-slate-500 mt-1">10 questions • 5 minutes</p>
+                <h3 className="text-3xl font-black text-white">Business Health Assessment</h3>
+                <p className="text-base text-emerald-100 mt-2 font-semibold">10 questions • 5 minutes</p>
               </div>
             </div>
-            <p className="text-slate-600 mb-4">
+            <p className="text-emerald-50 mb-6 text-lg leading-relaxed">
               Score yourself across 10 dimensions. See exactly where your business needs attention.
             </p>
-            <div className="flex items-center gap-2 text-emerald-600 font-semibold">
-              Start <ArrowRight size={20} />
+            <div className="flex items-center gap-2 text-white font-bold text-lg">
+              Start Now <ArrowRight size={24} />
             </div>
           </button>
 
@@ -85,27 +85,27 @@ const Healthcheck = () => {
           <button
             type="button"
             onClick={() => setCurrentPage('pm')}
-            className="bg-white p-8 rounded-lg border-2 border-slate-200 hover:border-emerald-600 cursor-pointer transition-all hover:shadow-lg text-left w-full"
+            className="bg-gradient-to-br from-orange-600 to-orange-700 p-10 rounded-xl border-2 border-orange-500 hover:border-orange-400 hover:shadow-2xl cursor-pointer transition-all hover:scale-105 text-left w-full"
           >
-            <div className="flex items-start gap-4 mb-4">
-              <Home className="w-8 h-8 text-orange-600 flex-shrink-0" />
+            <div className="flex items-start gap-6 mb-6">
+              <Home className="w-12 h-12 text-orange-100 flex-shrink-0" />
               <div>
-                <h3 className="text-xl font-bold text-slate-900">5 Systems Framework</h3>
-                <p className="text-sm text-slate-500 mt-1">5 questions • 5 minutes</p>
+                <h3 className="text-3xl font-black text-white">5 Systems Framework</h3>
+                <p className="text-base text-orange-100 mt-2 font-semibold">5 questions • 5 minutes</p>
               </div>
             </div>
-            <p className="text-slate-600 mb-4">
+            <p className="text-orange-50 mb-6 text-lg leading-relaxed">
               For property managers: The 5 systems that break the moment you step away.
             </p>
-            <div className="flex items-center gap-2 text-emerald-600 font-semibold">
-              Start <ArrowRight size={20} />
+            <div className="flex items-center gap-2 text-white font-bold text-lg">
+              Start Now <ArrowRight size={24} />
             </div>
           </button>
         </div>
 
-        <div className="mt-12 bg-blue-50 border border-blue-200 p-6 rounded-lg text-center">
-          <p className="text-blue-900">
-            <strong>Pro tip:</strong> Start with "Clarity Before Strategy" to identify your real goal, then choose the assessment that matches your business type.
+        <div className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-600 border-2 border-indigo-400 p-8 rounded-xl text-center">
+          <p className="text-white text-lg">
+            <strong className="text-2xl">Pro tip:</strong> Start with "Clarity Before Strategy" to identify your real goal, then choose the assessment that matches your business type.
           </p>
         </div>
       </div>
