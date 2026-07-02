@@ -1,10 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CheckCircle2, ArrowRight, FileText, CheckSquare, Lightbulb, Home, ChevronLeft } from 'lucide-react';
 
 const Healthcheck = () => {
   const [currentPage, setCurrentPage] = useState<'hub' | 'clarity' | 'quickwins' | 'assessment' | 'pm' | 'thankyou'>('hub');
   const [formData, setFormData] = useState({ name: '', businessName: '', email: '' });
   const [submitted, setSubmitted] = useState(false);
+
+  // Prevent browser back button from leaving healthcheck
+  useEffect(() => {
+    // Push a state so browser back button stays in healthcheck
+    window.history.pushState({ page: currentPage }, '', window.location.href);
+
+    const handlePopState = (event: PopStateEvent) => {
+      // If they click browser back, go back to hub instead of leaving page
+      if (currentPage !== 'hub') {
+        setCurrentPage('hub');
+        window.history.pushState({ page: 'hub' }, '', window.location.href);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [currentPage]);
 
   // ============ HUB PAGE ============
   const HubPage = () => (
@@ -145,10 +162,11 @@ const Healthcheck = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
         <div className="max-w-2xl mx-auto px-6 lg:px-8">
           <button
+            type="button"
             onClick={() => setCurrentPage('hub')}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8"
+            className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold mb-8 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg transition-all"
           >
-            <ChevronLeft size={20} /> Back
+            <ChevronLeft size={20} /> Back to Assessments
           </button>
 
           <div className="mb-8">
@@ -281,10 +299,11 @@ const Healthcheck = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
         <div className="max-w-2xl mx-auto px-6 lg:px-8">
           <button
+            type="button"
             onClick={() => setCurrentPage('hub')}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8"
+            className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold mb-8 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg transition-all"
           >
-            <ChevronLeft size={20} /> Back
+            <ChevronLeft size={20} /> Back to Assessments
           </button>
 
           <div className="mb-8">
@@ -393,10 +412,11 @@ const Healthcheck = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
         <div className="max-w-3xl mx-auto px-6 lg:px-8">
           <button
+            type="button"
             onClick={() => setCurrentPage('hub')}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8"
+            className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold mb-8 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg transition-all"
           >
-            <ChevronLeft size={20} /> Back
+            <ChevronLeft size={20} /> Back to Assessments
           </button>
 
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Business Health Assessment</h1>
@@ -497,10 +517,11 @@ const Healthcheck = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12">
         <div className="max-w-3xl mx-auto px-6 lg:px-8">
           <button
+            type="button"
             onClick={() => setCurrentPage('hub')}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8"
+            className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold mb-8 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg transition-all"
           >
-            <ChevronLeft size={20} /> Back
+            <ChevronLeft size={20} /> Back to Assessments
           </button>
 
           <div className="mb-8">
