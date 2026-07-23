@@ -53,16 +53,6 @@
   to = "/signatures/:splat"
   status = 200
 
-[[redirects]]
-  from = "/clarityb/*"
-  to = "/clarityb/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/tools/*"
-  to = "/tools/:splat"
-  status = 200
-
 # SPA catch-all (must be last)
 [[redirects]]
   from = "/*"

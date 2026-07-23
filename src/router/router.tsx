@@ -9,11 +9,14 @@ import LandingPage from '@/pages/landing/Landing';
 import BookingPage from '@/pages/booking/Booking';
 import ClientManagement from '@/pages/tools/ClientManagement';
 import PipelineAnalytics from '@/pages/tools/PipelineAnalytics';
-import EmailManagement from '@/pages/tools/EmailManagement';
 import ApplicantTracking from '@/pages/tools/ApplicantTracking';
 import Careers from '@/pages/hire/Careers';
 import JobApplication from '@/pages/hire/JobApplication';
 import Healthcheck from '@/pages/healthcheck/Healthcheck';
+import Tools from '@/pages/tools/Tools';
+import ClarityHub from '@/pages/clarityb/ClarityHub';
+import ClarityHubLanding from '@/pages/clarityb/ClarityHubLanding';
+import Assessment from '@/pages/clarityb/Assessment';
 
 const AppDeleteRedirect = () => {
   const { appName } = useParams();
@@ -37,6 +40,22 @@ const AppPrivacyRedirect = () => {
 
 export const router = createBrowserRouter([
   {
+    path: '/tools',
+    element: <Tools />,
+  },
+  {
+    path: '/clarityb',
+    element: <ClarityHubLanding />,
+  },
+  {
+    path: '/clarityb/dashboard',
+    element: <ClarityHub />,
+  },
+  {
+    path: '/clarityb/assessment/:id',
+    element: <Assessment />,
+  },
+  {
     path: '/',
     element: <MainLayout />,
     children: [
@@ -59,10 +78,6 @@ export const router = createBrowserRouter([
       {
         path: 'tools/pipeline-analytics',
         element: <PipelineAnalytics />,
-      },
-      {
-        path: 'tools/email-subscribers',
-        element: <EmailManagement />,
       },
       {
         path: 'tools/applicants',
