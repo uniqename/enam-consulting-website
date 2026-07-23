@@ -445,7 +445,8 @@ const Booking = () => {
       }
     }
 
-    // ── Send emails via EmailJS (if configured) ─────────────────────────
+    // ── Send emails via Resend (if configured) ────────────────────────────
+    let emailsSent = false;
     if (emailConfigured()) {
       try {
         await sendBookingEmails({
@@ -461,21 +462,24 @@ const Booking = () => {
           guests:      validGuests,
           clarityHubLink: clarityHubLink || undefined,
         });
+        emailsSent = true;
+        console.log('[booking] Emails sent successfully via Resend');
       } catch (err) {
-        // EmailJS failed — fall through to mailto fallback below
-        console.error('[booking] EmailJS send failed:', err);
+        console.error('[booking] Resend email failed, showing fallback:', err);
       }
     }
 
-    // ── mailto fallback (always opens mail client as a backup) ──────────
-    const allRecipients = ['ename@doxaandco.co', ...validGuests];
-    const [to, ...cc] = allRecipients;
-    const ccParam = cc.length ? `&cc=${encodeURIComponent(cc.join(','))}` : '';
-    const feeSection = selectedType.fee
-      ? `\n\nSession Fee: ${selectedType.fee}\n${selectedType.feeNote}\nPayment details will be confirmed by Enam before the call.`
-      : '';
-    const body = `Hi Enam,\n\nI'm reaching out regarding: ${selectedType.title}\n\nDate/Time: ${dateStr} at ${selectedSlot} EDT\n\nAgenda:\n${form.message}${feeSection}\n\n---\nName: ${form.name}${form.company ? `\nCompany: ${form.company}` : ''}\nEmail: ${form.email}${validGuests.length ? `\nAdditional guests: ${validGuests.join(', ')}` : ''}\n\n(Calendar invite attached)`;
-    window.open(`mailto:${to}?subject=${encodeURIComponent(title)}${ccParam}&body=${encodeURIComponent(body)}`, '_blank');
+    // ── mailto fallback (only if automatic emails failed or not configured) ──
+    if (!emailsSent) {
+      const allRecipients = ['ename@doxaandco.co', ...validGuests];
+      const [to, ...cc] = allRecipients;
+      const ccParam = cc.length ? `&cc=${encodeURIComponent(cc.join(','))}` : '';
+      const feeSection = selectedType.fee
+        ? `\n\nSession Fee: ${selectedType.fee}\n${selectedType.feeNote}\nPayment details will be confirmed by Enam before the call.`
+        : '';
+      const body = `Hi Enam,\n\nI'm reaching out regarding: ${selectedType.title}\n\nDate/Time: ${dateStr} at ${selectedSlot} EDT\n\nAgenda:\n${form.message}${feeSection}\n\n---\nName: ${form.name}${form.company ? `\nCompany: ${form.company}` : ''}\nEmail: ${form.email}${validGuests.length ? `\nAdditional guests: ${validGuests.join(', ')}` : ''}\n\n(Calendar invite attached)`;
+      window.open(`mailto:${to}?subject=${encodeURIComponent(title)}${ccParam}&body=${encodeURIComponent(body)}`, '_blank');
+    }
 
     setStep('confirmed');
   };
