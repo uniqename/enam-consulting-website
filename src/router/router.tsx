@@ -11,13 +11,9 @@ import ClientManagement from '@/pages/tools/ClientManagement';
 import PipelineAnalytics from '@/pages/tools/PipelineAnalytics';
 import EmailManagement from '@/pages/tools/EmailManagement';
 import ApplicantTracking from '@/pages/tools/ApplicantTracking';
-import Tools from '@/pages/tools/Tools';
 import Careers from '@/pages/hire/Careers';
 import JobApplication from '@/pages/hire/JobApplication';
 import Healthcheck from '@/pages/healthcheck/Healthcheck';
-import ClarityHubLanding from '@/pages/clarityb/ClarityHubLanding';
-import ClarityHub from '@/pages/clarityb/ClarityHub';
-import Assessment from '@/pages/clarityb/Assessment';
 
 const AppDeleteRedirect = () => {
   const { appName } = useParams();
@@ -79,26 +75,6 @@ export const router = createBrowserRouter([
       {
         path: 'hire/apply/:jobId',
         element: <JobApplication />,
-      },
-      {
-        path: 'tools',
-        element: <Tools />,
-      },
-      {
-        path: 'clarityb',
-        element: <ClarityHubLanding />,
-      },
-      {
-        path: 'clarityb/login',
-        element: <ClarityHub />,
-      },
-      {
-        path: 'clarityb/admin',
-        element: <ClarityHub />,
-      },
-      {
-        path: 'clarityb/assessment/:assessmentId',
-        element: <Assessment />,
       },
       {
         path: 'delete/:appName',
