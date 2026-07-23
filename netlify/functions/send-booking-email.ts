@@ -41,6 +41,7 @@ function staffHtml(p: BookingEmailParams): string {
     ? `<strong>Session Fee:</strong> ${p.fee}${p.feeNote ? `<br><em>${p.feeNote}</em>` : ''}`
     : 'No session fee';
   const guestsList = p.guests.length ? p.guests.join(', ') : 'None';
+  const meetLink = generateMeetLink(p.name, p.meetingDate);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -60,6 +61,12 @@ function staffHtml(p: BookingEmailParams): string {
         <tr>
           <td style="padding:36px 40px;">
             <p style="margin:0 0 24px;font-size:15px;color:#44403c;">You have a new booking. Details below.</p>
+
+            <!-- Google Meet Link -->
+            <div style="background:#e0f2fe;border:2px solid #0284c7;border-radius:8px;padding:16px;margin-bottom:24px;text-align:center;">
+              <p style="margin:0 0 10px;font-size:11px;font-family:sans-serif;color:#0c4a6e;text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Meeting Room</p>
+              <p style="margin:0;font-size:12px;color:#0c4a6e;font-family:sans-serif;"><a href="${meetLink}" style="color:#0284c7;text-decoration:none;font-weight:600;">${meetLink}</a></p>
+            </div>
 
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
@@ -216,19 +223,28 @@ export default async function handler(req: Request): Promise<Response> {
   const fromAddress = 'Doxa & Co <ename@doxaandco.co>';
 
   async function sendEmail(to: string, subject: string, html: string) {
+    console.log(`[send-booking-email] Attempting to send email to: ${to}`);
+    const payload = { from: fromAddress, to: [to], subject, html };
+    console.log(`[send-booking-email] Payload from: ${payload.from}`);
+
     const res = await fetch(RESEND_API, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ from: fromAddress, to: [to], subject, html }),
+      body: JSON.stringify(payload),
     });
+
+    const responseData = await res.json();
+
     if (!res.ok) {
-      const body = await res.text();
-      throw new Error(`Resend error ${res.status}: ${body}`);
+      console.error(`[send-booking-email] Resend API error for ${to}:`, res.status, responseData);
+      throw new Error(`Resend error ${res.status}: ${JSON.stringify(responseData)}`);
     }
-    return res.json();
+
+    console.log(`[send-booking-email] Email sent successfully to ${to}:`, responseData);
+    return responseData;
   }
 
   try {
