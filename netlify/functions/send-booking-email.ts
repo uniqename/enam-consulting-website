@@ -31,6 +31,11 @@ interface BookingEmailParams {
   clarityHubLink?: string; // Login link to their new ClarityHub account
 }
 
+function generateMeetLink(name: string, date: string): string {
+  const sanitized = `${name}-${date}`.toLowerCase().replace(/[^a-z0-9]/g, '-').substring(0, 20);
+  return `https://meet.google.com/meet/${sanitized}`;
+}
+
 function staffHtml(p: BookingEmailParams): string {
   const feeSection = p.fee
     ? `<strong>Session Fee:</strong> ${p.fee}${p.feeNote ? `<br><em>${p.feeNote}</em>` : ''}`
@@ -111,6 +116,7 @@ function staffHtml(p: BookingEmailParams): string {
 }
 
 function clientHtml(p: BookingEmailParams): string {
+  const meetLink = generateMeetLink(p.name, p.meetingDate);
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -137,6 +143,13 @@ function clientHtml(p: BookingEmailParams): string {
               <p style="margin:0 0 6px;font-size:20px;color:#1c1917;font-family:Georgia,serif;">${p.meetingType}</p>
               <p style="margin:0 0 4px;font-size:14px;color:#57534e;">${p.meetingDate}</p>
               <p style="margin:0;font-size:14px;color:#57534e;">${p.meetingTime}</p>
+            </div>
+
+            <!-- Google Meet Link -->
+            <div style="background:#ecfdf5;border:2px solid #059669;border-radius:8px;padding:24px;margin-bottom:28px;text-align:center;">
+              <p style="margin:0 0 12px;font-size:11px;font-family:sans-serif;color:#047857;text-transform:uppercase;letter-spacing:.08em;font-weight:600;">Join the Meeting</p>
+              <table cellpadding="0" cellspacing="0" width="100%"><tr><td style="text-align:center;"><a href="${meetLink}" style="display:inline-block;background:#059669;padding:14px 32px;color:#ffffff;text-decoration:none;font-weight:600;font-size:16px;font-family:sans-serif;border-radius:6px;">Open Google Meet</a></td></tr></table>
+              <p style="margin:12px 0 0;font-size:12px;color:#047857;font-family:sans-serif;">Or paste this link in your browser: <code style="background:#fff;padding:2px 6px;border-radius:3px;">${meetLink}</code></p>
             </div>
 
             ${p.agenda ? `<div style="margin-bottom:28px;">
@@ -220,25 +233,29 @@ export default async function handler(req: Request): Promise<Response> {
 
   try {
     // Staff notification
-    await sendEmail(
+    console.log(`[send-booking-email] Sending staff notification to ename@doxaandco.co`);
+    const staffResult = await sendEmail(
       'ename@doxaandco.co',
       `New Booking: ${params.name} — ${params.meetingType} on ${params.meetingDate}`,
       staffHtml(params)
     );
+    console.log('[send-booking-email] Staff email sent:', staffResult);
 
     // Client confirmation
-    await sendEmail(
+    console.log(`[send-booking-email] Sending client confirmation to ${params.email}`);
+    const clientResult = await sendEmail(
       params.email,
       `Your booking with Doxa & Co is confirmed — ${params.meetingDate}`,
       clientHtml(params)
     );
+    console.log('[send-booking-email] Client email sent:', clientResult);
 
-    return new Response(JSON.stringify({ ok: true }), {
+    return new Response(JSON.stringify({ ok: true, staffId: staffResult.id, clientId: clientResult.id }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    console.error('[send-booking-email]', err);
+    console.error('[send-booking-email] Error:', err);
     return new Response(JSON.stringify({ error: String(err) }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
