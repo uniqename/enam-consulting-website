@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 // Layouts
 import MainLayout from '@/components/layout/MainLayout';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 // Pages
 import LandingPage from '@/pages/landing/Landing';
@@ -42,22 +43,32 @@ export const router = createBrowserRouter([
   {
     path: '/tools',
     element: <Tools />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: '/clarityb',
     element: <ClarityHubLanding />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: '/clarityb/dashboard',
     element: <ClarityHub />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: '/clarityb/assessment',
+    element: <Assessment />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: '/clarityb/assessment/:id',
     element: <Assessment />,
+    errorElement: <ErrorBoundary />,
   },
   {
     path: '/',
     element: <MainLayout />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         index: true,
@@ -100,5 +111,9 @@ export const router = createBrowserRouter([
         element: <AppPrivacyRedirect />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <ErrorBoundary />,
   },
 ]);
