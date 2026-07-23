@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Search, Filter, Plus, MoreVertical } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { useContacts } from '@/hooks/useContacts';
 import ContactList from '@/components/contacts/ContactList';
 import ContactDetailsPanel from '@/components/contacts/ContactDetailsPanel';
 import SearchBar from '@/components/shared/SearchBar';
@@ -18,7 +19,6 @@ interface Contact {
 }
 
 export default function PeopleDashboard() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCriteria, setFilterCriteria] = useState({
@@ -26,24 +26,12 @@ export default function PeopleDashboard() {
     status: 'active',
     date_range: 'all',
   });
-  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch contacts from Supabase
-  useMemo(async () => {
-    try {
-      setIsLoading(true);
-      // TODO: Replace with actual Supabase query
-      // const { data } = await supabase
-      //   .from('contacts')
-      //   .select('*')
-      //   .eq('status', filterCriteria.status);
-      // setContacts(data || []);
-    } catch (error) {
-      console.error('Failed to fetch contacts:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filterCriteria]);
+  const { contacts, isLoading } = useContacts({
+    status: filterCriteria.status,
+    meetingType: filterCriteria.meeting_type,
+  });
 
   // Filter and search contacts
   const filteredContacts = useMemo(() => {
