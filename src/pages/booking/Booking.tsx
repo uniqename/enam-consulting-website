@@ -619,7 +619,7 @@ const Booking = () => {
                       <motion.div key={selectedDate.toDateString()} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
                         className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 space-y-4">
                         <p className="font-semibold text-stone-800 text-sm">{DAY_SHORT[selectedDate.getDay()]}, {MONTH_NAMES[selectedDate.getMonth()]} {selectedDate.getDate()}</p>
-                        <p className="text-xs text-stone-400">Eastern Time (EDT) · 60 min</p>
+                        <p className="text-xs text-stone-400">Eastern Time (EDT) · {selectedType.durationMinutes} min</p>
                         <div className="space-y-2">
                           {availableSlots.length === 0 ? (
                             <p className="text-sm text-stone-400 text-center py-4">No availability — try another day</p>
