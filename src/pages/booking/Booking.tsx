@@ -22,10 +22,11 @@ interface MeetingTypeConfig {
   whatToBring: string[];
   fee: string | null;
   feeNote: string | null;
+  durationMinutes: number;
 }
 
 type Step = 'type' | 'schedule' | 'details' | 'confirmed';
-interface FormState { name: string; email: string; company: string; message: string }
+interface FormState { name: string; email: string; phone: string; company: string; message: string }
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -42,6 +43,7 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     whatToBring: ['Current risk register or audit findings', 'Compliance framework in use (SOX, ISO, etc.)', 'Org chart / team structure', 'Any pending audit deadlines'],
     fee: '$350',
     feeNote: 'Credited toward your engagement if you move forward.',
+    durationMinutes: 60,
   },
   {
     key: 'mvp',
@@ -55,6 +57,7 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     whatToBring: ['Product brief or 1-page concept doc', 'Rough budget range', 'Target launch date', 'Competing apps you admire'],
     fee: '$500',
     feeNote: 'Credited toward your project if you move forward.',
+    durationMinutes: 60,
   },
   {
     key: 'retainer',
@@ -68,6 +71,7 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     whatToBring: ['Current team structure', 'Sprint cadence or delivery process', 'Biggest product bottleneck right now', 'Recent roadmap or backlog (if any)'],
     fee: null,
     feeNote: 'Free discovery call. First month paid upfront before work begins.',
+    durationMinutes: 60,
   },
   {
     key: 'ai',
@@ -81,6 +85,21 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     whatToBring: ["Overview of your current operations & tools", "Biggest time/cost bottlenecks in your workflow", "Any AI tools you've tried or explored", 'Budget range or engagement tier interest'],
     fee: '$250',
     feeNote: 'Credited toward your audit or build engagement if you move forward.',
+    durationMinutes: 60,
+  },
+  {
+    key: 'quick',
+    title: 'Quick Consultation',
+    tagline: 'Fast answer to a specific question',
+    description: "Got a quick question or need a second opinion? Perfect for urgent guidance without the full discovery process.",
+    icon: <Clock className="w-5 h-5" />,
+    colorClass: 'text-teal-600',
+    bgClass: 'bg-teal-50 border-teal-200',
+    subject: 'Quick Consultation',
+    whatToBring: ['Your specific question or challenge', 'Any relevant context (brief is fine)'],
+    fee: '$75',
+    feeNote: 'Fast guidance at a lower price point.',
+    durationMinutes: 15,
   },
   {
     key: 'intro',
@@ -94,13 +113,14 @@ const MEETING_TYPES: MeetingTypeConfig[] = [
     whatToBring: ['A quick summary of your challenge', 'Any relevant context about your team or product'],
     fee: null,
     feeNote: 'Complimentary — no commitment required.',
+    durationMinutes: 30,
   },
 ];
 
-const ALL_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAY_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAY_LABELS = ['Mon','Tue','Wed','Thu','Fri'];
+const BASE_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -123,39 +143,52 @@ function getWeekDays(offset: number): Date[] {
   });
 }
 
-function getAvailableSlots(date: Date): string[] {
+function parseTimeToMinutes(slot: string): number {
+  const [time, period] = slot.split(' ');
+  const [h, m] = time.split(':').map(Number);
+  const hour24 = period === 'PM' && h !== 12 ? h + 12 : period === 'AM' && h === 12 ? 0 : h;
+  return hour24 * 60 + m;
+}
+
+function minutesToTime(mins: number): string {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  const isAM = h < 12;
+  const displayH = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const period = isAM ? 'AM' : 'PM';
+  return `${displayH}:${String(m).padStart(2, '0')} ${period}`;
+}
+
+function addMinutes(slot: string, minutes: number): string {
+  const totalMins = parseTimeToMinutes(slot) + minutes;
+  return minutesToTime(totalMins);
+}
+
+function getAvailableSlots(date: Date, durationMinutes: number = 60): string[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   if (date < today) return [];
   const seed = date.getDate() * 13 + (date.getMonth() + 1) * 7 + (date.getFullYear() % 100) * 3;
   const now = new Date();
-  return ALL_SLOTS.filter((slot, i) => {
+  const bufferMins = durationMinutes + 15;
+
+  return BASE_SLOTS.filter((slot, i) => {
     if ((seed + i * 17) % 10 <= 3) return false;
     if (date.toDateString() === now.toDateString()) {
-      const [t, p] = slot.split(' ');
-      const h = parseInt(t) + (p === 'PM' && parseInt(t) !== 12 ? 12 : 0);
-      if (h <= now.getHours() + 1) return false;
+      const slotMins = parseTimeToMinutes(slot);
+      const nowMins = now.getHours() * 60 + now.getMinutes();
+      if (slotMins <= nowMins + 60) return false;
     }
     return true;
   });
-}
-
-function addOneHour(slot: string): string {
-  const [time, period] = slot.split(' ');
-  const [h] = time.split(':').map(Number);
-  let newH = h + 1;
-  let newP = period;
-  if (h === 11 && period === 'AM') { newH = 12; newP = 'PM'; }
-  else if (h === 12 && period === 'PM') { newH = 1; newP = 'PM'; }
-  return `${newH}:00 ${newP}`;
 }
 
 function formatTimeShort(slot: string): string {
   return slot.replace(':00', '').toLowerCase();
 }
 
-function buildMeetingTitle(date: Date, slot: string, company: string): string {
-  const endSlot = addOneHour(slot);
+function buildMeetingTitle(date: Date, slot: string, company: string, durationMinutes: number = 60): string {
+  const endSlot = addMinutes(slot, durationMinutes);
   const label = company.trim() || 'Guest';
   const dateStr = `${DAY_SHORT[date.getDay()]} ${MONTH_NAMES[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
   return `Enam Egyir and ${label} @ ${dateStr} ${formatTimeShort(slot)} EDT to ${formatTimeShort(endSlot)} EDT`;
@@ -164,20 +197,22 @@ function buildMeetingTitle(date: Date, slot: string, company: string): string {
 function generateICS(params: {
   date: Date; slot: string; title: string;
   name: string; email: string; guests: string[];
-  description: string;
+  description: string; durationMinutes?: number;
 }): string {
-  const { date, slot, title, name, email, guests, description } = params;
+  const { date, slot, title, name, email, guests, description, durationMinutes = 60 } = params;
   const [time, period] = slot.split(' ');
   const [h] = time.split(':').map(Number);
   const hour24 = period === 'PM' && h !== 12 ? h + 12 : period === 'AM' && h === 12 ? 0 : h;
-  const endHour24 = hour24 + 1;
+  const endTotalMins = hour24 * 60 + durationMinutes;
+  const endHour24 = Math.floor(endTotalMins / 60);
+  const endMin24 = endTotalMins % 60;
 
   const pad = (n: number) => String(n).padStart(2, '0');
   const y = date.getFullYear();
   const mo = pad(date.getMonth() + 1);
   const d = pad(date.getDate());
   const dtstart = `${y}${mo}${d}T${pad(hour24)}0000`;
-  const dtend   = `${y}${mo}${d}T${pad(endHour24)}0000`;
+  const dtend   = `${y}${mo}${d}T${pad(endHour24)}${pad(endMin24)}00`;
   const dtstamp = new Date().toISOString().replace(/[-:]/g,'').split('.')[0] + 'Z';
   const uid = `${Date.now()}-enam@doxaandco.co`;
 
@@ -232,7 +267,7 @@ const Booking = () => {
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [form, setForm] = useState<FormState>({ name: '', email: '', company: '', message: '' });
+  const [form, setForm] = useState<FormState>({ name: '', email: '', phone: '', company: '', message: '' });
   const [guests, setGuests] = useState<string[]>(['']);
   const [errors, setErrors] = useState<Partial<FormState>>({});
 
@@ -245,19 +280,20 @@ const Booking = () => {
   }, [searchParams]);
 
   const weekDays = useMemo(() => getWeekDays(weekOffset), [weekOffset]);
-  const availableSlots = useMemo(() => selectedDate ? getAvailableSlots(selectedDate) : [], [selectedDate]);
+  const availableSlots = useMemo(() => selectedDate ? getAvailableSlots(selectedDate, selectedType.durationMinutes) : [], [selectedDate, selectedType.durationMinutes]);
   const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
   const isPastWeek = weekDays[4] < today;
 
   const meetingTitle = useMemo(() =>
-    selectedDate && selectedSlot ? buildMeetingTitle(selectedDate, selectedSlot, form.company || form.name) : '',
-    [selectedDate, selectedSlot, form.company, form.name]
+    selectedDate && selectedSlot ? buildMeetingTitle(selectedDate, selectedSlot, form.company || form.name, selectedType.durationMinutes) : '',
+    [selectedDate, selectedSlot, form.company, form.name, selectedType.durationMinutes]
   );
 
   const validate = () => {
     const e: Partial<FormState> = {};
     if (!form.name.trim()) e.name = 'Name is required';
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Valid email required';
+    if (!form.phone.trim()) e.phone = 'Phone number is required';
     if (!form.message.trim()) e.message = 'Please add a brief agenda';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -267,21 +303,63 @@ const Booking = () => {
     if (!validate() || !selectedDate || !selectedSlot) return;
     const validGuests = guests.filter(g => g.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g.trim()));
     const title = meetingTitle;
-    const endSlot = addOneHour(selectedSlot);
+    const endSlot = addMinutes(selectedSlot, selectedType.durationMinutes);
     const dateStr = `${DAY_SHORT[selectedDate.getDay()]} ${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()}`;
+
+    // ── Save contact to people management system ──────────────────────
+    try {
+      await fetch('/.netlify/functions/save-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          company: form.company,
+          meetingType: selectedType.title,
+          source: 'booking',
+        }),
+      });
+      console.log('[booking] Contact saved to people management');
+    } catch (err) {
+      console.error('[booking] Contact save error (non-blocking):', err);
+    }
+
+    // ── Schedule reminder emails (1 day, 1 hour, 30 min before) ────────
+    try {
+      await fetch('/.netlify/functions/schedule-meeting-reminders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientName: form.name,
+          clientEmail: form.email,
+          staffEmail: 'ename@doxaandco.co',
+          guestEmails: validGuests,
+          meetingType: selectedType.title,
+          meetingDate: dateStr,
+          meetingTime: `${selectedSlot} – ${endSlot} EDT`,
+          agenda: form.message,
+          duration: selectedType.durationMinutes,
+        }),
+      });
+      console.log('[booking] Reminder emails scheduled');
+    } catch (err) {
+      console.error('[booking] Reminder scheduling error (non-blocking):', err);
+    }
 
     // ── .ics calendar invite download ──────────────────────────────────
     const desc = [
       `Meeting: ${selectedType.title}`,
       `Date: ${dateStr}`,
       `Time: ${selectedSlot} – ${endSlot} EDT`,
+      `Duration: ${selectedType.durationMinutes} minutes`,
       ``, `Agenda:`, form.message, ``,
       `Attendee: ${form.name} <${form.email}>`,
       form.company ? `Company: ${form.company}` : '',
       validGuests.length ? `Additional guests: ${validGuests.join(', ')}` : '',
       ``, `A Google Meet link will be shared before the call.`,
     ].filter(Boolean).join('\n');
-    const ics = generateICS({ date: selectedDate, slot: selectedSlot, title, name: form.name, email: form.email, guests: validGuests, description: desc });
+    const ics = generateICS({ date: selectedDate, slot: selectedSlot, title, name: form.name, email: form.email, guests: validGuests, description: desc, durationMinutes: selectedType.durationMinutes });
     downloadICS(ics, 'meeting-enam-egyir.ics');
 
     // ── Create ClarityHub account from booking ────────────────────────────
@@ -415,7 +493,7 @@ const Booking = () => {
 
         <div className="text-center mb-10">
           <h1 className="text-4xl lg:text-5xl font-bold text-stone-900 mb-3">Book a Meeting</h1>
-          <p className="text-stone-500 text-lg">60-minute sessions · Google Meet · EDT</p>
+          <p className="text-stone-500 text-lg">Google Meet · Eastern Time (EDT)</p>
         </div>
 
         {step !== 'confirmed' && (
@@ -471,7 +549,7 @@ const Booking = () => {
                     {selectedType.icon} {selectedType.title}
                   </div>
                   <div className="space-y-2 text-sm text-stone-500">
-                    <div className="flex items-center gap-2"><Clock size={14} /> 60 minutes</div>
+                    <div className="flex items-center gap-2"><Clock size={14} /> {selectedType.durationMinutes} minutes</div>
                     <div className="flex items-center gap-2"><Video size={14} /> Google Meet</div>
                     <div className="flex items-center gap-2"><Calendar size={14} /> Eastern Time (EDT)</div>
                   </div>
@@ -548,7 +626,7 @@ const Booking = () => {
                           ) : availableSlots.map(slot => (
                             <button type="button" key={slot} onClick={() => setSelectedSlot(slot)}
                               className={`w-full py-2.5 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${selectedSlot === slot ? 'bg-stone-900 text-white border-stone-900' : 'border-stone-200 text-stone-700 hover:border-emerald-500 hover:text-emerald-700'}`}>
-                              {slot} – {addOneHour(slot)} EDT
+                              {slot} – {addMinutes(slot, selectedType.durationMinutes)} EDT
                             </button>
                           ))}
                         </div>
@@ -579,7 +657,7 @@ const Booking = () => {
                     </div>
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center gap-2 text-stone-600"><Calendar size={14} className="text-stone-400" /><span className="font-medium">{DAY_SHORT[selectedDate.getDay()]}, {MONTH_NAMES[selectedDate.getMonth()]} {selectedDate.getDate()}, {selectedDate.getFullYear()}</span></div>
-                      <div className="flex items-center gap-2 text-stone-600"><Clock size={14} className="text-stone-400" /><span className="font-medium">{selectedSlot} – {addOneHour(selectedSlot)} EDT</span></div>
+                      <div className="flex items-center gap-2 text-stone-600"><Clock size={14} className="text-stone-400" /><span className="font-medium">{selectedSlot} – {addMinutes(selectedSlot, selectedType.durationMinutes)} EDT</span></div>
                       <div className="flex items-center gap-2 text-stone-600"><Video size={14} className="text-stone-400" /><span>Google Meet</span></div>
                     </div>
                     <div className="border-t border-stone-100 pt-4 space-y-1.5">
@@ -607,6 +685,15 @@ const Booking = () => {
                         {errors[id] && <p className="mt-1 text-xs text-red-500">{errors[id]}</p>}
                       </div>
                     ))}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700 mb-1.5" htmlFor="phone">Phone Number *</label>
+                    <input id="phone" type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                      className={`w-full px-4 py-3 rounded-xl border text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${errors.phone ? 'border-red-400 bg-red-50' : 'border-stone-200'}`}
+                    />
+                    {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-stone-700 mb-1.5" htmlFor="company">Company / Organization</label>
@@ -672,14 +759,14 @@ const Booking = () => {
                 <p className="font-semibold text-stone-800 text-sm leading-relaxed">{meetingTitle}</p>
                 <div className="space-y-1.5 text-sm text-stone-600">
                   <div className="flex items-center gap-2"><Video size={13} className="text-stone-400" /> Google Meet (link sent separately)</div>
-                  <div className="flex items-center gap-2"><Clock size={13} className="text-stone-400" /> 60 minutes · {selectedType.title}</div>
+                  <div className="flex items-center gap-2"><Clock size={13} className="text-stone-400" /> {selectedType.durationMinutes} minutes · {selectedType.title}</div>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <button type="button"
                   onClick={() => {
                     if (!selectedDate || !selectedSlot) return;
-                    const ics = generateICS({ date: selectedDate, slot: selectedSlot, title: meetingTitle, name: form.name, email: form.email, guests: guests.filter(g => g.trim()), description: `Meeting: ${selectedType.title}\nAgenda: ${form.message}` });
+                    const ics = generateICS({ date: selectedDate, slot: selectedSlot, title: meetingTitle, name: form.name, email: form.email, guests: guests.filter(g => g.trim()), description: `Meeting: ${selectedType.title}\nAgenda: ${form.message}`, durationMinutes: selectedType.durationMinutes });
                     downloadICS(ics, 'meeting-enam-egyir.ics');
                   }}
                   className="flex-1 flex items-center justify-center gap-2 bg-stone-900 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition-all">
@@ -690,7 +777,7 @@ const Booking = () => {
                   <Mail size={15} /> Email Directly
                 </a>
               </div>
-              <button type="button" onClick={() => { setStep('type'); setSelectedDate(null); setSelectedSlot(null); setForm({ name:'', email:'', company:'', message:'' }); setGuests(['']); }}
+              <button type="button" onClick={() => { setStep('type'); setSelectedDate(null); setSelectedSlot(null); setForm({ name:'', email:'', phone:'', company:'', message:'' }); setGuests(['']); }}
                 className="text-sm text-stone-400 hover:text-stone-700 underline underline-offset-2 transition-colors">
                 Book another meeting
               </button>
