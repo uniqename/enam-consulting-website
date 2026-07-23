@@ -18,6 +18,7 @@ import Tools from '@/pages/tools/Tools';
 import ClarityHub from '@/pages/clarityb/ClarityHub';
 import ClarityHubLanding from '@/pages/clarityb/ClarityHubLanding';
 import Assessment from '@/pages/clarityb/Assessment';
+import PeopleDashboard from '@/pages/dashboard/PeopleDashboard';
 
 const AppDeleteRedirect = () => {
   const { appName } = useParams();
@@ -63,6 +64,11 @@ export const router = createBrowserRouter([
   {
     path: '/clarityb/assessment/:id',
     element: <Assessment />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: '/dashboard/contacts',
+    element: <PeopleDashboard />,
     errorElement: <ErrorBoundary />,
   },
   {
