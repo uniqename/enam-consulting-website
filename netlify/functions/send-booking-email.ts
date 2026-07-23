@@ -52,9 +52,9 @@ function staffHtml(p: BookingEmailParams): string {
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);">
         <!-- Header -->
         <tr>
-          <td style="background:#1c1917;padding:28px 40px;">
-            <p style="margin:0;font-family:Georgia,serif;font-size:20px;color:#C9A44A;letter-spacing:.05em;">DOXA &amp; CO</p>
-            <p style="margin:4px 0 0;font-size:11px;color:#78716c;letter-spacing:.15em;text-transform:uppercase;">New Booking Notification</p>
+          <td style="background:#1c1917;padding:20px 40px;text-align:center;">
+            <img src="https://doxaandco.co/doxa-logo.jpg" alt="Doxa & Co" style="max-width:180px;height:auto;margin:0 auto;display:block;" />
+            <p style="margin:12px 0 0;font-size:11px;color:#78716c;letter-spacing:.15em;text-transform:uppercase;">New Booking Notification</p>
           </td>
         </tr>
         <!-- Body -->
@@ -133,9 +133,9 @@ function clientHtml(p: BookingEmailParams): string {
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);">
         <!-- Header -->
         <tr>
-          <td style="background:#1c1917;padding:28px 40px;">
-            <p style="margin:0;font-family:Georgia,serif;font-size:20px;color:#C9A44A;letter-spacing:.05em;">DOXA &amp; CO</p>
-            <p style="margin:4px 0 0;font-size:11px;color:#78716c;letter-spacing:.15em;text-transform:uppercase;">Booking Confirmed</p>
+          <td style="background:#1c1917;padding:20px 40px;text-align:center;">
+            <img src="https://doxaandco.co/doxa-logo.jpg" alt="Doxa & Co" style="max-width:180px;height:auto;margin:0 auto;display:block;" />
+            <p style="margin:12px 0 0;font-size:11px;color:#78716c;letter-spacing:.15em;text-transform:uppercase;">Booking Confirmed</p>
           </td>
         </tr>
         <!-- Body -->
